@@ -8,7 +8,7 @@ const Layout = () => {
       <header className="app-header">
         <div className="container header-content">
           <Link to="/" className="logo">
-            MyMovies
+            HNAM PHIM
           </Link>
           <SearchForm /> {/* Thêm form tìm kiếm vào đây */}
         </div>
