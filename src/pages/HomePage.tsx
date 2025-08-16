@@ -1,10 +1,19 @@
 // src/pages/HomePage.tsx
 import { useState, useEffect, useCallback } from 'react'
-import type { MovieListItem, PaginationInfo, MovieListApiResponse } from '../type'
+// SỬA LỖI: Import đầy đủ các type cần thiết
+import type {
+  MovieListItem,
+  MovieListApiResponse,
+  MovieDetail,
+  MovieDetailApiResponse,
+  PaginationInfo, // Import PaginationInfo
+  CategoryGroup,
+} from '../type'
 import MovieCard from '../components/MovieCard'
 import Pagination from '../components/Pagination'
 import MovieCardSkeleton from '../components/MovieCardSkeleton'
 import MovieFilters from '../components/MovieFilters'
+import { filterData } from '../data/filters' // SỬA LỖI: Import filterData
 
 interface ActiveFilters {
   category: string
@@ -12,80 +21,131 @@ interface ActiveFilters {
   year: string
 }
 
+// SỬA LỖI: Định nghĩa kiểu rõ ràng hơn
+// MovieListItemWithDetails sẽ có TẤT CẢ các thuộc tính của MovieListItem
+// và CÓ THỂ CÓ thuộc tính 'details'
+type MovieListItemWithDetails = MovieListItem & {
+  details?: MovieDetail
+}
+
 const HomePage = () => {
-  const [movies, setMovies] = useState<MovieListItem[]>([])
+  // Sử dụng kiểu MovieListItemWithDetails cho state
+  const [filteredMovies, setFilteredMovies] = useState<MovieListItemWithDetails[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // State chứa các bộ lọc đang được áp dụng
   const [appliedFilters, setAppliedFilters] = useState<ActiveFilters>({
     category: '',
     country: '',
     year: '',
   })
 
-  // Hàm này được gọi khi người dùng nhấn nút "Lọc kết quả"
   const handleFilterApply = useCallback((newFilters: ActiveFilters) => {
     setAppliedFilters(newFilters)
-    setCurrentPage(1) // Reset về trang 1 khi áp dụng bộ lọc mới
+    setCurrentPage(1)
   }, [])
 
   useEffect(() => {
     const controller = new AbortController()
     const { signal } = controller
 
-    const fetchMovies = async () => {
+    const fetchAndFilterMovies = async () => {
       setLoading(true)
       setError(null)
 
-      let apiUrl = 'https://phim.nguonc.com/api/films/phim-moi-cap-nhat'
-
-      // Ưu tiên Thể loại > Quốc gia > Năm
+      let baseApiUrl = 'https://phim.nguonc.com/api/films/phim-moi-cap-nhat'
       if (appliedFilters.category) {
-        apiUrl = `https://phim.nguonc.com/api/films/the-loai/${appliedFilters.category}`
-      } else if (appliedFilters.country) {
-        apiUrl = `https://phim.nguonc.com/api/films/quoc-gia/${appliedFilters.country}`
+        baseApiUrl = `https://phim.nguonc.com/api/films/the-loai/${appliedFilters.category}`
       } else if (appliedFilters.year) {
-        apiUrl = `https://phim.nguonc.com/api/films/nam-phat-hanh/${appliedFilters.year}`
+        baseApiUrl = `https://phim.nguonc.com/api/films/nam-phat-hanh/${appliedFilters.year}`
+      } else if (appliedFilters.country) {
+        baseApiUrl = `https://phim.nguonc.com/api/films/quoc-gia/${appliedFilters.country}`
       }
 
       try {
-        const response = await fetch(`${apiUrl}?page=${currentPage}`, { signal })
-        if (!response.ok) throw new Error('Không thể tải dữ liệu phim')
-        const data: MovieListApiResponse = await response.json()
+        const listResponse = await fetch(`${baseApiUrl}?page=${currentPage}`, { signal })
+        if (!listResponse.ok) throw new Error('Lỗi khi tải danh sách phim')
+        const listData: MovieListApiResponse = await listResponse.json()
 
-        if (data.status === 'success') {
-          setMovies(data.items)
-          setPagination(data.paginate)
-        } else {
-          // Xử lý trường hợp API trả về success nhưng không có item (kết quả lọc rỗng)
-          setMovies([])
-          setPagination(null)
+        if (listData.status !== 'success' || !listData.items || listData.items.length === 0) {
+          setFilteredMovies([])
+          setPagination(listData.paginate || null)
+          setLoading(false) // Quan trọng: dừng loading ở đây
+          return
         }
+
+        const moviesFromList = listData.items
+        setPagination(listData.paginate)
+
+        const detailPromises = moviesFromList.map(
+          (movie) =>
+            fetch(`https://phim.nguonc.com/api/film/${movie.slug}`, { signal })
+              .then((res) => res.json() as Promise<MovieDetailApiResponse>)
+              .then((data) => ({ ...movie, details: data.movie }))
+              .catch(() => ({ ...movie, details: undefined })), // Gán details là undefined nếu lỗi
+        )
+
+        const moviesWithDetails: MovieListItemWithDetails[] = await Promise.all(detailPromises)
+
+        const finalFilteredMovies = moviesWithDetails.filter((movie) => {
+          // Nếu không có details, không thể lọc, coi như không khớp
+          if (!movie.details) return false
+
+          // SỬA LỖI: Thêm kiểu dữ liệu cho 'g'
+          const categoryList = Object.values(movie.details.category).flatMap(
+            (g: CategoryGroup) => g.list,
+          )
+
+          // SỬA LỖI: Thêm kiểu dữ liệu cho 'f'
+          const countryMatch =
+            !appliedFilters.country ||
+            categoryList.some(
+              (c) =>
+                c.name ===
+                filterData.countries.find(
+                  (f: { name: string; slug: string }) => f.slug === appliedFilters.country,
+                )?.name,
+            )
+          const yearMatch =
+            !appliedFilters.year || categoryList.some((c) => c.name === appliedFilters.year)
+          const categoryMatch =
+            !appliedFilters.category ||
+            categoryList.some(
+              (c) =>
+                c.name ===
+                filterData.categories.find(
+                  (f: { name: string; slug: string }) => f.slug === appliedFilters.category,
+                )?.name,
+            )
+
+          return countryMatch && yearMatch && categoryMatch
+        })
+
+        setFilteredMovies(finalFilteredMovies)
       } catch (err: any) {
         if (err.name !== 'AbortError') setError(err.message)
       } finally {
         setLoading(false)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
 
-    fetchMovies()
+    fetchAndFilterMovies()
 
     return () => {
       controller.abort()
     }
-  }, [currentPage, appliedFilters]) // Effect chạy lại khi trang hoặc bộ lọc thay đổi
+  }, [currentPage, appliedFilters])
 
   return (
     <div className="homepage-container">
       <div className="homepage-header">
-        {/* <h1>HNAM PHIM</h1> */}
+        <h1>Khám Phá Phim</h1>
         <MovieFilters onFilterApply={handleFilterApply} />
       </div>
 
+      {/* SỬA LỖI: Hiển thị Skeleton UI khi loading */}
       {loading && (
         <div className="movie-grid">
           {Array.from({ length: 12 }).map((_, index) => (
@@ -98,10 +158,10 @@ const HomePage = () => {
 
       {!loading &&
         !error &&
-        (movies.length > 0 ? (
+        (filteredMovies.length > 0 ? (
           <>
             <div className="movie-grid">
-              {movies.map((movie) => (
+              {filteredMovies.map((movie) => (
                 <MovieCard key={movie.slug} movie={movie} />
               ))}
             </div>
@@ -114,7 +174,7 @@ const HomePage = () => {
             )}
           </>
         ) : (
-          <p className="no-results">Không tìm thấy phim nào phù hợp với bộ lọc của bạn.</p>
+          <p className="no-results">Không tìm thấy phim nào phù hợp.</p>
         ))}
     </div>
   )
