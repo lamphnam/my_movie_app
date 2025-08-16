@@ -41,18 +41,14 @@ const HomePage = () => {
       setError(null)
 
       let apiUrl = 'https://phim.nguonc.com/api/films/phim-moi-cap-nhat'
-      let hasFilter = false
 
       // Ưu tiên Thể loại > Quốc gia > Năm
       if (appliedFilters.category) {
         apiUrl = `https://phim.nguonc.com/api/films/the-loai/${appliedFilters.category}`
-        hasFilter = true
       } else if (appliedFilters.country) {
         apiUrl = `https://phim.nguonc.com/api/films/quoc-gia/${appliedFilters.country}`
-        hasFilter = true
       } else if (appliedFilters.year) {
         apiUrl = `https://phim.nguonc.com/api/films/nam-phat-hanh/${appliedFilters.year}`
-        hasFilter = true
       }
 
       try {
