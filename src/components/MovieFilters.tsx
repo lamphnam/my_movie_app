@@ -20,10 +20,8 @@ const MovieFilters = memo(({ onFilterApply }: FilterProps) => {
     year: '',
   })
 
-  // ==========================================================
-  // HÀM NÀY LÀ THAY ĐỔI QUAN TRỌNG NHẤT
-  // ==========================================================
   const handleSelect = (type: keyof ActiveFilters, value: string) => {
+    // Nếu click lại item đã active thì bỏ chọn
     const newValue = activeFilters[type] === value ? '' : value
     setActiveFilters((prev) => ({ ...prev, [type]: newValue }))
   }
@@ -40,9 +38,6 @@ const MovieFilters = memo(({ onFilterApply }: FilterProps) => {
     setIsOpen(false)
   }
 
-  // Logic để xác định nút "Tất cả" có active hay không
-  const isAllActive = !activeFilters.category && !activeFilters.country && !activeFilters.year
-
   return (
     <div className="v-filter">
       <button className="filter-toggle" onClick={() => setIsOpen(!isOpen)}>
@@ -57,9 +52,8 @@ const MovieFilters = memo(({ onFilterApply }: FilterProps) => {
             <div className="fe-name">Thể loại:</div>
             <div className="fe-results">
               <div
-                className={`item ${isAllActive ? 'active' : ''}`}
-                // Khi click "Tất cả", chúng ta reset state bằng cách gọi handleReset
-                onClick={handleReset}
+                className={`item ${activeFilters.category === '' ? 'active' : ''}`}
+                onClick={() => handleSelect('category', '')}
               >
                 Tất cả
               </div>
@@ -79,7 +73,12 @@ const MovieFilters = memo(({ onFilterApply }: FilterProps) => {
           <div className="fe-row">
             <div className="fe-name">Quốc gia:</div>
             <div className="fe-results">
-              {/* Nút "Tất cả" của các bộ lọc con không cần nữa vì đã có nút reset chung */}
+              <div
+                className={`item ${activeFilters.country === '' ? 'active' : ''}`}
+                onClick={() => handleSelect('country', '')}
+              >
+                Tất cả
+              </div>
               {filterData.countries.map((country) => (
                 <div
                   key={country.slug}
@@ -96,6 +95,12 @@ const MovieFilters = memo(({ onFilterApply }: FilterProps) => {
           <div className="fe-row">
             <div className="fe-name">Năm:</div>
             <div className="fe-results">
+              <div
+                className={`item ${activeFilters.year === '' ? 'active' : ''}`}
+                onClick={() => handleSelect('year', '')}
+              >
+                Tất cả
+              </div>
               {filterData.years.map((year) => (
                 <div
                   key={year}
