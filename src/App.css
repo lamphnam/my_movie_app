@@ -202,6 +202,10 @@ body {
   flex-wrap: wrap; /* THÊM MỚI: Cho phép các nút "Thể loại", "Năm"... tự xuống dòng nếu cần */
   justify-content: flex-end; /* THÊM MỚI: Dồn các nút về phía bên phải nếu chúng xuống dòng */
 }
+.desktop-nav .nav-dropdown:last-child .nav-dropdown-content {
+  left: auto;
+  right: 0;
+}
 
 .nav-link {
   padding: 0.5rem 0.75rem;
@@ -887,7 +891,15 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
+@media (max-width: 767px) {
+  .nav-dropdown-content {
+    min-width: 200px; /* Giảm chiều rộng tối thiểu */
+  }
 
+  .nav-dropdown-grid {
+    grid-template-columns: 1fr; /* Chuyển về layout 1 cột */
+  }
+}
 /* --- Medium devices (tablets, 768px and up) --- */
 @media (min-width: 768px) {
   /* ==================
