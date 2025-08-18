@@ -604,9 +604,6 @@ body {
   margin: 0 auto;
   padding: 2rem 0;
 }
-.video-player-section {
-  margin-bottom: 2rem;
-}
 .video-player-container {
   position: relative;
   width: 100%;
@@ -624,21 +621,26 @@ body {
   border: none;
 }
 .detail-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 2rem;
 }
 .movie-title {
   font-size: 2rem;
   margin-bottom: 0.5rem;
+  line-height: 1.2; /* THAY ĐỔI: Giảm line-height cho tiêu đề gọn hơn */
 }
 .movie-original-title {
   font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.5); /* Mờ hơn */
+  margin-top: 0.25rem; /* Thêm khoảng cách với tiêu đề chính */
+  font-weight: 400;
+  font-style: italic;
 }
+
 .favorite-button {
   border: none;
   padding: 0.75rem 1.5rem;
+  margin-top: 1.5rem;
   border-radius: 25px;
   font-size: 1rem;
   cursor: pointer;
@@ -650,22 +652,39 @@ body {
 }
 .movie-content {
   display: grid;
-  grid-template-columns: 1fr; /* Mobile-first: 1 cột */
+  grid-template-columns: 1fr; /* Vẫn 1 cột trên mobile */
   gap: 2rem;
-  margin-bottom: 3rem;
-  text-align: center;
+  margin-top: 2rem; /* THÊM MỚI: Tách khỏi header */
+  margin-bottom: 2rem;
+  text-align: left; /* THAY ĐỔI: Luôn canh lề trái */
 }
 .movie-thumb {
   width: 100%;
-  max-width: 300px; /* Giới hạn độ rộng ảnh trên mobile */
+  max-width: 300px;
   margin: 0 auto;
-  border-radius: 12px;
+  border-radius: 16px; /* THAY ĐỔI: Bo tròn nhiều hơn */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* THÊM MỚI */
 }
-.movie-info p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
+.movie-thumb:hover {
+  transform: scale(1.03) translateY(-5px); /* THÊM MỚI */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* THÊM MỚI */
 }
+.movie-info p,
+.movie-info .category-group {
+  margin-bottom: 1.5rem; /* Tăng khoảng cách giữa các mục */
+  line-height: 1.7;
+}
+.movie-info strong {
+  display: block;
+  color: rgba(255, 255, 255, 0.85); /* Sáng hơn đáng kể */
+  font-weight: 700; /* Đậm hơn */
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
 .categories {
   margin-top: 1rem;
 }
@@ -675,22 +694,31 @@ body {
 .category-tags {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
+  justify-content: flex-start; /* THAY ĐỔI: Luôn bắt đầu từ bên trái */
+  gap: 0.75rem; /* THAY ĐỔI: Tăng khoảng cách giữa các tag */
   margin-top: 0.5rem;
 }
 .category-tag {
-  background: rgba(102, 126, 234, 0.2);
-  color: #667eea;
-  padding: 0.25rem 0.75rem;
-  border-radius: 15px;
-  font-size: 0.9rem;
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.4rem 0.8rem; /* Điều chỉnh padding */
+  border-radius: 8px; /* Bo tròn vừa phải */
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Thêm viền mờ */
+  transition: all 0.2s ease-in-out;
+}
+.video-player-section,
+.episodes-section {
+  padding-top: 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 .episodes-section h2 {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
   color: #ffffff;
+  text-align: left; /* THÊM MỚI: Đảm bảo tiêu đề canh trái */
 }
 .server-list {
   margin-bottom: 2rem;
@@ -705,7 +733,7 @@ body {
   flex-wrap: wrap;
   gap: 0.5rem;
   list-style: none;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .episode-button {
   padding: 0.5rem 1rem;
@@ -858,6 +886,9 @@ body {
   .mobile-menu-button {
     display: none;
   }
+  .detail-header {
+    text-align: left; /* THAY ĐỔI: Canh trái header trên desktop */
+  }
   .header-content {
     gap: 2rem;
     flex-wrap: nowrap; /* THÊM MỚI: Không cho xuống dòng nữa */
@@ -881,18 +912,20 @@ body {
     flex-direction: row;
   }
   .movie-content {
-    grid-template-columns: 250px 1fr; /* Chuyển về 2 cột trên tablet */
-    text-align: left;
+    grid-template-columns: 300px 1fr;
+    gap: 3rem;
+    /* text-align: left; Đã chuyển ra ngoài nên có thể xóa ở đây */
   }
   .movie-thumb {
-    max-width: none; /* Bỏ giới hạn độ rộng */
+    max-width: none;
+    margin: 0; /* THAY ĐỔI: Reset margin */
   }
   .category-tags,
   .episode-list {
     justify-content: flex-start;
   }
   .movie-title {
-    font-size: 2.5rem;
+    font-size: 3rem; /* Cho tiêu đề to và ấn tượng hơn */
   }
 }
 
@@ -904,7 +937,7 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
   .movie-content {
-    grid-template-columns: 300px 1fr; /* Kích thước poster lớn hơn */
+    gap: 4rem; /* Tăng khoảng cách cho thoáng hơn */
   }
 }
 

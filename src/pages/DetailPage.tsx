@@ -72,8 +72,52 @@ const DetailPage = () => {
   if (error) return <div className="error-message">Lỗi: {error}</div>
   if (!movie) return <div>Không có dữ liệu phim.</div>
 
+  // --- BẮT ĐẦU PHẦN LAYOUT ĐÃ SẮP XẾP LẠI ---
   return (
     <div className="movie-detail-page">
+      {/* PHẦN 1: GIỚI THIỆU PHIM (Đã di chuyển lên đầu) */}
+      <div className="movie-introduction-section">
+        <div className="detail-header">
+          <h1 className="movie-title">{movie.name}</h1>
+          <p className="movie-original-title">({movie.original_name})</p>
+          <button onClick={handleToggleFavorite} className="favorite-button">
+            {isFavorited ? '❤️ Bỏ thích' : '🤍 Thêm vào yêu thích'}
+          </button>
+        </div>
+
+        <div className="movie-content">
+          <img
+            src={movie.thumb_url || '/placeholder.svg'}
+            alt={movie.name}
+            className="movie-thumb"
+          />
+          <div className="movie-info">
+            <p>
+              <strong>Mô tả:</strong> {movie.description}
+            </p>
+            <p>
+              <strong>Diễn viên:</strong> {movie.casts}
+            </p>
+            <div className="categories">
+              {movie.category &&
+                Object.values(movie.category).map((catGroup) => (
+                  <div key={catGroup.group.id} className="category-group">
+                    <strong>{catGroup.group.name}:</strong>
+                    <div className="category-tags">
+                      {catGroup.list.map((item) => (
+                        <span key={item.id} className="category-tag">
+                          {item.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* PHẦN 2: VIDEO PHIM (Đã di chuyển xuống dưới phần giới thiệu) */}
       {selectedEpisodeUrl && (
         <div className="video-player-section">
           <div className="video-player-container">
@@ -87,41 +131,7 @@ const DetailPage = () => {
         </div>
       )}
 
-      <div className="detail-header">
-        <h1 className="movie-title">{movie.name}</h1>
-        <p className="movie-original-title">({movie.original_name})</p>
-        <button onClick={handleToggleFavorite} className="favorite-button">
-          {isFavorited ? '❤️ Bỏ thích' : '🤍 Thêm vào yêu thích'}
-        </button>
-      </div>
-
-      <div className="movie-content">
-        <img src={movie.thumb_url || '/placeholder.svg'} alt={movie.name} className="movie-thumb" />
-        <div className="movie-info">
-          <p>
-            <strong>Mô tả:</strong> {movie.description}
-          </p>
-          <p>
-            <strong>Diễn viên:</strong> {movie.casts}
-          </p>
-          <div className="categories">
-            {movie.category &&
-              Object.values(movie.category).map((catGroup) => (
-                <div key={catGroup.group.id} className="category-group">
-                  <strong>{catGroup.group.name}:</strong>
-                  <div className="category-tags">
-                    {catGroup.list.map((item) => (
-                      <span key={item.id} className="category-tag">
-                        {item.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
-
+      {/* PHẦN 3: DANH SÁCH TẬP PHIM (Giữ nguyên ở cuối) */}
       <div className="episodes-section">
         <h2>Danh sách tập phim</h2>
         {movie.episodes &&
