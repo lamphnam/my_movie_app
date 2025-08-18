@@ -15,8 +15,13 @@ body {
   color: #ffffff;
   line-height: 1.6;
   min-height: 100vh;
+  overflow-x: hidden;
 }
-
+.App,
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -191,9 +196,11 @@ body {
 }
 
 .desktop-nav {
-  display: flex; /* Bỏ 'none', cho nó luôn hiển thị */
+  display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap; /* THÊM MỚI: Cho phép các nút "Thể loại", "Năm"... tự xuống dòng nếu cần */
+  justify-content: flex-end; /* THÊM MỚI: Dồn các nút về phía bên phải nếu chúng xuống dòng */
 }
 
 .nav-link {
