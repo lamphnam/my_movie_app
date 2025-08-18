@@ -6,7 +6,7 @@ import type { Movie, ApiResponse } from '../types'
 import MovieCard from '../components/MovieCard'
 import Pagination from '../components/Pagination'
 import MovieCardSkeleton from '../components/MovieCardSkeleton'
-import MovieFilters from '../components/MovieFilters'
+// import MovieFilters from '../components/MovieFilters'
 import CategoryHeader from '../components/CategoryHeader'
 import { movieApi } from '../services/api'
 
@@ -31,10 +31,10 @@ const HomePage = () => {
   })
 
   // Hàm này được gọi khi người dùng nhấn nút "Áp dụng lọc"
-  const handleFilterApply = useCallback((newFilters: ActiveFilters) => {
-    setAppliedFilters(newFilters)
-    setCurrentPage(1) // Reset về trang 1 khi áp dụng bộ lọc mới
-  }, [])
+  // const handleFilterApply = useCallback((newFilters: ActiveFilters) => {
+  //   setAppliedFilters(newFilters)
+  //   setCurrentPage(1) // Reset về trang 1 khi áp dụng bộ lọc mới
+  // }, [])
 
   const getHeaderType = (): {
     type: 'category' | 'country' | 'year' | 'default'
@@ -56,7 +56,6 @@ const HomePage = () => {
     const fetchMovies = async () => {
       setLoading(true)
       setError(null)
-      console.log('Bộ lọc hiện tại:', appliedFilters)
       try {
         let data: ApiResponse
 
@@ -98,9 +97,9 @@ const HomePage = () => {
     <div className="homepage-container">
       <CategoryHeader type={headerInfo.type} value={headerInfo.value} />
 
-      <div className="homepage-controls">
+      {/* <div className="homepage-controls">
         <MovieFilters onFilterApply={handleFilterApply} currentFilters={appliedFilters} />
-      </div>
+      </div> */}
 
       {loading && (
         <div className="movie-grid">
