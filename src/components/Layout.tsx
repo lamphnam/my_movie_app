@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Outlet } from 'react-router-dom'
 import Header from './Header'
+import Footer from './Footer'
 
 const Layout = ({ children }: { children?: React.ReactNode }) => {
   return (
@@ -9,6 +10,7 @@ const Layout = ({ children }: { children?: React.ReactNode }) => {
       <main>
         <div className="container">{children || <Outlet />}</div>
       </main>
+      <Footer />
     </>
   )
 }

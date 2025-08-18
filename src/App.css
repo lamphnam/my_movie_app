@@ -1023,4 +1023,85 @@ body {
 
 .nav-dropdown-content::-webkit-scrollbar-thumb:hover {
   background-color: rgba(102, 126, 234, 0.8);
+} /* ==========================================================================
+   5. FOOTER - Phiên bản theo ảnh mẫu
+   ========================================================================== */
+
+.app-footer {
+  background: rgba(15, 15, 35, 0.3);
+  padding: 3rem 0;
+  margin-top: 4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  text-align: left; /* Đảm bảo mọi thứ căn trái */
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  /* Giữ nguyên trên mobile */
+}
+
+/* Style cho Disclaimer (dòng trên) */
+.footer-disclaimer {
+  line-height: 1.8;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8); /* Làm cho chữ rõ hơn một chút */
+  margin-bottom: 2rem;
+}
+
+/* Footer Bottom (dòng dưới) */
+.footer-bottom {
+  display: flex;
+  flex-direction: column; /* Mặc định xếp dọc trên mobile */
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.footer-copyright {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem; /* Khoảng cách giữa các link */
+  font-size: 0.85rem;
+}
+
+.footer-link {
+  color: inherit; /* Màu chữ kế thừa từ .app-footer */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #ffffff; /* Nổi bật khi hover */
+}
+
+/* Thêm đường kẻ phân cách */
+.footer-link:not(:first-child)::before {
+  content: '|';
+  color: rgba(255, 255, 255, 0.2);
+  margin-right: 1rem;
+}
+
+/* ==========================================================================
+   MEDIA QUERY - Đưa footer về dạng ngang trên desktop
+   ========================================================================== */
+@media (min-width: 768px) {
+  .footer-bottom {
+    flex-direction: row; /* Chuyển sang ngang */
+    justify-content: space-between; /* Đẩy copyright và links ra 2 bên */
+    align-items: center;
+    margin-top: 1rem; /* Khoảng cách giữa disclaimer và bottom row */
+  }
+
+  .footer-copyright {
+    flex-shrink: 0;
+  }
 }
