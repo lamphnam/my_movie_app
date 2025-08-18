@@ -18,7 +18,7 @@ const Header: React.FC = () => {
         <div className="header-content">
           {/* Logo */}
           <Link to="/" className="logo">
-            <span>🎬</span> MovieHub
+            <span>🎬</span> HNAM Phim
           </Link>
 
           {/* Desktop Navigation */}
