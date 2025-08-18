@@ -1,22 +1,13 @@
-// src/components/Layout.tsx
-import { Outlet, Link } from 'react-router-dom'
-import SearchForm from './SearchForm' // Import component mới
+import type React from 'react'
+import { Outlet } from 'react-router-dom'
+import Header from './Header'
 
-const Layout = () => {
+const Layout = ({ children }: { children?: React.ReactNode }) => {
   return (
     <>
-      <header className="app-header">
-        <div className="container header-content">
-          <Link to="/" className="logo">
-            HNAM PHIM
-          </Link>
-          <SearchForm /> {/* Thêm form tìm kiếm vào đây */}
-        </div>
-      </header>
+      <Header />
       <main>
-        <div className="container">
-          <Outlet />
-        </div>
+        <div className="container">{children || <Outlet />}</div>
       </main>
     </>
   )

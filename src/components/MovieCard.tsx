@@ -1,19 +1,34 @@
 // src/components/MovieCard.tsx
+
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import type { MovieListItem } from '../type'
+// No longer need to import the full 'Movie' type.
+
+// Define a type that includes only the properties the MovieCard component actually uses.
+// Both the 'Movie' and 'MovieListItem' types satisfy this interface.
+interface MovieCardData {
+  slug: string
+  thumb_url: string
+  name: string
+  quality: string
+  current_episode: string
+  original_name: string
+}
 
 interface MovieCardProps {
-  movie: MovieListItem
+  movie: MovieCardData // Use the more specific and flexible type here
 }
 
 const MovieCard = memo(({ movie }: MovieCardProps) => {
-  console.log(`Rendering MovieCard: ${movie.name}`) // Debug render (có thể xóa nếu không cần)
-
   return (
     <Link to={`/phim/${movie.slug}`} className="movie-card">
       <div className="movie-card-image-wrapper">
-        <img src={movie.thumb_url} alt={movie.name} className="movie-card-thumb" loading="lazy" />
+        <img
+          src={movie.thumb_url || '/placeholder.svg'}
+          alt={movie.name}
+          className="movie-card-thumb"
+          loading="lazy"
+        />
         <div className="movie-card-overlay">
           <span className="play-icon">▶</span>
         </div>

@@ -1,10 +1,14 @@
+'use client'
+
 // src/pages/HomePage.tsx
 import { useState, useEffect, useCallback } from 'react'
-import type { MovieListItem, PaginationInfo, MovieListApiResponse } from '../type'
+import type { Movie, ApiResponse } from '../types'
 import MovieCard from '../components/MovieCard'
 import Pagination from '../components/Pagination'
 import MovieCardSkeleton from '../components/MovieCardSkeleton'
 import MovieFilters from '../components/MovieFilters'
+import CategoryHeader from '../components/CategoryHeader'
+import { movieApi } from '../services/api'
 
 interface ActiveFilters {
   category: string
@@ -13,8 +17,8 @@ interface ActiveFilters {
 }
 
 const HomePage = () => {
-  const [movies, setMovies] = useState<MovieListItem[]>([])
-  const [pagination, setPagination] = useState<PaginationInfo | null>(null)
+  const [movies, setMovies] = useState<Movie[]>([])
+  const [pagination, setPagination] = useState<ApiResponse['paginate'] | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,41 +30,50 @@ const HomePage = () => {
     year: '',
   })
 
-  // Hàm này được gọi khi người dùng nhấn nút "Lọc kết quả"
+  // Hàm này được gọi khi người dùng nhấn nút "Áp dụng lọc"
   const handleFilterApply = useCallback((newFilters: ActiveFilters) => {
     setAppliedFilters(newFilters)
     setCurrentPage(1) // Reset về trang 1 khi áp dụng bộ lọc mới
   }, [])
 
+  const getHeaderType = (): {
+    type: 'category' | 'country' | 'year' | 'default'
+    value?: string
+  } => {
+    if (appliedFilters.category) {
+      return { type: 'category', value: appliedFilters.category }
+    } else if (appliedFilters.country) {
+      return { type: 'country', value: appliedFilters.country }
+    } else if (appliedFilters.year) {
+      return { type: 'year', value: appliedFilters.year }
+    }
+    return { type: 'default' }
+  }
+
   useEffect(() => {
     const controller = new AbortController()
-    const { signal } = controller
 
     const fetchMovies = async () => {
       setLoading(true)
       setError(null)
-
-      let apiUrl = 'https://phim.nguonc.com/api/films/phim-moi-cap-nhat'
-
-      // Ưu tiên Thể loại > Quốc gia > Năm
-      if (appliedFilters.category) {
-        apiUrl = `https://phim.nguonc.com/api/films/the-loai/${appliedFilters.category}`
-      } else if (appliedFilters.country) {
-        apiUrl = `https://phim.nguonc.com/api/films/quoc-gia/${appliedFilters.country}`
-      } else if (appliedFilters.year) {
-        apiUrl = `https://phim.nguonc.com/api/films/nam-phat-hanh/${appliedFilters.year}`
-      }
-
+      console.log('Bộ lọc hiện tại:', appliedFilters)
       try {
-        const response = await fetch(`${apiUrl}?page=${currentPage}`, { signal })
-        if (!response.ok) throw new Error('Không thể tải dữ liệu phim')
-        const data: MovieListApiResponse = await response.json()
+        let data: ApiResponse
+
+        if (appliedFilters.category) {
+          data = await movieApi.getMoviesByCategory(appliedFilters.category, currentPage)
+        } else if (appliedFilters.country) {
+          data = await movieApi.getMoviesByCountry(appliedFilters.country, currentPage)
+        } else if (appliedFilters.year) {
+          data = await movieApi.getMoviesByYear(appliedFilters.year, currentPage)
+        } else {
+          data = await movieApi.getNewMovies(currentPage)
+        }
 
         if (data.status === 'success') {
           setMovies(data.items)
           setPagination(data.paginate)
         } else {
-          // Xử lý trường hợp API trả về success nhưng không có item (kết quả lọc rỗng)
           setMovies([])
           setPagination(null)
         }
@@ -79,11 +92,14 @@ const HomePage = () => {
     }
   }, [currentPage, appliedFilters]) // Effect chạy lại khi trang hoặc bộ lọc thay đổi
 
+  const headerInfo = getHeaderType()
+
   return (
     <div className="homepage-container">
-      <div className="homepage-header">
-        {/* <h1>HNAM PHIM</h1> */}
-        <MovieFilters onFilterApply={handleFilterApply} />
+      <CategoryHeader type={headerInfo.type} value={headerInfo.value} />
+
+      <div className="homepage-controls">
+        <MovieFilters onFilterApply={handleFilterApply} currentFilters={appliedFilters} />
       </div>
 
       {loading && (
@@ -114,7 +130,14 @@ const HomePage = () => {
             )}
           </>
         ) : (
-          <p className="no-results">Không tìm thấy phim nào phù hợp với bộ lọc của bạn.</p>
+          <div className="no-results">
+            <div className="no-results-icon">🎬</div>
+            <h3>Không tìm thấy phim nào</h3>
+            <p>
+              Không có phim nào phù hợp với bộ lọc của bạn. Hãy thử thay đổi bộ lọc hoặc tìm kiếm
+              khác.
+            </p>
+          </div>
         ))}
     </div>
   )

@@ -1,9 +1,12 @@
+'use client'
+
 // src/pages/SearchPage.tsx
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { MovieListItem, MovieListApiResponse } from '../type'
 import MovieCard from '../components/MovieCard'
 import Loader from '../components/Loader'
+import CategoryHeader from '../components/CategoryHeader'
 
 const SearchPage = () => {
   // useSearchParams để lấy query param từ URL, ví dụ: /search?q=keyword
@@ -50,7 +53,8 @@ const SearchPage = () => {
 
   return (
     <div className="search-page-container">
-      <h1>Kết quả tìm kiếm cho: "{keyword}"</h1>
+      <CategoryHeader type="search" searchKeyword={keyword || ''} />
+
       {movies.length > 0 ? (
         <div className="movie-grid">
           {movies.map((movie) => (
@@ -58,7 +62,13 @@ const SearchPage = () => {
           ))}
         </div>
       ) : (
-        <p className="no-results">Không tìm thấy kết quả nào phù hợp.</p>
+        <div className="no-results">
+          <div className="no-results-icon">🔍</div>
+          <h3>Không tìm thấy kết quả</h3>
+          <p>
+            Không có phim nào phù hợp với từ khóa "{keyword}". Hãy thử tìm kiếm với từ khóa khác.
+          </p>
+        </div>
       )}
     </div>
   )

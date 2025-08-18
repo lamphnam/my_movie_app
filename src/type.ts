@@ -1,7 +1,4 @@
-// src/types.ts
-
-// --- Dành cho API danh sách phim ---
-
+// src/type.ts - Type definitions for the movie app
 export interface MovieListItem {
   name: string
   slug: string
@@ -18,15 +15,31 @@ export interface MovieListItem {
 export interface PaginationInfo {
   current_page: number
   total_page: number
+  total_items: number
+  items_per_page: number
 }
 
 export interface MovieListApiResponse {
   status: string
-  paginate: PaginationInfo
   items: MovieListItem[]
+  paginate: PaginationInfo
 }
 
-// --- Dành cho API chi tiết phim ---
+export interface CategoryItem {
+  id: string
+  name: string
+  slug: string
+}
+
+export interface CategoryGroup {
+  id: string
+  name: string
+}
+
+export interface Category {
+  group: CategoryGroup
+  list: CategoryItem[]
+}
 
 export interface EpisodeItem {
   name: string
@@ -35,19 +48,9 @@ export interface EpisodeItem {
   m3u8: string
 }
 
-export interface EpisodeServer {
+export interface Episode {
   server_name: string
   items: EpisodeItem[]
-}
-
-export interface Category {
-  id: string
-  name: string
-}
-
-export interface CategoryGroup {
-  group: { id: string; name: string }
-  list: Category[]
 }
 
 export interface MovieDetail {
@@ -55,10 +58,11 @@ export interface MovieDetail {
   slug: string
   original_name: string
   thumb_url: string
+  poster_url: string
   description: string
   casts: string
-  category: { [key: string]: CategoryGroup }
-  episodes: EpisodeServer[]
+  category: Record<string, Category>
+  episodes: Episode[]
 }
 
 export interface MovieDetailApiResponse {

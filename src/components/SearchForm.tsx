@@ -1,3 +1,7 @@
+'use client'
+
+import type React from 'react'
+
 // src/components/SearchForm.tsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'

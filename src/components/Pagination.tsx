@@ -1,5 +1,6 @@
-// src/components/Pagination.tsx
+'use client'
 
+// src/components/Pagination.tsx
 interface PaginationProps {
   currentPage: number
   totalPages: number
@@ -27,7 +28,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
   const pageNumbers = generatePageNumbers(currentPage, totalPages)
 
   return (
-    <nav className="pagination-nav">
+    <nav className="pagination">
       <button
         className="page-item"
         onClick={() => onPageChange(currentPage - 1)}

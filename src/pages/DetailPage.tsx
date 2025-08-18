@@ -1,18 +1,20 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import useLocalStorage from '../hooks/useLocalStorage'
-import type { MovieDetail, MovieDetailApiResponse, MovieListItem } from '../type'
+import type { MovieDetail, Movie } from '../types'
+import { movieApi } from '../services/api'
 import Loader from '../components/Loader'
 
 const DetailPage = () => {
   const { slug } = useParams<{ slug: string }>()
-  const [movie, setMovie] = useState<MovieDetail | null>(null)
+  const [movie, setMovie] = useState<MovieDetail['movie'] | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedEpisodeUrl, setSelectedEpisodeUrl] = useState<string | null>(null)
 
-  // Yêu thích
-  const [favorites, setFavorites] = useLocalStorage<MovieListItem[]>('favorites', [])
+  const [favorites, setFavorites] = useLocalStorage<Movie[]>('favorites', [])
   const isFavorited = favorites.some((fav) => fav.slug === slug)
 
   const handleToggleFavorite = () => {
@@ -21,17 +23,23 @@ const DetailPage = () => {
     if (isFavorited) {
       setFavorites(favorites.filter((fav) => fav.slug !== slug))
     } else {
-      const movieInfo: MovieListItem = {
+      const movieInfo: Movie = {
+        id: movie.id,
         name: movie.name,
         slug: movie.slug,
         original_name: movie.original_name,
         thumb_url: movie.thumb_url,
-        poster_url: '', // bỏ trống
-        created: '',
-        modified: '',
-        current_episode: '',
-        quality: '',
-        language: '',
+        poster_url: movie.poster_url,
+        created: movie.created,
+        modified: movie.modified,
+        description: movie.description,
+        total_episodes: movie.total_episodes,
+        current_episode: movie.current_episode,
+        time: movie.time,
+        quality: movie.quality,
+        language: movie.language,
+        director: movie.director,
+        casts: movie.casts,
       }
       setFavorites([...favorites, movieInfo])
     }
@@ -45,13 +53,9 @@ const DetailPage = () => {
       setError(null)
 
       try {
-        const response = await fetch(`https://phim.nguonc.com/api/film/${slug}`)
-        if (!response.ok) throw new Error('Không tìm thấy thông tin phim')
-
-        const data: MovieDetailApiResponse = await response.json()
+        const data: MovieDetail = await movieApi.getMovieDetail(slug)
         setMovie(data.movie)
 
-        // Chọn tập đầu tiên để phát
         const firstEpisode = data.movie.episodes?.[0]?.items?.[0]
         if (firstEpisode) setSelectedEpisodeUrl(firstEpisode.embed)
       } catch (err: any) {
@@ -92,7 +96,7 @@ const DetailPage = () => {
       </div>
 
       <div className="movie-content">
-        <img src={movie.thumb_url} alt={movie.name} className="movie-thumb" />
+        <img src={movie.thumb_url || '/placeholder.svg'} alt={movie.name} className="movie-thumb" />
         <div className="movie-info">
           <p>
             <strong>Mô tả:</strong> {movie.description}
@@ -101,43 +105,45 @@ const DetailPage = () => {
             <strong>Diễn viên:</strong> {movie.casts}
           </p>
           <div className="categories">
-            {Object.values(movie.category).map((catGroup) => (
-              <div key={catGroup.group.id} className="category-group">
-                <strong>{catGroup.group.name}:</strong>
-                <div className="category-tags">
-                  {catGroup.list.map((item) => (
-                    <span key={item.id} className="category-tag">
-                      {item.name}
-                    </span>
-                  ))}
+            {movie.category &&
+              Object.values(movie.category).map((catGroup) => (
+                <div key={catGroup.group.id} className="category-group">
+                  <strong>{catGroup.group.name}:</strong>
+                  <div className="category-tags">
+                    {catGroup.list.map((item) => (
+                      <span key={item.id} className="category-tag">
+                        {item.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </div>
 
       <div className="episodes-section">
         <h2>Danh sách tập phim</h2>
-        {movie.episodes.map((server, index) => (
-          <div key={index} className="server-list">
-            <h3>{server.server_name}</h3>
-            <ul className="episode-list">
-              {server.items.map((episode) => (
-                <li key={episode.slug}>
-                  <button
-                    className={`episode-button ${
-                      episode.embed === selectedEpisodeUrl ? 'active' : ''
-                    }`}
-                    onClick={() => setSelectedEpisodeUrl(episode.embed)}
-                  >
-                    {episode.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {movie.episodes &&
+          movie.episodes.map((server, index) => (
+            <div key={index} className="server-list">
+              <h3>{server.server_name}</h3>
+              <ul className="episode-list">
+                {server.items.map((episode) => (
+                  <li key={episode.slug}>
+                    <button
+                      className={`episode-button ${
+                        episode.embed === selectedEpisodeUrl ? 'active' : ''
+                      }`}
+                      onClick={() => setSelectedEpisodeUrl(episode.embed)}
+                    >
+                      {episode.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
       </div>
     </div>
   )
