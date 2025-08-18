@@ -43,7 +43,7 @@ const Header: React.FC = () => {
               </button>
               <div className="nav-dropdown-content">
                 <div className="nav-dropdown-grid">
-                  {filterData.genres.slice(0, 10).map((genre) => (
+                  {filterData.genres.slice(0, filterData.genres.length).map((genre) => (
                     <Link key={genre.id} to={`/genre/${genre.slug}`} className="nav-dropdown-item">
                       {genre.name}
                     </Link>
@@ -72,13 +72,41 @@ const Header: React.FC = () => {
               </button>
               <div className="nav-dropdown-content">
                 <div className="nav-dropdown-grid">
-                  {filterData.countries.slice(0, 10).map((country) => (
+                  {filterData.countries.slice(0, filterData.countries.length).map((country) => (
                     <Link
                       key={country.id}
                       to={`/country/${country.slug}`}
                       className="nav-dropdown-item"
                     >
                       {country.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Dropdown Năm Sản Xuất */}
+            <div className="nav-dropdown">
+              <button className="nav-link">
+                Năm
+                <svg
+                  className="dropdown-arrow"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              <div className="nav-dropdown-content">
+                <div className="nav-dropdown-grid">
+                  {filterData.years.slice(0, filterData.years.length).map((year) => (
+                    <Link key={year.id} to={`/year/${year.slug}`} className="nav-dropdown-item">
+                      {year.name}
                     </Link>
                   ))}
                 </div>

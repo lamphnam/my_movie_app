@@ -7,6 +7,7 @@ import DetailPage from './pages/DetailPage'
 import CategoryPage from './pages/CategoryPage'
 import GenrePage from './pages/GenrePage'
 import CountryPage from './pages/CountryPage'
+import YearPage from './pages/YearPage'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/genre/:slug" element={<GenrePage />} />
           <Route path="/country/:slug" element={<CountryPage />} />
+          <Route path="year/:slug" element={<YearPage />} />
         </Routes>
       </Layout>
     </Router>
