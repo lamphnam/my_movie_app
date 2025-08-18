@@ -1,7 +1,7 @@
 'use client'
 
 // src/pages/HomePage.tsx
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import type { Movie, ApiResponse } from '../types'
 import MovieCard from '../components/MovieCard'
 import Pagination from '../components/Pagination'
@@ -24,7 +24,7 @@ const HomePage = () => {
   const [error, setError] = useState<string | null>(null)
 
   // State chứa các bộ lọc đang được áp dụng
-  const [appliedFilters, setAppliedFilters] = useState<ActiveFilters>({
+  const [appliedFilters] = useState<ActiveFilters>({
     category: '',
     country: '',
     year: '',
