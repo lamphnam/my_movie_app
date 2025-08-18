@@ -170,8 +170,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
   padding: 1rem 0;
+  flex-wrap: wrap; /* THÊM MỚI: Cho phép các item xuống dòng */
+  row-gap: 1rem; /* THÊM MỚI: Tạo khoảng cách giữa các dòng khi wrap */
 }
 
 .logo {
@@ -186,7 +187,7 @@ body {
 }
 
 .desktop-nav {
-  display: none; /* Ẩn trên mobile, hiện trên desktop qua media query */
+  display: flex; /* THAY ĐỔI: Luôn hiển thị dạng flex */
   align-items: center;
   gap: 1rem;
 }
@@ -249,8 +250,10 @@ body {
   padding: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
-  flex-grow: 1; /* Cho phép co giãn trên mobile */
-  max-width: 350px; /* Giới hạn độ rộng tối đa */
+  flex-grow: 1;
+  /* max-width: 350px; XÓA BỎ DÒNG NÀY Ở ĐÂY */
+  width: 100%; /* THÊM MỚI: Chiếm toàn bộ chiều rộng trên mobile */
+  order: 3; /* THÊM MỚI: Đảm bảo nó luôn ở vị trí cuối cùng trong flex container */
 }
 
 .search-form:focus-within {
@@ -853,10 +856,14 @@ body {
   }
   .header-content {
     gap: 2rem;
+    flex-wrap: nowrap; /* THÊM MỚI: Không cho xuống dòng nữa */
   }
   .search-form {
-    flex-grow: 0; /* Không co giãn nữa */
+    flex-grow: 0;
     min-width: 300px;
+    width: auto; /* THÊM MỚI: Reset lại width */
+    order: 0; /* THÊM MỚI: Reset lại thứ tự */
+    max-width: 350px; /* THÊM MỚI: Thêm lại max-width cho desktop */
   }
   .category-header-content {
     flex-direction: row;
