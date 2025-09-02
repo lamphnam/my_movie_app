@@ -1165,9 +1165,10 @@ body {
 
 /* Category Components */
 .category-header {
-  margin: var(--spacing-xl) 0;
-  padding: var(--spacing-xl) 0;
+  margin: 5px 0 var(--spacing-xl) 0;
+  padding: 5px 0 var(--spacing-xl) 0;
 }
+
 
 .category-header-content {
   display: flex;
@@ -1214,7 +1215,8 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
   justify-content: flex-start;
-  margin: 0 -20px;
+  /* margin: 0 -20px; */
+  margin: 0 -20px -20px -20px;
   padding: var(--spacing-md) 20px;
   -webkit-overflow-scrolling: touch;
 }
@@ -1626,4 +1628,16 @@ body {
   .footer-copyright {
     flex-shrink: 0;
   }
+}
+/* ==========================================================================
+   8. PAGE-SPECIFIC CONTAINERS (Thêm vào cuối file)
+   ========================================================================== */
+.homepage-container,
+.search-page-container,
+.category-page-container,
+.genre-page-container,
+.country-page-container,
+.year-page-container {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
 }
