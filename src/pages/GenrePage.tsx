@@ -1,92 +1,91 @@
-// src/pages/GenrePage.tsx
-
-'use client'
-
-import type React from 'react'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import MovieCard from '../components/MovieCard'
-import MovieCardSkeleton from '../components/MovieCardSkeleton'
-import Pagination from '../components/Pagination'
-import { filterData } from '../data/filters'
-import type { Movie } from '../types'
+import type { MovieListItem, MovieListApiResponse } from '@/types'
+import { getGenreBySlug } from '@/data/filters'
+import { movieApi } from '@/services/api'
+import MovieCard from '@/components/MovieCard'
+import MovieCardSkeleton from '@/components/MovieCardSkeleton'
+import Pagination from '@/components/Pagination'
+import CategoryHeader from '@/components/CategoryHeader'
+import MovieGrid from '@/components/MovieGrid'
 
-const GenrePage: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>()
-  const [movies, setMovies] = useState<Movie[]>([])
-  const [loading, setLoading] = useState(true)
+const GenrePage = () => {
+  const { slug = '' } = useParams<{ slug: string }>()
+  const [movies, setMovies] = useState<MovieListItem[]>([])
+  const [pagination, setPagination] = useState<MovieListApiResponse['paginate'] | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const genre = filterData.genres.find((g) => g.slug === slug)
+  const genre = getGenreBySlug(slug)
 
   useEffect(() => {
     const fetchMovies = async () => {
-      if (!genre) return
-
       setLoading(true)
+      setError(null)
       try {
-        const response = await fetch(
-          `https://phim.nguonc.com/api/films/the-loai/${genre.slug}?page=${currentPage}`,
-        )
-        const data = await response.json()
-
+        const data: MovieListApiResponse = await movieApi.getMoviesByGenre(slug, currentPage)
         if (data.status === 'success') {
-          setMovies(data.items || [])
-          setTotalPages(data.paginate?.total_page || 1)
+          setMovies(data.items)
+          setPagination(data.paginate)
+        } else {
+          setError('Không thể tải danh sách phim cho thể loại này.')
         }
-      } catch (error) {
-        console.error('Error fetching movies:', error)
+      } catch (err: any) {
+        setError(err.message || 'Đã xảy ra lỗi.')
       } finally {
         setLoading(false)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
 
-    fetchMovies()
-  }, [genre, currentPage, slug])
+    if (slug) {
+      fetchMovies()
+    }
+  }, [slug, currentPage])
 
   if (!genre) {
+    return <div className="text-center py-10">Không tìm thấy thể loại.</div>
+  }
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <MovieGrid>
+          {Array.from({ length: 10 }).map((_, index) => (
+            <MovieCardSkeleton key={index} />
+          ))}
+        </MovieGrid>
+      )
+    }
+    if (error) return <div className="text-center text-destructive">{error}</div>
+    if (movies.length === 0)
+      return <div className="text-center text-muted-foreground">Không tìm thấy phim nào.</div>
+
     return (
-      <div className="container">
-        <div className="no-results">
-          <h3>Không tìm thấy thể loại</h3>
-          <p>Thể loại bạn tìm kiếm không tồn tại.</p>
-        </div>
-      </div>
+      <>
+        <MovieGrid>
+          {movies.map((movie) => (
+            <MovieCard key={movie.slug} movie={movie} />
+          ))}
+        </MovieGrid>
+        {pagination && pagination.total_page > 1 && (
+          <div className="mt-8">
+            <Pagination
+              currentPage={pagination.current_page}
+              totalPages={pagination.total_page}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
+      </>
     )
   }
 
   return (
-    <div className="genre-page-container">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold mb-2">{genre.name}</h1>
-        <p className="text-gray-400">Khám phá những bộ phim hay nhất thuộc thể loại {genre.name}</p>
-      </div>
-
-      {loading ? (
-        <div className="movie-grid">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <MovieCardSkeleton key={index} />
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className="movie-grid mb-8">
-            {movies.map((movie) => (
-              <MovieCard key={movie.slug} movie={movie} />
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          )}
-        </>
-      )}
+    <div className="space-y-8">
+      <CategoryHeader type="category" value={slug} />
+      {renderContent()}
     </div>
   )
 }

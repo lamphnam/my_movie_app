@@ -1,10 +1,8 @@
-'use client'
-
 import type React from 'react'
-
-// src/components/SearchForm.tsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 const SearchForm = () => {
   const [query, setQuery] = useState('')
@@ -13,24 +11,23 @@ const SearchForm = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
-      // Điều hướng đến trang search với query param
-      navigate(`/search?q=${query.trim()}`)
-      setQuery('') // Reset ô input
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`)
+      setQuery('')
     }
   }
 
   return (
-    <form className="search-form" onSubmit={handleSearch}>
-      <input
+    <form className="relative w-full max-w-sm" onSubmit={handleSearch}>
+      <Input
         type="text"
         placeholder="Tìm kiếm phim..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="search-input"
+        className="pr-16"
       />
-      <button type="submit" className="search-button">
+      <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2">
         Tìm
-      </button>
+      </Button>
     </form>
   )
 }

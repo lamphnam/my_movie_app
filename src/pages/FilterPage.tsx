@@ -1,35 +1,51 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import type { MovieListItem, MovieListApiResponse } from '@/types'
-import { getCountryBySlug } from '@/data/filters'
-import { movieApi } from '@/services/api'
+import { movieApi } from '@/services/api' // Chúng ta sẽ cần thêm hàm mới ở đây
 import MovieCard from '@/components/MovieCard'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
 import Pagination from '@/components/Pagination'
 import CategoryHeader from '@/components/CategoryHeader'
 import MovieGrid from '@/components/MovieGrid'
+import MovieFilters from '@/components/MovieFilters'
 
-const CountryPage = () => {
-  const { slug = '' } = useParams<{ slug: string }>()
+const FilterPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [movies, setMovies] = useState<MovieListItem[]>([])
   const [pagination, setPagination] = useState<MovieListApiResponse['paginate'] | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const country = getCountryBySlug(slug)
+  // Lấy các tham số filter từ URL
+  const genre = searchParams.get('genre') || ''
+  const country = searchParams.get('country') || ''
+  const year = searchParams.get('year') || ''
+  const currentPage = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchFilteredMovies = async () => {
       setLoading(true)
       setError(null)
+
       try {
-        const data: MovieListApiResponse = await movieApi.getMoviesByCountry(slug, currentPage)
+        let data: MovieListApiResponse
+        // Ưu tiên gọi API theo từng loại filter
+        if (genre) {
+          data = await movieApi.getMoviesByGenre(genre, currentPage)
+        } else if (country) {
+          data = await movieApi.getMoviesByCountry(country, currentPage)
+        } else if (year) {
+          data = await movieApi.getMoviesByYear(year, currentPage)
+        } else {
+          // Nếu không có filter nào, hiển thị phim mới
+          data = await movieApi.getNewMovies(currentPage)
+        }
+
         if (data.status === 'success') {
           setMovies(data.items)
           setPagination(data.paginate)
         } else {
-          setError('Không thể tải danh sách phim cho quốc gia này.')
+          setError('Không thể tải danh sách phim.')
         }
       } catch (err: any) {
         setError(err.message || 'Đã xảy ra lỗi.')
@@ -38,14 +54,13 @@ const CountryPage = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
+    fetchFilteredMovies()
+  }, [genre, country, year, currentPage])
 
-    if (slug) {
-      fetchMovies()
-    }
-  }, [slug, currentPage])
-
-  if (!country) {
-    return <div className="text-center py-10">Không tìm thấy quốc gia.</div>
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams)
+    params.set('page', newPage.toString())
+    setSearchParams(params)
   }
 
   const renderContent = () => {
@@ -60,7 +75,11 @@ const CountryPage = () => {
     }
     if (error) return <div className="text-center text-destructive">{error}</div>
     if (movies.length === 0)
-      return <div className="text-center text-muted-foreground">Không tìm thấy phim nào.</div>
+      return (
+        <div className="text-center text-muted-foreground py-10">
+          Không tìm thấy phim nào phù hợp.
+        </div>
+      )
 
     return (
       <>
@@ -74,7 +93,7 @@ const CountryPage = () => {
             <Pagination
               currentPage={pagination.current_page}
               totalPages={pagination.total_page}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
             />
           </div>
         )}
@@ -84,10 +103,13 @@ const CountryPage = () => {
 
   return (
     <div className="space-y-8">
-      <CategoryHeader type="country" value={slug} />
+      <div className="flex justify-between items-center">
+        <CategoryHeader type="default" />
+        <MovieFilters />
+      </div>
       {renderContent()}
     </div>
   )
 }
 
-export default CountryPage
+export default FilterPage

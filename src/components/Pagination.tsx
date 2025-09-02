@@ -1,64 +1,104 @@
-'use client'
+import {
+  Pagination as UIPagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 
-// src/components/Pagination.tsx
 interface PaginationProps {
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
 }
 
-// Hàm helper để tạo ra dải số trang (ví dụ: [1, '...', 4, 5, 6, '...', 10])
-const generatePageNumbers = (currentPage: number, totalPages: number): (number | string)[] => {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1)
-  }
-
-  if (currentPage <= 4) {
-    return [1, 2, 3, 4, 5, '...', totalPages]
-  }
-
-  if (currentPage >= totalPages - 3) {
-    return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
-  }
-
-  return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages]
-}
-
 const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
-  const pageNumbers = generatePageNumbers(currentPage, totalPages)
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1)
+    }
+  }
+
+  // Logic để tạo ra các nút trang thông minh hơn
+  const getPageNumbers = () => {
+    const pages = []
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      pages.push(1)
+      if (currentPage > 4) {
+        pages.push('...')
+      }
+      const startPage = Math.max(2, currentPage - 2)
+      const endPage = Math.min(totalPages - 1, currentPage + 2)
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i)
+      }
+
+      if (currentPage < totalPages - 3) {
+        pages.push('...')
+      }
+      pages.push(totalPages)
+    }
+    return pages
+  }
 
   return (
-    <nav className="pagination">
-      <button
-        className="page-item"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
-        &laquo;
-      </button>
-      {pageNumbers.map((page, index) =>
-        typeof page === 'string' ? (
-          <span key={`ellipsis-${index}`} className="page-item ellipsis">
-            ...
-          </span>
-        ) : (
-          <button
-            key={page}
-            className={`page-item ${currentPage === page ? 'active' : ''}`}
-            onClick={() => onPageChange(page)}
-          >
-            {page}
-          </button>
-        ),
-      )}
-      <button
-        className="page-item"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >
-        &raquo;
-      </button>
-    </nav>
+    <UIPagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              handlePrevious()
+            }}
+            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+          />
+        </PaginationItem>
+
+        {getPageNumbers().map((page, index) => (
+          <PaginationItem key={index}>
+            {typeof page === 'string' ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  onPageChange(page)
+                }}
+                isActive={currentPage === page}
+              >
+                {page}
+              </PaginationLink>
+            )}
+          </PaginationItem>
+        ))}
+
+        <PaginationItem>
+          <PaginationNext
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              handleNext()
+            }}
+            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </UIPagination>
   )
 }
 

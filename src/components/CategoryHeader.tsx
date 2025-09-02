@@ -1,8 +1,8 @@
-// src/components/CategoryHeader.tsx
-import { getCategoryBySlug, getCountryBySlug } from '../data/filters'
+import { getCategoryBySlug, getCountryBySlug, getGenreBySlug } from '@/data/filters'
+import { Badge } from './ui/badge'
 
 interface CategoryHeaderProps {
-  type: 'category' | 'country' | 'year' | 'search' | 'default'
+  type: 'category' | 'genre' | 'country' | 'year' | 'search' | 'default'
   value?: string
   searchKeyword?: string
 }
@@ -11,13 +11,14 @@ const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => 
   const getHeaderContent = () => {
     switch (type) {
       case 'category':
+      case 'genre': // Gộp genre vào đây vì logic tương tự
         if (value) {
-          const category = getCategoryBySlug(value)
+          const category = getCategoryBySlug(value) || getGenreBySlug(value)
           return {
             title: `Phim ${category?.name || value}`,
             subtitle:
               category?.description || `Tất cả phim thuộc thể loại ${category?.name || value}`,
-            icon: '🎬',
+            tag: 'Thể loại',
           }
         }
         break
@@ -28,7 +29,7 @@ const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => 
           return {
             title: `Phim ${country?.name || value}`,
             subtitle: country?.description || `Tất cả phim đến từ ${country?.name || value}`,
-            icon: '🌍',
+            tag: 'Quốc gia',
           }
         }
         break
@@ -38,7 +39,7 @@ const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => 
           return {
             title: `Phim năm ${value}`,
             subtitle: `Tất cả phim được phát hành trong năm ${value}`,
-            icon: '📅',
+            tag: 'Năm phát hành',
           }
         }
         break
@@ -46,9 +47,9 @@ const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => 
       case 'search':
         if (searchKeyword) {
           return {
-            title: `Kết quả tìm kiếm: "${searchKeyword}"`,
-            subtitle: `Tìm thấy các bộ phim liên quan đến "${searchKeyword}"`,
-            icon: '🔍',
+            title: `Kết quả cho: "${searchKeyword}"`,
+            subtitle: `Tìm thấy các bộ phim liên quan đến từ khóa của bạn.`,
+            tag: 'Tìm kiếm',
           }
         }
         break
@@ -56,30 +57,28 @@ const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => 
       default:
         return {
           title: 'Phim Mới Cập Nhật',
-          subtitle: 'Khám phá những bộ phim mới nhất được cập nhật hàng ngày',
-          icon: '🆕',
+          subtitle: 'Khám phá những bộ phim và series mới nhất được cập nhật hàng ngày.',
+          tag: 'Mới nhất',
         }
     }
 
+    // Fallback
     return {
-      title: 'HNAM PHIM',
-      subtitle: 'Xem phim online chất lượng cao miễn phí',
-      icon: '🎭',
+      title: 'Khám phá Phim Hay',
+      subtitle: 'Xem phim online chất lượng cao miễn phí.',
+      tag: 'Trang chủ',
     }
   }
 
-  const { title, subtitle, icon } = getHeaderContent()
+  const { title, subtitle, tag } = getHeaderContent()
 
   return (
-    <div className="category-header">
-      <div className="category-header-content">
-        <div className="category-icon">{icon}</div>
-        <div className="category-info">
-          <h1 className="category-title">{title}</h1>
-          <p className="category-subtitle">{subtitle}</p>
-        </div>
-      </div>
-      <div className="category-divider"></div>
+    <div className="rounded-lg bg-card p-6 text-center md:text-left">
+      <Badge variant="secondary" className="mb-4">
+        {tag}
+      </Badge>
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gradient mb-2">{title}</h1>
+      <p className="text-lg text-muted-foreground">{subtitle}</p>
     </div>
   )
 }

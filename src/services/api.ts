@@ -1,45 +1,44 @@
 const BASE_URL = 'https://phim.nguonc.com/api'
 
+// Helper function để xử lý fetch và parse JSON
+const fetchApi = async (url: string) => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  return response.json()
+}
+
 export const movieApi = {
-  // Lấy danh sách phim mới cập nhật
-  getNewMovies: async (page = 1) => {
-    const response = await fetch(`${BASE_URL}/films/phim-moi-cap-nhat?page=${page}`)
-    return response.json()
+  getNewMovies: (page = 1) => {
+    return fetchApi(`${BASE_URL}/films/phim-moi-cap-nhat?page=${page}`)
   },
 
-  // Lấy phim theo danh mục
-  getMoviesByCategory: async (slug: string, page = 1) => {
-    const response = await fetch(`${BASE_URL}/films/danh-sach/${slug}?page=${page}`)
-    return response.json()
+  getMoviesByCategory: (slug: string, page = 1) => {
+    // Xử lý trường hợp đặc biệt cho 'phim-moi-cap-nhat'
+    if (slug === 'phim-moi-cap-nhat') {
+      return movieApi.getNewMovies(page)
+    }
+    return fetchApi(`${BASE_URL}/films/danh-sach/${slug}?page=${page}`)
   },
 
-  // Lấy phim theo thể loại
-  getMoviesByGenre: async (slug: string, page = 1) => {
-    const response = await fetch(`${BASE_URL}/films/the-loai/${slug}?page=${page}`)
-    return response.json()
+  getMoviesByGenre: (slug: string, page = 1) => {
+    return fetchApi(`${BASE_URL}/films/the-loai/${slug}?page=${page}`)
   },
 
-  // Lấy phim theo quốc gia
-  getMoviesByCountry: async (slug: string, page = 1) => {
-    const response = await fetch(`${BASE_URL}/films/quoc-gia/${slug}?page=${page}`)
-    return response.json()
+  getMoviesByCountry: (slug: string, page = 1) => {
+    return fetchApi(`${BASE_URL}/films/quoc-gia/${slug}?page=${page}`)
   },
 
-  // Lấy phim theo năm
-  getMoviesByYear: async (year: string, page = 1) => {
-    const response = await fetch(`${BASE_URL}/films/nam-phat-hanh/${year}?page=${page}`)
-    return response.json()
+  getMoviesByYear: (year: string, page = 1) => {
+    return fetchApi(`${BASE_URL}/films/nam-phat-hanh/${year}?page=${page}`)
   },
 
-  // Tìm kiếm phim
-  searchMovies: async (keyword: string) => {
-    const response = await fetch(`${BASE_URL}/films/search?keyword=${encodeURIComponent(keyword)}`)
-    return response.json()
+  searchMovies: (keyword: string, page = 1) => {
+    return fetchApi(`${BASE_URL}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`)
   },
 
-  // Lấy chi tiết phim
-  getMovieDetail: async (slug: string) => {
-    const response = await fetch(`${BASE_URL}/film/${slug}`)
-    return response.json()
+  getMovieDetail: (slug: string) => {
+    return fetchApi(`${BASE_URL}/film/${slug}`)
   },
 }

@@ -1,214 +1,157 @@
-// 'use client'
+import { useState, memo, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { filterData } from '@/data/filters'
+import { Button } from './ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
+import { Filter, X, RotateCcw } from 'lucide-react'
 
-// // src/components/MovieFilters.tsx
-// import { useState, memo } from 'react'
-// import { filterData, popularCategories, popularCountries } from '../data/filters'
+const buildQueryString = (params: Record<string, string>): string => {
+  const query = new URLSearchParams()
+  for (const key in params) {
+    if (params[key]) {
+      query.set(key, params[key])
+    }
+  }
+  return query.toString()
+}
 
-// interface ActiveFilters {
-//   category: string
-//   country: string
-//   year: string
-// }
+const MovieFilters = memo(() => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
-// interface FilterProps {
-//   onFilterApply: (filters: ActiveFilters) => void
-//   currentFilters?: ActiveFilters
-// }
+  const [isOpen, setIsOpen] = useState(false)
 
-// const MovieFilters = memo(({ onFilterApply, currentFilters }: FilterProps) => {
-//   const [isOpen, setIsOpen] = useState(false)
-//   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(
-//     currentFilters || {
-//       category: '',
-//       country: '',
-//       year: '',
-//     },
-//   )
+  const [genre, setGenre] = useState(searchParams.get('genre') || '')
+  const [country, setCountry] = useState(searchParams.get('country') || '')
+  const [year, setYear] = useState(searchParams.get('year') || '')
 
-//   const handleSelect = (type: keyof ActiveFilters, value: string) => {
-//     // Nếu click lại item đã active thì bỏ chọn
-//     const newValue = activeFilters[type] === value ? '' : value
-//     setActiveFilters((prev) => ({ ...prev, [type]: newValue }))
-//   }
+  useEffect(() => {
+    setGenre(searchParams.get('genre') || '')
+    setCountry(searchParams.get('country') || '')
+    setYear(searchParams.get('year') || '')
+  }, [searchParams])
 
-//   const handleApply = () => {
-//     onFilterApply(activeFilters)
-//     setIsOpen(false)
-//   }
+  // Logic mới: Khi chọn 1 filter, reset các filter khác
+  const handleGenreChange = (value: string) => {
+    setGenre(value)
+    if (value) {
+      setCountry('')
+      setYear('')
+    }
+  }
+  const handleCountryChange = (value: string) => {
+    setCountry(value)
+    if (value) {
+      setGenre('')
+      setYear('')
+    }
+  }
+  const handleYearChange = (value: string) => {
+    setYear(value)
+    if (value) {
+      setGenre('')
+      setCountry('')
+    }
+  }
 
-//   const handleReset = () => {
-//     const resetFilters = { category: '', country: '', year: '' }
-//     setActiveFilters(resetFilters)
-//     onFilterApply(resetFilters)
-//     setIsOpen(false)
-//   }
+  const handleApply = () => {
+    const filters = { genre, country, year }
+    navigate(`/filter?${buildQueryString(filters)}`)
+    setIsOpen(false)
+  }
 
-//   const hasActiveFilters = activeFilters.category || activeFilters.country || activeFilters.year
+  const handleReset = () => {
+    setGenre('')
+    setCountry('')
+    setYear('')
+    navigate('/filter')
+    setIsOpen(false)
+  }
 
-//   return (
-//     <div className="movie-filters">
-//       <button
-//         className={`filter-toggle ${hasActiveFilters ? 'has-filters' : ''}`}
-//         onClick={() => setIsOpen(!isOpen)}
-//       >
-//         <i className="fa-solid fa-filter"></i>
-//         <span>Bộ lọc</span>
-//         {hasActiveFilters && <span className="filter-count">●</span>}
-//       </button>
+  const activeFilterCount = [genre, country, year].filter(Boolean).length
 
-//       {isOpen && (
-//         <div className="filter-dropdown">
-//           <div className="filter-header">
-//             <h3>Lọc phim theo</h3>
-//             <button className="close-btn" onClick={() => setIsOpen(false)}>
-//               <i className="fa-solid fa-times"></i>
-//             </button>
-//           </div>
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="relative">
+          <Filter className="mr-2 h-4 w-4" />
+          Bộ lọc
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+              {activeFilterCount}
+            </span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 md:w-96" align="end">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold">Lọc phim </h3>
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
 
-//           <div className="filter-content">
-//             {/* Popular Categories */}
-//             <div className="filter-section">
-//               <div className="filter-label">
-//                 <i className="fa-solid fa-star"></i>
-//                 Thể loại phổ biến
-//               </div>
-//               <div className="filter-grid">
-//                 {popularCategories.map((slug) => {
-//                   const category = filterData.categories.find((cat) => cat.slug === slug)
-//                   if (!category) return null
-//                   return (
-//                     <div
-//                       key={category.slug}
-//                       className={`filter-chip ${
-//                         activeFilters.category === category.slug ? 'active' : ''
-//                       }`}
-//                       onClick={() => handleSelect('category', category.slug)}
-//                     >
-//                       {category.name}
-//                     </div>
-//                   )
-//                 })}
-//               </div>
-//             </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Thể loại</label>
+            <ToggleGroup
+              type="single"
+              value={genre}
+              onValueChange={handleGenreChange}
+              className="flex-wrap justify-start"
+            >
+              {filterData.genres.slice(0, 10).map((g) => (
+                <ToggleGroupItem key={g.slug} value={g.slug}>
+                  {g.name}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
 
-//             {/* All Categories */}
-//             <div className="filter-section">
-//               <div className="filter-label">
-//                 <i className="fa-solid fa-film"></i>
-//                 Tất cả thể loại
-//               </div>
-//               <div className="filter-grid">
-//                 <div
-//                   className={`filter-chip ${activeFilters.category === '' ? 'active' : ''}`}
-//                   onClick={() => handleSelect('category', '')}
-//                 >
-//                   Tất cả
-//                 </div>
-//                 {filterData.categories.map((cat) => (
-//                   <div
-//                     key={cat.slug}
-//                     className={`filter-chip ${activeFilters.category === cat.slug ? 'active' : ''}`}
-//                     onClick={() => handleSelect('category', cat.slug)}
-//                   >
-//                     {cat.name}
-//                   </div>
-//                 ))}
-//               </div>
-//             </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Quốc gia</label>
+            <ToggleGroup
+              type="single"
+              value={country}
+              onValueChange={handleCountryChange}
+              className="flex-wrap justify-start"
+            >
+              {filterData.countries.slice(0, 10).map((c) => (
+                <ToggleGroupItem key={c.slug} value={c.slug}>
+                  {c.name}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
 
-//             {/* Popular Countries */}
-//             <div className="filter-section">
-//               <div className="filter-label">
-//                 <i className="fa-solid fa-globe"></i>
-//                 Quốc gia phổ biến
-//               </div>
-//               <div className="filter-grid">
-//                 {popularCountries.map((slug) => {
-//                   const country = filterData.countries.find((c) => c.slug === slug)
-//                   if (!country) return null
-//                   return (
-//                     <div
-//                       key={country.slug}
-//                       className={`filter-chip ${
-//                         activeFilters.country === country.slug ? 'active' : ''
-//                       }`}
-//                       onClick={() => handleSelect('country', country.slug)}
-//                     >
-//                       {country.name}
-//                     </div>
-//                   )
-//                 })}
-//               </div>
-//             </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Năm</label>
+            <ToggleGroup
+              type="single"
+              value={year}
+              onValueChange={handleYearChange}
+              className="flex-wrap justify-start"
+            >
+              {filterData.years.slice(0, 10).map((y) => (
+                <ToggleGroupItem key={y.slug} value={y.slug}>
+                  {y.name}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
 
-//             {/* All Countries */}
-//             <div className="filter-section">
-//               <div className="filter-label">
-//                 <i className="fa-solid fa-flag"></i>
-//                 Tất cả quốc gia
-//               </div>
-//               <div className="filter-grid">
-//                 <div
-//                   className={`filter-chip ${activeFilters.country === '' ? 'active' : ''}`}
-//                   onClick={() => handleSelect('country', '')}
-//                 >
-//                   Tất cả
-//                 </div>
-//                 {filterData.countries.map((country) => (
-//                   <div
-//                     key={country.slug}
-//                     className={`filter-chip ${
-//                       activeFilters.country === country.slug ? 'active' : ''
-//                     }`}
-//                     onClick={() => handleSelect('country', country.slug)}
-//                   >
-//                     {country.name}
-//                   </div>
-//                 ))}
-//               </div>
-//             </div>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button variant="ghost" onClick={handleReset}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Xóa lọc
+            </Button>
+            <Button onClick={handleApply}>Áp dụng</Button>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+})
 
-//             {/* Years */}
-//             <div className="filter-section">
-//               <div className="filter-label">
-//                 <i className="fa-solid fa-calendar"></i>
-//                 Năm phát hành
-//               </div>
-//               <div className="filter-grid">
-//                 <div
-//                   className={`filter-chip ${activeFilters.year === '' ? 'active' : ''}`}
-//                   onClick={() => handleSelect('year', '')}
-//                 >
-//                   Tất cả
-//                 </div>
-//                 {filterData.years.map((year) => (
-//                   <div
-//                     key={year}
-//                     className={`filter-chip ${activeFilters.year === year ? 'active' : ''}`}
-//                     onClick={() => handleSelect('year', year)}
-//                   >
-//                     {year}
-//                   </div>
-//                 ))}
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Action Buttons */}
-//           <div className="filter-actions">
-//             <button onClick={handleReset} className="btn-reset">
-//               <i className="fa-solid fa-refresh"></i>
-//               Xóa bộ lọc
-//             </button>
-//             <button onClick={handleApply} className="btn-apply">
-//               <i className="fa-solid fa-check"></i>
-//               Áp dụng lọc
-//             </button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   )
-// })
-
-// export default MovieFilters
+export default MovieFilters

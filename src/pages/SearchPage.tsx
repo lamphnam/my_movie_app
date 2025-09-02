@@ -1,28 +1,27 @@
-'use client'
-
-// src/pages/SearchPage.tsx
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import type { MovieListItem, PaginationInfo } from '../type' // Sửa đổi: Thêm PaginationInfo
-import MovieCard from '../components/MovieCard'
-import Loader from '../components/Loader'
-import CategoryHeader from '../components/CategoryHeader'
-import Pagination from '../components/Pagination' // Dòng mới: Import component Pagination
+import type { MovieListItem, MovieListApiResponse } from '@/types'
+import { movieApi } from '@/services/api'
+import MovieCard from '@/components/MovieCard'
+import MovieCardSkeleton from '@/components/MovieCardSkeleton'
+import Pagination from '@/components/Pagination'
+import CategoryHeader from '@/components/CategoryHeader'
+import MovieGrid from '@/components/MovieGrid'
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const keyword = searchParams.get('q') || ''
-  const page = parseInt(searchParams.get('page') || '1', 10) // Dòng mới: Lấy page từ URL
+  const currentPage = parseInt(searchParams.get('page') || '1', 10)
 
   const [movies, setMovies] = useState<MovieListItem[]>([])
-  const [paginationInfo, setPaginationInfo] = useState<PaginationInfo | null>(null) // Dòng mới: State cho thông tin phân trang
+  const [pagination, setPagination] = useState<MovieListApiResponse['paginate'] | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!keyword) {
       setMovies([])
-      setPaginationInfo(null)
+      setPagination(null)
       setLoading(false)
       return
     }
@@ -31,70 +30,79 @@ const SearchPage = () => {
       setLoading(true)
       setError(null)
       try {
-        // Sửa đổi: Thêm `&page=${page}` vào URL
-        const response = await fetch(
-          `https://phim.nguonc.com/api/films/search?keyword=${keyword}&page=${page}`,
-        )
-        if (!response.ok) throw new Error('Lỗi khi tìm kiếm phim')
-
-        // Sửa đổi: API trả về có `paginate`, nên không cần dùng Omit
-        const data = await response.json()
+        const data: MovieListApiResponse = await movieApi.searchMovies(keyword, currentPage)
 
         if (data.status === 'success') {
           setMovies(data.items || [])
-          setPaginationInfo(data.paginate || null) // Dòng mới: Lưu thông tin phân trang
+          setPagination(data.paginate || null)
         } else {
           setMovies([])
-          setPaginationInfo(null)
+          setPagination(null)
         }
       } catch (err: any) {
         setError(err.message)
       } finally {
         setLoading(false)
-        window.scrollTo({ top: 0, behavior: 'smooth' }) // Cuộn lên đầu khi chuyển trang
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
 
     fetchSearchResults()
-  }, [keyword, page]) // Sửa đổi: Chạy lại effect khi `page` thay đổi
+  }, [keyword, currentPage])
 
-  // Dòng mới: Hàm xử lý khi người dùng chuyển trang
   const handlePageChange = (newPage: number) => {
     setSearchParams({ q: keyword, page: newPage.toString() })
   }
 
-  if (loading) return <Loader />
-  if (error) return <div className="error-message">Lỗi: {error}</div>
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <MovieGrid>
+          {Array.from({ length: 10 }).map((_, index) => (
+            <MovieCardSkeleton key={index} />
+          ))}
+        </MovieGrid>
+      )
+    }
 
-  return (
-    <div className="search-page-container">
-      <CategoryHeader type="search" searchKeyword={keyword} />
+    if (error) {
+      return <div className="text-center text-destructive">{error}</div>
+    }
 
-      {movies.length > 0 ? (
+    if (movies.length > 0) {
+      return (
         <>
-          <div className="movie-grid">
+          <MovieGrid>
             {movies.map((movie) => (
               <MovieCard key={movie.slug} movie={movie} />
             ))}
-          </div>
-          {/* Dòng mới: Hiển thị Pagination nếu có nhiều hơn 1 trang */}
-          {paginationInfo && paginationInfo.total_page > 1 && (
-            <Pagination
-              currentPage={paginationInfo.current_page}
-              totalPages={paginationInfo.total_page}
-              onPageChange={handlePageChange}
-            />
+          </MovieGrid>
+          {pagination && pagination.total_page > 1 && (
+            <div className="mt-8">
+              <Pagination
+                currentPage={pagination.current_page}
+                totalPages={pagination.total_page}
+                onPageChange={handlePageChange}
+              />
+            </div>
           )}
         </>
-      ) : (
-        <div className="no-results">
-          <div className="no-results-icon">🔍</div>
-          <h3>Không tìm thấy kết quả</h3>
-          <p>
-            Không có phim nào phù hợp với từ khóa "{keyword}". Hãy thử tìm kiếm với từ khóa khác.
-          </p>
-        </div>
-      )}
+      )
+    }
+
+    return (
+      <div className="py-10 text-center">
+        <div className="text-5xl mb-4">🔍</div>
+        <h3 className="text-xl font-semibold mb-2">Không tìm thấy kết quả</h3>
+        <p className="text-muted-foreground">Không có phim nào phù hợp với từ khóa "{keyword}".</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-8">
+      <CategoryHeader type="search" searchKeyword={keyword} />
+      {renderContent()}
     </div>
   )
 }

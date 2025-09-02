@@ -1,51 +1,6 @@
 // src/types.ts
-export interface Movie {
-  id?: string
-  name: string
-  slug: string
-  original_name: string
-  thumb_url: string
-  poster_url: string
-  created: string
-  modified: string
-  description: string
-  total_episodes: number
-  current_episode: string
-  time: string
-  quality: string
-  language: string
-  director: string | null
-  casts: string | null
-  category?: {
-    [key: string]: {
-      group: {
-        id: string
-        name: string
-      }
-      list: Array<{
-        id: string
-        name: string
-      }>
-    }
-  }
-}
 
-export interface ApiResponse {
-  status: string
-  paginate: {
-    current_page: number
-    total_page: number
-    total_items: number
-    items_per_page: number
-  }
-  cat?: {
-    name: string
-    title: string
-    slug: string
-  }
-  items: Movie[]
-}
-
+// Dùng cho API trả về danh sách phim
 export interface MovieListItem {
   id?: string
   name: string
@@ -55,28 +10,36 @@ export interface MovieListItem {
   poster_url: string
   created: string
   modified: string
-  description: string
+  description?: string
   total_episodes: number
   current_episode: string
-  time: string
+  time: string | null
   quality: string
   language: string
   director: string | null
   casts: string | null
-  category?: {
-    [key: string]: {
-      group: {
-        id: string
-        name: string
-      }
-      list: Array<{
-        id: string
-        name: string
-      }>
-    }
-  }
 }
 
+// Dùng cho API trả về chi tiết phim
+export interface MovieDetail extends MovieListItem {
+  category?: {
+    [key: string]: {
+      group: { id: string; name: string }
+      list: Array<{ id: string; name: string }>
+    }
+  }
+  episodes: Array<{
+    server_name: string
+    items: Array<{
+      name: string
+      slug: string
+      embed: string
+      m3u8: string
+    }>
+  }>
+}
+
+// Dùng cho các response API dạng danh sách
 export interface MovieListApiResponse {
   status: string
   paginate: {
@@ -93,29 +56,8 @@ export interface MovieListApiResponse {
   items: MovieListItem[]
 }
 
-export interface MovieDetail {
+// Dùng cho response API dạng chi tiết
+export interface MovieDetailApiResponse {
   status: string
-  movie: Movie & {
-    episodes: Array<{
-      server_name: string
-      items: Array<{
-        name: string
-        slug: string
-        embed: string
-        m3u8: string
-      }>
-    }>
-  }
-}
-
-export interface FilterOption {
-  id: string
-  name: string
-  slug: string
-}
-
-export interface FilterGroup {
-  id: string
-  name: string
-  options: FilterOption[]
+  movie: MovieDetail
 }
