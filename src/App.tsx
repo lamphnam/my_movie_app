@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react' // Import lazy và Suspense
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Loader from './components/Loader' // Import component Loader
+import { Analytics } from '@vercel/analytics/react'
 
 // Sử dụng React.lazy để import động các component trang
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -30,6 +31,7 @@ function App() {
             <Route path="/year/:slug" element={<YearPage />} />
           </Routes>
         </Suspense>
+        <Analytics />
       </Layout>
     </Router>
   )
