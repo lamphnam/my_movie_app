@@ -1,56 +1,58 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+// src/pages/DetailPage.tsx
+
 import useLocalStorage from '@/hooks/useLocalStorage'
-import type { MovieDetail, MovieListItem } from '@/types'
+import { optimizeImage } from '@/lib/image'
 import { movieApi } from '@/services/api'
-import Loader from '@/components/Loader'
+import type { EpisodeItem, EpisodeServer, MovieListItem } from '@/types'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+
+import DetailPageSkeleton from '@/components/DetailPageSkeleton'
+import RelatedMovies from '@/components/RelatedMovies'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
+import { Calendar, Clapperboard, Globe, Heart, Play, Tv } from 'lucide-react'
+
+// Kiểu dữ liệu không đổi
+type CategoryItem = { id: string; name: string; slug?: string }
+type CategoryGroup = {
+  group: { id: string; name: string }
+  list: CategoryItem[]
+}
 
 const DetailPage = () => {
   const { slug } = useParams<{ slug: string }>()
-  const [movie, setMovie] = useState<MovieDetail | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const playerRef = useRef<HTMLDivElement>(null)
+  const [favorites, setFavorites] = useLocalStorage<MovieListItem[]>('favorites', [])
   const [selectedEpisodeUrl, setSelectedEpisodeUrl] = useState<string | null>(null)
 
-  const [favorites, setFavorites] = useLocalStorage<MovieListItem[]>('favorites', [])
-  const isFavorited = favorites.some((fav) => fav.slug === slug)
+  const {
+    data: movieData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['movie', slug],
+    queryFn: () => movieApi.getMovieDetail(slug!),
+    enabled: !!slug,
+  })
+
+  const movie = movieData?.movie
 
   useEffect(() => {
-    if (!slug) return
-
-    const fetchMovieDetail = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const data = await movieApi.getMovieDetail(slug)
-        if (data.status === 'success' && data.movie) {
-          setMovie(data.movie)
-          const firstEpisode = data.movie.episodes?.[0]?.items?.[0]
-          if (firstEpisode) {
-            setSelectedEpisodeUrl(firstEpisode.embed)
-          }
-        } else {
-          setError('Không tìm thấy thông tin phim.')
-        }
-      } catch (err: any) {
-        setError(err.message || 'Đã xảy ra lỗi.')
-      } finally {
-        setLoading(false)
-      }
+    if (movie?.episodes?.[0]?.items?.[0]) {
+      setSelectedEpisodeUrl(movie.episodes[0].items[0].embed)
     }
-    fetchMovieDetail()
-  }, [slug])
+  }, [movie])
+
+  if (isLoading) return <DetailPageSkeleton />
+  if (isError || !movie) {
+    return <div className="py-20 text-center text-destructive">Không thể tải thông tin phim.</div>
+  }
+
+  const isFavorited = favorites.some((fav) => fav.slug === slug)
 
   const handleToggleFavorite = () => {
-    if (!movie || !slug) return
     if (isFavorited) {
       setFavorites(favorites.filter((fav) => fav.slug !== slug))
     } else {
@@ -58,97 +60,167 @@ const DetailPage = () => {
     }
   }
 
-  if (loading) return <Loader />
-  if (error) return <div className="text-center text-destructive py-10">{error}</div>
-  if (!movie)
-    return <div className="text-center text-muted-foreground py-10">Không có dữ liệu phim.</div>
+  const handleWatchClick = () => {
+    playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+
+  const handleSelectEpisode = (url: string) => {
+    setSelectedEpisodeUrl(url)
+  }
+
+  const categories: CategoryGroup[] = movie.category
+    ? (Object.values(movie.category) as CategoryGroup[])
+    : []
+  const genreCategory = categories.find((cat) => cat.group.name === 'Thể loại')
+  const yearCategory = categories.find((cat) => cat.group.name === 'Năm')
+  const countryCategory = categories.find((cat) => cat.group.name === 'Quốc gia')
+  const primaryGenre = genreCategory?.list[0]
+
+  const posterUrl = optimizeImage(movie.thumb_url, 500)
+  const backgroundPlayerUrl = optimizeImage(movie.poster_url, 1280)
+  const isSeries = movie.episodes.some((server: EpisodeServer) => server.items.length > 1)
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gradient md:text-4xl">{movie.name}</h1>
-          <p className="text-lg text-muted-foreground">({movie.original_name})</p>
-        </div>
-        <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
-          <i className={`fa-solid fa-heart ${isFavorited ? 'text-red-500' : ''}`}></i>
-        </Button>
-      </div>
+    // POLISH FOR MOBILE: Giảm khoảng cách tổng thể trên mobile
+    <div className="container space-y-12 lg:space-y-16">
+      {/* POLISH FOR MOBILE: Thay đổi cấu trúc grid, gap cho mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-x-12">
+        {/* === LEFT COLUMN (Desktop only) === */}
+        {/* POLISH FOR MOBILE: Cột này sẽ ẩn trên mobile và chỉ hiển thị trên màn hình lớn */}
+        <aside className="hidden lg:col-span-2 lg:block xl:col-span-1">
+          {/* POLISH FOR MOBILE: Chỉ sticky trên màn hình lớn */}
+          <div className="lg:sticky lg:top-24 space-y-4">
+            <img src={posterUrl} alt={movie.name} className="w-full rounded-lg shadow-2xl" />
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="lg" onClick={handleWatchClick}>
+                <Play className="mr-2 h-5 w-5" /> Xem
+              </Button>
+              <Button size="lg" variant="secondary" onClick={handleToggleFavorite}>
+                <Heart
+                  className={`mr-2 h-5 w-5 transition-colors ${
+                    isFavorited ? 'fill-red-500 text-red-500' : ''
+                  }`}
+                />
+                Lưu
+              </Button>
+            </div>
+            <div className="space-y-3 rounded-lg border bg-card p-4 text-sm">
+              <h3 className="mb-2 font-semibold text-foreground">Thông tin</h3>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <Clapperboard className="h-4 w-4" /> Thể loại
+                </span>
+                <span className="font-medium text-right">{primaryGenre?.name || 'N/A'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <Calendar className="h-4 w-4" /> Năm
+                </span>
+                <span className="font-medium">{yearCategory?.list[0]?.name || 'N/A'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <Globe className="h-4 w-4" /> Quốc gia
+                </span>
+                <span className="font-medium text-right">
+                  {countryCategory?.list[0]?.name || 'N/A'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <Tv className="h-4 w-4" /> Tập phim
+                </span>
+                <span className="font-medium">{movie.current_episode}</span>
+              </div>
+            </div>
+          </div>
+        </aside>
 
-      {/* Video Player */}
-      {selectedEpisodeUrl && (
-        <div className="aspect-video w-full overflow-hidden rounded-lg border">
-          <iframe
-            className="h-full w-full"
-            src={selectedEpisodeUrl}
-            title="Video Player"
-            allowFullScreen
-          />
-        </div>
-      )}
-
-      {/* Episodes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Danh sách tập</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {movie.episodes.map((server, serverIndex) => (
-            <div key={serverIndex}>
-              <h3 className="mb-2 font-semibold">{server.server_name}</h3>
+        {/* === RIGHT COLUMN / MAIN CONTENT (All screens) === */}
+        <main className="lg:col-span-3 xl:col-span-4">
+          {/* POLISH FOR MOBILE: Tái cấu trúc khu vực hero cho mobile */}
+          <div className="flex flex-col gap-6 sm:flex-row lg:block">
+            {/* Poster phim hiển thị trên mobile */}
+            <img
+              src={posterUrl}
+              alt={movie.name}
+              className="w-1/2 self-start rounded-lg shadow-xl sm:w-1/3 lg:hidden"
+            />
+            <div className="flex-1 space-y-4">
+              {/* POLISH FOR MOBILE: Giảm kích thước chữ cho mobile */}
+              <h1 className="text-3xl font-bold tracking-tighter text-foreground sm:text-4xl lg:text-5xl xl:text-6xl">
+                {movie.name}
+              </h1>
+              <p className="text-md text-muted-foreground sm:text-lg lg:text-xl">
+                {movie.original_name}
+              </p>
               <div className="flex flex-wrap gap-2">
-                {server.items.map((episode) => (
-                  <Button
-                    key={episode.slug}
-                    variant={episode.embed === selectedEpisodeUrl ? 'default' : 'secondary'}
-                    onClick={() => setSelectedEpisodeUrl(episode.embed)}
-                  >
-                    {episode.name}
-                  </Button>
+                {genreCategory?.list.map((genre) => (
+                  <Badge key={genre.id} variant="secondary">
+                    {genre.name}
+                  </Badge>
                 ))}
               </div>
             </div>
-          ))}
-        </CardContent>
-      </Card>
+          </div>
 
-      {/* Description & Details */}
-      <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
-        <AccordionItem value="item-1">
-          <AccordionTrigger>Nội dung phim</AccordionTrigger>
-          <AccordionContent>
+          <div className="mt-8 lg:mt-10">
+            <h2 className="text-2xl font-semibold tracking-tight">Nội dung phim</h2>
             <div
-              className="prose prose-sm prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: movie.description || '' }}
+              className="prose prose-sm prose-invert mt-4 max-w-none text-muted-foreground"
+              dangerouslySetInnerHTML={{ __html: movie.description || 'Chưa có mô tả.' }}
             />
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-2">
-          <AccordionTrigger>Chi tiết</AccordionTrigger>
-          <AccordionContent className="space-y-4">
-            <p>
-              <strong>Diễn viên:</strong> {movie.casts || 'Đang cập nhật'}
-            </p>
-            <p>
-              <strong>Đạo diễn:</strong> {movie.director || 'Đang cập nhật'}
-            </p>
-            {movie.category &&
-              Object.values(movie.category).map((catGroup) => (
-                <div key={catGroup.group.id}>
-                  <strong>{catGroup.group.name}:</strong>
-                  <div className="mt-1 flex flex-wrap gap-2">
-                    {catGroup.list.map((item) => (
-                      <div key={item.id} className="rounded-full bg-secondary px-3 py-1 text-sm">
-                        {item.name}
-                      </div>
-                    ))}
-                  </div>
+          </div>
+
+          <div className="mt-8 lg:mt-10" ref={playerRef}>
+            <h2 className="text-2xl font-semibold tracking-tight">Xem Phim</h2>
+            <div
+              className="mt-4 aspect-video w-full overflow-hidden rounded-lg bg-cover bg-center shadow-lg"
+              style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
+            >
+              {selectedEpisodeUrl ? (
+                <iframe
+                  className="h-full w-full"
+                  src={selectedEpisodeUrl}
+                  title="Video Player"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-black/50">
+                  <p className="text-foreground">Chọn một tập để bắt đầu xem</p>
                 </div>
-              ))}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+              )}
+            </div>
+          </div>
+
+          {isSeries && (
+            <div className="mt-8 lg:mt-10">
+              <h2 className="text-2xl font-semibold tracking-tight">Danh sách tập</h2>
+              <div className="mt-4 space-y-4">
+                {movie.episodes.map((server: EpisodeServer, index: number) => (
+                  <div key={index}>
+                    <h3 className="font-semibold text-muted-foreground">{server.server_name}</h3>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {server.items.map((episode: EpisodeItem) => (
+                        // POLISH FOR MOBILE: Tăng padding cho nút để dễ chạm hơn
+                        <Button
+                          key={episode.slug}
+                          variant={selectedEpisodeUrl === episode.embed ? 'default' : 'secondary'}
+                          onClick={() => handleSelectEpisode(episode.embed)}
+                          className="px-4 py-2 h-auto"
+                        >
+                          {episode.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+      <RelatedMovies genreSlug={primaryGenre?.slug} currentMovieSlug={movie.slug} />
     </div>
   )
 }

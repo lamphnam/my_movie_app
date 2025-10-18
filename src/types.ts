@@ -1,6 +1,3 @@
-// src/types.ts
-
-// Dùng cho API trả về danh sách phim
 export interface MovieListItem {
   id?: string
   name: string
@@ -20,7 +17,18 @@ export interface MovieListItem {
   casts: string | null
 }
 
-// Dùng cho API trả về chi tiết phim
+export interface EpisodeItem {
+  name: string
+  slug: string
+  embed: string
+  m3u8: string
+}
+
+export interface EpisodeServer {
+  server_name: string
+  items: EpisodeItem[]
+}
+
 export interface MovieDetail extends MovieListItem {
   category?: {
     [key: string]: {
@@ -28,18 +36,9 @@ export interface MovieDetail extends MovieListItem {
       list: Array<{ id: string; name: string }>
     }
   }
-  episodes: Array<{
-    server_name: string
-    items: Array<{
-      name: string
-      slug: string
-      embed: string
-      m3u8: string
-    }>
-  }>
+  episodes: EpisodeServer[]
 }
 
-// Dùng cho các response API dạng danh sách
 export interface MovieListApiResponse {
   status: string
   paginate: {
@@ -56,7 +55,6 @@ export interface MovieListApiResponse {
   items: MovieListItem[]
 }
 
-// Dùng cho response API dạng chi tiết
 export interface MovieDetailApiResponse {
   status: string
   movie: MovieDetail

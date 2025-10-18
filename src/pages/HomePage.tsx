@@ -1,85 +1,71 @@
-import { useState, useEffect } from 'react'
-import type { MovieListItem, MovieListApiResponse } from '@/types'
-import MovieCard from '@/components/MovieCard'
-import Pagination from '@/components/Pagination'
-import CategoryHeader from '@/components/CategoryHeader'
-import { movieApi } from '@/services/api'
-import MovieCardSkeleton from '@/components/MovieCardSkeleton'
-import MovieGrid from '@/components/MovieGrid'
-import MovieFilters from '@/components/MovieFilters'
+// src/pages/HomePage.tsx
+
+import HeroBanner from '@/components/HeroBanner'
+import MovieCarousel from '@/components/MovieCarousel'
+import { featuredMovie } from '@/config/featuredContent'
+import { movieApi } from '@/services/api' // <-- Quay lại dùng API gốc
+import { useQuery } from '@tanstack/react-query'
 
 const HomePage = () => {
-  const [movies, setMovies] = useState<MovieListItem[]>([])
-  const [pagination, setPagination] = useState<MovieListApiResponse['paginate'] | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // TanStack Query sẽ quản lý tất cả: loading, error, data và caching
+  const {
+    data: koreanData,
+    isLoading: koreanMoviesLoading,
+    isError: isKoreanError,
+  } = useQuery({
+    queryKey: ['movies', 'korean'], // Một key duy nhất cho query này
+    queryFn: () => movieApi.getMoviesByCountry('han-quoc', 1),
+    staleTime: 5 * 60 * 1000, // Dữ liệu được coi là mới trong 5 phút
+  })
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const data: MovieListApiResponse = await movieApi.getNewMovies(currentPage)
-        if (data.status === 'success') {
-          setMovies(data.items)
-          setPagination(data.paginate)
-        } else {
-          setMovies([])
-          setPagination(null)
-          setError('Không thể tải danh sách phim.')
-        }
-      } catch (err: any) {
-        setError(err.message || 'Đã xảy ra lỗi.')
-      } finally {
-        setLoading(false)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    }
-    fetchMovies()
-  }, [currentPage])
+  const {
+    data: chineseData,
+    isLoading: chineseMoviesLoading,
+    isError: isChineseError,
+  } = useQuery({
+    queryKey: ['movies', 'chinese'],
+    queryFn: () => movieApi.getMoviesByCountry('trung-quoc', 1),
+    staleTime: 5 * 60 * 1000,
+  })
 
-  const renderContent = () => {
-    if (loading) {
-      return (
-        <MovieGrid>
-          {Array.from({ length: 10 }).map((_, index) => (
-            <MovieCardSkeleton key={index} />
-          ))}
-        </MovieGrid>
-      )
-    }
-    if (error) return <div className="text-center text-destructive">{error}</div>
-    if (movies.length === 0)
-      return <div className="text-center text-muted-foreground">Không tìm thấy phim nào.</div>
+  const {
+    data: usUkData,
+    isLoading: usUkMoviesLoading,
+    isError: isUsUkError,
+  } = useQuery({
+    queryKey: ['movies', 'us-uk'],
+    queryFn: () => movieApi.getMoviesByCountry('au-my', 1),
+    staleTime: 5 * 60 * 1000,
+  })
 
-    return (
-      <>
-        <MovieGrid>
-          {movies.map((movie) => (
-            <MovieCard key={movie.slug} movie={movie} />
-          ))}
-        </MovieGrid>
-        {pagination && pagination.total_page > 1 && (
-          <div className="mt-8">
-            <Pagination
-              currentPage={pagination.current_page}
-              totalPages={pagination.total_page}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
-      </>
-    )
+  if (isKoreanError || isChineseError || isUsUkError) {
+    return <div className="py-10 text-center text-destructive">Đã có lỗi xảy ra.</div>
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <CategoryHeader type="default" />
-        <MovieFilters />
-      </div>
-      {renderContent()}
+    <div className="space-y-8 lg:space-y-12">
+      <HeroBanner movie={featuredMovie} loading={koreanMoviesLoading} />
+
+      <MovieCarousel
+        title="Phim Hàn Quốc"
+        movies={koreanData?.items || []}
+        loading={koreanMoviesLoading}
+        viewAllLink="/country/han-quoc"
+      />
+
+      <MovieCarousel
+        title="Phim Trung Quốc"
+        movies={chineseData?.items || []}
+        loading={chineseMoviesLoading}
+        viewAllLink="/country/trung-quoc"
+      />
+
+      <MovieCarousel
+        title="Phim Âu Mỹ"
+        movies={usUkData?.items || []}
+        loading={usUkMoviesLoading}
+        viewAllLink="/country/au-my"
+      />
     </div>
   )
 }

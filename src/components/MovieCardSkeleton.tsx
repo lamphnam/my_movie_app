@@ -1,11 +1,10 @@
-// src/components/MovieCardSkeleton.tsx
 const MovieCardSkeleton = () => {
   return (
-    <div className="movie-card-skeleton">
-      <div className="skeleton-poster"></div>
-      <div className="skeleton-info">
-        <div className="skeleton-title"></div>
-        <div className="skeleton-year"></div>
+    <div className="animate-pulse">
+      <div className="aspect-[2/3] w-full rounded-lg bg-secondary"></div>
+      <div className="mt-3 space-y-2">
+        <div className="h-4 rounded bg-secondary"></div>
+        <div className="h-4 w-3/4 rounded bg-secondary"></div>
       </div>
     </div>
   )
