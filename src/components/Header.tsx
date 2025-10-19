@@ -1,3 +1,5 @@
+// src/components/Header.tsx
+
 import SearchForm from '@/components/SearchForm'
 import {
   Accordion,
@@ -9,8 +11,8 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription, // <-- IMPORT THÊM DialogDescription
   DialogHeader,
-  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
@@ -203,22 +205,18 @@ const Header = () => {
                   <Search className="h-6 w-6" />
                 </Button>
               </DialogTrigger>
-              {/* <CHANGE> Wrap DialogContent with DialogPortal and fix responsive layout */}
-              <DialogPortal>
-                <DialogContent className="fixed inset-0 flex h-screen w-screen flex-col gap-0 rounded-none p-0 sm:inset-auto sm:h-auto sm:max-h-[80vh] sm:w-full sm:max-w-lg sm:rounded-lg sm:gap-4 sm:p-4">
-                  <DialogHeader className="border-b border-border px-4 py-3 sm:border-0 sm:px-0 sm:py-0">
-                    <DialogTitle className="flex items-center justify-between">
-                      <span>Tìm kiếm phim</span>
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-6 w-6"></Button>
-                      </DialogTrigger>
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="flex-1 overflow-hidden">
-                    <MobileSearch onSearchSubmit={() => setIsSearchOpen(false)} />
-                  </div>
-                </DialogContent>
-              </DialogPortal>
+              <DialogContent className="top-0 flex h-screen max-h-screen w-screen max-w-full flex-col gap-4 rounded-none p-4 sm:top-[50%] sm:h-auto sm:max-h-[80vh] sm:w-full sm:max-w-lg sm:translate-y-[-50%] sm:rounded-lg">
+                <DialogHeader className="flex-shrink-0">
+                  <DialogTitle>Tìm kiếm phim</DialogTitle>
+                  {/* SỬA LỖI: Thêm DialogDescription để khắc phục cảnh báo */}
+                  <DialogDescription className="sr-only">
+                    Nhập từ khóa để tìm kiếm phim và xem kết quả trực tiếp bên dưới.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="min-h-0 flex-1">
+                  <MobileSearch onSearchSubmit={() => setIsSearchOpen(false)} />
+                </div>
+              </DialogContent>
             </Dialog>
           </div>
         </div>
