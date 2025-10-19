@@ -11,7 +11,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2, Search, X } from 'lucide-react'
 
-const SearchForm = () => {
+// Thêm prop onSearchSubmit để đóng Dialog trên mobile
+interface SearchFormProps {
+  onSearchSubmit?: () => void
+}
+
+const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -26,7 +31,7 @@ const SearchForm = () => {
     queryKey: ['search', debouncedQuery],
     queryFn: () => movieApi.searchMovies(debouncedQuery, 1),
     enabled: debouncedQuery.length > 2,
-    staleTime: 10 * 60 * 1000, // Cache kết quả trong 10 phút
+    staleTime: 10 * 60 * 1000,
   })
 
   useEffect(() => {
@@ -35,16 +40,17 @@ const SearchForm = () => {
     }, 500)
     return () => clearTimeout(timerId)
   }, [query])
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`)
       setQuery('')
       setIsFocused(false)
+      onSearchSubmit?.() // Gọi callback để đóng Dialog
     }
   }
 
-  // Xử lý sự kiện click ra ngoài để ẩn dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -62,7 +68,6 @@ const SearchForm = () => {
   const showResults = isFocused && query.length > 2
 
   return (
-    // Sử dụng div thay vì form để kiểm soát sự kiện submit tốt hơn
     <div className="relative w-full max-w-sm" ref={searchContainerRef}>
       <form onSubmit={handleSearchSubmit}>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -72,9 +77,8 @@ const SearchForm = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          className="pl-10 pr-10" // Tăng padding để chứa icon
+          className="pl-10 pr-10"
         />
-        {/* Nút X để xóa nhanh nội dung */}
         {query && (
           <Button
             type="button"
@@ -88,7 +92,6 @@ const SearchForm = () => {
         )}
       </form>
 
-      {/* Dropdown Kết quả Tìm kiếm */}
       {showResults && (
         <div className="absolute top-full mt-2 w-full rounded-lg border bg-background shadow-lg z-50 max-h-96 overflow-y-auto custom-scrollbar">
           {isLoading && (
@@ -111,6 +114,7 @@ const SearchForm = () => {
                     onClick={() => {
                       setQuery('')
                       setIsFocused(false)
+                      onSearchSubmit?.() // Đóng Dialog khi chọn phim
                     }}
                   >
                     <img
@@ -130,7 +134,10 @@ const SearchForm = () => {
                   <Button variant="link" asChild className="w-full justify-center">
                     <Link
                       to={`/search?q=${encodeURIComponent(query.trim())}`}
-                      onClick={() => setIsFocused(false)}
+                      onClick={() => {
+                        setIsFocused(false)
+                        onSearchSubmit?.() // Đóng Dialog khi xem tất cả
+                      }}
                     >
                       Xem tất cả {results.length} kết quả
                     </Link>

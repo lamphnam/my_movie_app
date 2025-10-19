@@ -1,48 +1,33 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import type { MovieListItem, MovieListApiResponse } from '@/types'
+// src/pages/YearPage.tsx
+
+import { useMoviePagination } from '@/hooks/useMoviePagination'
 import { movieApi } from '@/services/api'
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+
+import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
-import Pagination from '@/components/Pagination'
-import CategoryHeader from '@/components/CategoryHeader'
 import MovieGrid from '@/components/MovieGrid'
+import PageWrapper from '@/components/PageWrapper'
+import Pagination from '@/components/Pagination'
 
 const YearPage = () => {
   const { slug = '' } = useParams<{ slug: string }>()
-  const [movies, setMovies] = useState<MovieListItem[]>([])
-  const [pagination, setPagination] = useState<MovieListApiResponse['paginate'] | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const data: MovieListApiResponse = await movieApi.getMoviesByYear(slug, currentPage)
-        if (data.status === 'success') {
-          setMovies(data.items)
-          setPagination(data.paginate)
-        } else {
-          setError('Không thể tải danh sách phim cho năm này.')
-        }
-      } catch (err: any) {
-        setError(err.message || 'Đã xảy ra lỗi.')
-      } finally {
-        setLoading(false)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    }
+  const { movies, pagination, isLoading, isError, error } = useMoviePagination(
+    ['movies', 'year', slug, currentPage],
+    () => movieApi.getMoviesByYear(slug, currentPage),
+  )
 
-    if (slug) {
-      fetchMovies()
-    }
-  }, [slug, currentPage])
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const renderContent = () => {
-    if (loading) {
+    if (isLoading) {
       return (
         <MovieGrid>
           {Array.from({ length: 10 }).map((_, index) => (
@@ -51,7 +36,7 @@ const YearPage = () => {
         </MovieGrid>
       )
     }
-    if (error) return <div className="text-center text-destructive">{error}</div>
+    if (isError) return <div className="text-center text-destructive">{error?.message}</div>
     if (movies.length === 0)
       return <div className="text-center text-muted-foreground">Không tìm thấy phim nào.</div>
 
@@ -67,7 +52,7 @@ const YearPage = () => {
             <Pagination
               currentPage={pagination.current_page}
               totalPages={pagination.total_page}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
             />
           </div>
         )}
@@ -76,10 +61,12 @@ const YearPage = () => {
   }
 
   return (
-    <div className="space-y-8">
-      <CategoryHeader type="year" value={slug} />
-      {renderContent()}
-    </div>
+    <PageWrapper>
+      <div className="space-y-8">
+        <CategoryHeader type="year" value={slug} />
+        {renderContent()}
+      </div>
+    </PageWrapper>
   )
 }
 

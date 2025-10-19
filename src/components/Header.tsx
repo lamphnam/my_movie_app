@@ -1,6 +1,20 @@
-import { Link, NavLink } from 'react-router-dom'
-import { filterData } from '@/data/filters'
+// src/components/Header.tsx
+
 import SearchForm from '@/components/SearchForm'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -17,17 +31,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import { Menu } from 'lucide-react'
+import { filterData } from '@/data/filters'
 import { cn } from '@/lib/utils'
+import { Menu, Search } from 'lucide-react'
+import { useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 
 const Header = () => {
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between gap-4">
@@ -167,25 +179,35 @@ const Header = () => {
           </NavigationMenu>
         </div>
 
-        {/* === Search Form === */}
+        {/* === Search Section === */}
         <div className="flex flex-1 items-center justify-end">
-          <SearchForm />
+          {/* Search for Desktop */}
+          <div className="hidden md:block">
+            <SearchForm />
+          </div>
+          {/* Search Trigger for Mobile */}
+          <div className="md:hidden">
+            <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Search className="h-6 w-6" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="top-0 h-full max-h-[80vh] translate-y-0 rounded-b-lg sm:top-[50%] sm:h-auto sm:max-h-none sm:translate-y-[-50%]">
+                <DialogHeader>
+                  <DialogTitle>Tìm kiếm phim</DialogTitle>
+                </DialogHeader>
+                <SearchForm onSearchSubmit={() => setIsSearchOpen(false)} />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
     </header>
   )
 }
 
-const ListItem = ({
-  className,
-  title,
-  to,
-  ...props
-}: {
-  title: string
-  to: string
-  className?: string
-}) => {
+const ListItem = ({ className, title, to }: { title: string; to: string; className?: string }) => {
   return (
     <li>
       <NavigationMenuLink asChild>
@@ -195,7 +217,6 @@ const ListItem = ({
             'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
             className,
           )}
-          {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
         </Link>

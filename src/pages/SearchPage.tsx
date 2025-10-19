@@ -1,61 +1,36 @@
-import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import type { MovieListItem, MovieListApiResponse } from '@/types'
 import { movieApi } from '@/services/api'
+import type { MovieListApiResponse, MovieListItem } from '@/types' // SỬA LỖI: Thêm import MovieListItem
+import { useQuery } from '@tanstack/react-query' // SỬA LỖI: Thêm import useQuery
+import { useSearchParams } from 'react-router-dom'
+
+import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
-import Pagination from '@/components/Pagination'
-import CategoryHeader from '@/components/CategoryHeader'
 import MovieGrid from '@/components/MovieGrid'
+import PageWrapper from '@/components/PageWrapper'
+import Pagination from '@/components/Pagination'
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const keyword = searchParams.get('q') || ''
   const currentPage = parseInt(searchParams.get('page') || '1', 10)
 
-  const [movies, setMovies] = useState<MovieListItem[]>([])
-  const [pagination, setPagination] = useState<MovieListApiResponse['paginate'] | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data, isLoading, isError, error } = useQuery<MovieListApiResponse, Error>({
+    queryKey: ['movies', 'search', keyword, currentPage],
+    queryFn: () => movieApi.searchMovies(keyword, currentPage),
+    enabled: !!keyword, // Chỉ thực hiện query khi keyword không rỗng
+  })
 
-  useEffect(() => {
-    if (!keyword) {
-      setMovies([])
-      setPagination(null)
-      setLoading(false)
-      return
-    }
-
-    const fetchSearchResults = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const data: MovieListApiResponse = await movieApi.searchMovies(keyword, currentPage)
-
-        if (data.status === 'success') {
-          setMovies(data.items || [])
-          setPagination(data.paginate || null)
-        } else {
-          setMovies([])
-          setPagination(null)
-        }
-      } catch (err: any) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    }
-
-    fetchSearchResults()
-  }, [keyword, currentPage])
+  const movies = data?.items || []
+  const pagination = data?.paginate || null
 
   const handlePageChange = (newPage: number) => {
     setSearchParams({ q: keyword, page: newPage.toString() })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const renderContent = () => {
-    if (loading) {
+    if (isLoading) {
       return (
         <MovieGrid>
           {Array.from({ length: 10 }).map((_, index) => (
@@ -65,15 +40,16 @@ const SearchPage = () => {
       )
     }
 
-    if (error) {
-      return <div className="text-center text-destructive">{error}</div>
+    if (isError) {
+      return <div className="text-center text-destructive">{error.message}</div>
     }
 
     if (movies.length > 0) {
       return (
         <>
           <MovieGrid>
-            {movies.map((movie) => (
+            {/* SỬA LỖI: Định nghĩa kiểu cho 'movie' */}
+            {movies.map((movie: MovieListItem) => (
               <MovieCard key={movie.slug} movie={movie} />
             ))}
           </MovieGrid>
@@ -90,20 +66,28 @@ const SearchPage = () => {
       )
     }
 
-    return (
-      <div className="py-10 text-center">
-        <div className="text-5xl mb-4">🔍</div>
-        <h3 className="text-xl font-semibold mb-2">Không tìm thấy kết quả</h3>
-        <p className="text-muted-foreground">Không có phim nào phù hợp với từ khóa "{keyword}".</p>
-      </div>
-    )
+    if (keyword) {
+      return (
+        <div className="py-10 text-center">
+          <div className="text-5xl mb-4">🔍</div>
+          <h3 className="text-xl font-semibold mb-2">Không tìm thấy kết quả</h3>
+          <p className="text-muted-foreground">
+            Không có phim nào phù hợp với từ khóa "{keyword}".
+          </p>
+        </div>
+      )
+    }
+
+    return null
   }
 
   return (
-    <div className="space-y-8">
-      <CategoryHeader type="search" searchKeyword={keyword} />
-      {renderContent()}
-    </div>
+    <PageWrapper>
+      <div className="space-y-8">
+        <CategoryHeader type="search" searchKeyword={keyword} />
+        {renderContent()}
+      </div>
+    </PageWrapper>
   )
 }
 

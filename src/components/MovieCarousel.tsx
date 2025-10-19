@@ -6,6 +6,7 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
+import { MotionSection } from './Motion' // Import component motion
 import MovieCard from './MovieCard'
 import MovieCardSkeleton from './MovieCardSkeleton'
 import { Button } from './ui/button'
@@ -41,7 +42,14 @@ const MovieCarousel = ({ title, movies, loading, viewAllLink, className }: Movie
   }, [emblaApi])
 
   return (
-    <section className={cn('space-y-4', className)}>
+    <MotionSection // Thay thế <section> bằng <MotionSection>
+      className={cn('space-y-4', className)}
+      // Định nghĩa animation
+      initial={{ opacity: 0, y: 20 }} // Trạng thái ban đầu: vô hình, dịch xuống 20px
+      whileInView={{ opacity: 1, y: 0 }} // Animate khi component xuất hiện trong viewport
+      viewport={{ once: true, amount: 0.2 }} // Animation chỉ chạy 1 lần, khi 20% component hiện ra
+      transition={{ duration: 0.6, ease: 'easeInOut' }} // Thời gian và kiểu animation
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">{title}</h2>
         <div className="flex items-center gap-2">
@@ -85,7 +93,7 @@ const MovieCarousel = ({ title, movies, loading, viewAllLink, className }: Movie
               ))}
         </div>
       </div>
-    </section>
+    </MotionSection>
   )
 }
 

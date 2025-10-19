@@ -1,70 +1,48 @@
-import { useState, useEffect } from 'react'
+import { useMoviePagination } from '@/hooks/useMoviePagination'
+import { movieApi } from '@/services/api'
 import { useSearchParams } from 'react-router-dom'
-import type { MovieListItem, MovieListApiResponse } from '@/types'
-import { movieApi } from '@/services/api' // Chúng ta sẽ cần thêm hàm mới ở đây
+
+import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
-import Pagination from '@/components/Pagination'
-import CategoryHeader from '@/components/CategoryHeader'
-import MovieGrid from '@/components/MovieGrid'
 import MovieFilters from '@/components/MovieFilters'
+import MovieGrid from '@/components/MovieGrid'
+import PageWrapper from '@/components/PageWrapper'
+import Pagination from '@/components/Pagination'
 
 const FilterPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [movies, setMovies] = useState<MovieListItem[]>([])
-  const [pagination, setPagination] = useState<MovieListApiResponse['paginate'] | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  // Lấy các tham số filter từ URL
   const genre = searchParams.get('genre') || ''
   const country = searchParams.get('country') || ''
   const year = searchParams.get('year') || ''
   const currentPage = parseInt(searchParams.get('page') || '1', 10)
 
-  useEffect(() => {
-    const fetchFilteredMovies = async () => {
-      setLoading(true)
-      setError(null)
+  // Xác định hàm fetcher dựa trên tham số URL
+  const getFetcher = () => {
+    if (genre) return () => movieApi.getMoviesByGenre(genre, currentPage)
+    if (country) return () => movieApi.getMoviesByCountry(country, currentPage)
+    if (year) return () => movieApi.getMoviesByYear(year, currentPage)
+    return () => movieApi.getNewMovies(currentPage) // Mặc định là phim mới
+  }
 
-      try {
-        let data: MovieListApiResponse
-        // Ưu tiên gọi API theo từng loại filter
-        if (genre) {
-          data = await movieApi.getMoviesByGenre(genre, currentPage)
-        } else if (country) {
-          data = await movieApi.getMoviesByCountry(country, currentPage)
-        } else if (year) {
-          data = await movieApi.getMoviesByYear(year, currentPage)
-        } else {
-          // Nếu không có filter nào, hiển thị phim mới
-          data = await movieApi.getNewMovies(currentPage)
-        }
+  // SỬA LỖI: Làm phẳng queryKey, không chứa object
+  const queryKey = ['movies', 'filter', genre, country, year, currentPage]
 
-        if (data.status === 'success') {
-          setMovies(data.items)
-          setPagination(data.paginate)
-        } else {
-          setError('Không thể tải danh sách phim.')
-        }
-      } catch (err: any) {
-        setError(err.message || 'Đã xảy ra lỗi.')
-      } finally {
-        setLoading(false)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    }
-    fetchFilteredMovies()
-  }, [genre, country, year, currentPage])
+  const { movies, pagination, isLoading, isError, error } = useMoviePagination(
+    queryKey,
+    getFetcher(),
+  )
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams)
     params.set('page', newPage.toString())
     setSearchParams(params)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const renderContent = () => {
-    if (loading) {
+    if (isLoading) {
       return (
         <MovieGrid>
           {Array.from({ length: 10 }).map((_, index) => (
@@ -73,10 +51,10 @@ const FilterPage = () => {
         </MovieGrid>
       )
     }
-    if (error) return <div className="text-center text-destructive">{error}</div>
+    if (isError) return <div className="text-center text-destructive">{error?.message}</div>
     if (movies.length === 0)
       return (
-        <div className="text-center text-muted-foreground py-10">
+        <div className="py-10 text-center text-muted-foreground">
           Không tìm thấy phim nào phù hợp.
         </div>
       )
@@ -102,13 +80,15 @@ const FilterPage = () => {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <CategoryHeader type="default" />
-        <MovieFilters />
+    <PageWrapper>
+      <div className="space-y-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <CategoryHeader type="default" />
+          <MovieFilters />
+        </div>
+        {renderContent()}
       </div>
-      {renderContent()}
-    </div>
+    </PageWrapper>
   )
 }
 

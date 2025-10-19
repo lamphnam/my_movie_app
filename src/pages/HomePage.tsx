@@ -1,8 +1,10 @@
 // src/pages/HomePage.tsx
 
-import HeroSlider from '@/components/HeroSlider' // <-- UPDATED IMPORT
+import HeroSlider from '@/components/HeroSlider'
+import HeroSliderSkeleton from '@/components/HeroSliderSkeleton' // <-- IMPORT SKELETON MỚI
 import MovieCarousel from '@/components/MovieCarousel'
-import { featuredMovies } from '@/config/featuredContent' // <-- UPDATED IMPORT
+import PageWrapper from '@/components/PageWrapper'
+import { featuredMovies } from '@/config/featuredContent'
 import { movieApi } from '@/services/api'
 import { useQuery } from '@tanstack/react-query'
 
@@ -41,34 +43,39 @@ const HomePage = () => {
     return <div className="py-10 text-center text-destructive">Đã có lỗi xảy ra.</div>
   }
 
-  // Use the loading state of the first carousel as the loading indicator for the hero
   const isHeroLoading = koreanMoviesLoading
 
   return (
-    <div className="space-y-8 lg:space-y-12">
-      <HeroSlider movies={featuredMovies} loading={isHeroLoading} />
+    <PageWrapper>
+      <div className="space-y-8 lg:space-y-12">
+        {isHeroLoading ? (
+          <HeroSliderSkeleton />
+        ) : (
+          <HeroSlider movies={featuredMovies} loading={isHeroLoading} />
+        )}
 
-      <MovieCarousel
-        title="Phim Hàn Quốc"
-        movies={koreanData?.items || []}
-        loading={koreanMoviesLoading}
-        viewAllLink="/country/han-quoc"
-      />
+        <MovieCarousel
+          title="Phim Hàn Quốc"
+          movies={koreanData?.items || []}
+          loading={koreanMoviesLoading}
+          viewAllLink="/country/han-quoc"
+        />
 
-      <MovieCarousel
-        title="Phim Trung Quốc"
-        movies={chineseData?.items || []}
-        loading={chineseMoviesLoading}
-        viewAllLink="/country/trung-quoc"
-      />
+        <MovieCarousel
+          title="Phim Trung Quốc"
+          movies={chineseData?.items || []}
+          loading={chineseMoviesLoading}
+          viewAllLink="/country/trung-quoc"
+        />
 
-      <MovieCarousel
-        title="Phim Âu Mỹ"
-        movies={usUkData?.items || []}
-        loading={usUkMoviesLoading}
-        viewAllLink="/country/au-my"
-      />
-    </div>
+        <MovieCarousel
+          title="Phim Âu Mỹ"
+          movies={usUkData?.items || []}
+          loading={usUkMoviesLoading}
+          viewAllLink="/country/au-my"
+        />
+      </div>
+    </PageWrapper>
   )
 }
 
