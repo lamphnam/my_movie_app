@@ -1,21 +1,20 @@
 // src/pages/HomePage.tsx
 
-import HeroBanner from '@/components/HeroBanner'
+import HeroSlider from '@/components/HeroSlider' // <-- UPDATED IMPORT
 import MovieCarousel from '@/components/MovieCarousel'
-import { featuredMovie } from '@/config/featuredContent'
-import { movieApi } from '@/services/api' // <-- Quay lại dùng API gốc
+import { featuredMovies } from '@/config/featuredContent' // <-- UPDATED IMPORT
+import { movieApi } from '@/services/api'
 import { useQuery } from '@tanstack/react-query'
 
 const HomePage = () => {
-  // TanStack Query sẽ quản lý tất cả: loading, error, data và caching
   const {
     data: koreanData,
     isLoading: koreanMoviesLoading,
     isError: isKoreanError,
   } = useQuery({
-    queryKey: ['movies', 'korean'], // Một key duy nhất cho query này
+    queryKey: ['movies', 'korean'],
     queryFn: () => movieApi.getMoviesByCountry('han-quoc', 1),
-    staleTime: 5 * 60 * 1000, // Dữ liệu được coi là mới trong 5 phút
+    staleTime: 5 * 60 * 1000,
   })
 
   const {
@@ -42,9 +41,12 @@ const HomePage = () => {
     return <div className="py-10 text-center text-destructive">Đã có lỗi xảy ra.</div>
   }
 
+  // Use the loading state of the first carousel as the loading indicator for the hero
+  const isHeroLoading = koreanMoviesLoading
+
   return (
     <div className="space-y-8 lg:space-y-12">
-      <HeroBanner movie={featuredMovie} loading={koreanMoviesLoading} />
+      <HeroSlider movies={featuredMovies} loading={isHeroLoading} />
 
       <MovieCarousel
         title="Phim Hàn Quốc"
