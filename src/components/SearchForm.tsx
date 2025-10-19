@@ -1,22 +1,16 @@
 // src/components/SearchForm.tsx
 
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { optimizeImage } from '@/lib/image'
 import { movieApi } from '@/services/api'
 import type { MovieListItem } from '@/types'
 import { useQuery } from '@tanstack/react-query'
+import { Loader2, Search, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Loader2, Search, X } from 'lucide-react'
-
-// Thêm prop onSearchSubmit để đóng Dialog trên mobile
-interface SearchFormProps {
-  onSearchSubmit?: () => void
-}
-
-const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
+const SearchForm = () => {
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -47,7 +41,6 @@ const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`)
       setQuery('')
       setIsFocused(false)
-      onSearchSubmit?.() // Gọi callback để đóng Dialog
     }
   }
 
@@ -68,9 +61,9 @@ const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
   const showResults = isFocused && query.length > 2
 
   return (
-    <div className="relative w-full max-w-sm" ref={searchContainerRef}>
+    <div className="relative w-full" ref={searchContainerRef}>
       <form onSubmit={handleSearchSubmit}>
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="text"
           placeholder="Tìm kiếm phim, diễn viên..."
@@ -84,7 +77,7 @@ const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
             type="button"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
+            className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full"
             onClick={() => setQuery('')}
           >
             <X className="h-4 w-4" />
@@ -93,7 +86,7 @@ const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
       </form>
 
       {showResults && (
-        <div className="absolute top-full mt-2 w-full rounded-lg border bg-background shadow-lg z-50 max-h-96 overflow-y-auto custom-scrollbar">
+        <div className="custom-scrollbar absolute top-full z-50 mt-2 w-full max-h-96 overflow-y-auto rounded-lg border bg-background shadow-lg">
           {isLoading && (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -110,11 +103,10 @@ const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
                 <li key={movie.slug}>
                   <Link
                     to={`/phim/${movie.slug}`}
-                    className="flex items-center gap-4 p-3 hover:bg-accent transition-colors"
+                    className="flex items-center gap-4 p-3 transition-colors hover:bg-accent"
                     onClick={() => {
                       setQuery('')
                       setIsFocused(false)
-                      onSearchSubmit?.() // Đóng Dialog khi chọn phim
                     }}
                   >
                     <img
@@ -123,7 +115,7 @@ const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
                       className="h-16 w-12 rounded-md object-cover"
                     />
                     <div className="flex-1">
-                      <p className="font-semibold text-foreground truncate">{movie.name}</p>
+                      <p className="truncate font-semibold text-foreground">{movie.name}</p>
                       <p className="text-sm text-muted-foreground">{movie.original_name}</p>
                     </div>
                   </Link>
@@ -134,10 +126,7 @@ const SearchForm = ({ onSearchSubmit }: SearchFormProps) => {
                   <Button variant="link" asChild className="w-full justify-center">
                     <Link
                       to={`/search?q=${encodeURIComponent(query.trim())}`}
-                      onClick={() => {
-                        setIsFocused(false)
-                        onSearchSubmit?.() // Đóng Dialog khi xem tất cả
-                      }}
+                      onClick={() => setIsFocused(false)}
                     >
                       Xem tất cả {results.length} kết quả
                     </Link>
