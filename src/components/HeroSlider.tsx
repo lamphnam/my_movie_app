@@ -17,7 +17,7 @@ interface HeroSliderProps {
 }
 
 const HeroSlider = ({ movies, loading }: HeroSliderProps) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })])
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 3000 })])
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const onSelect = useCallback(() => {
