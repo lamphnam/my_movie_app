@@ -194,9 +194,10 @@ const Header = () => {
         {/* === Cụm bên phải: Tìm kiếm === */}
         <div className="flex items-center justify-end">
           {/* Search for Desktop */}
-          <div className="hidden w-full max-w-sm md:block">
+          <div className="hidden w-[400px] md:block">
             <SearchForm />
           </div>
+
           {/* Search Trigger for Mobile */}
           <div className="md:hidden">
             <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
