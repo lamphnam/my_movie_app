@@ -57,36 +57,39 @@ const SearchForm = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+
   const results = searchData?.items || []
   const showResults = isFocused && query.length > 2
 
   return (
-    <div className="relative w-full" ref={searchContainerRef}>
-      <form onSubmit={handleSearchSubmit}>
-        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+    <div className="relative w-full transition-all duration-300" ref={searchContainerRef}>
+      <form onSubmit={handleSearchSubmit} className="relative group">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
+
         <Input
           type="text"
-          placeholder="Tìm kiếm phim, diễn viên..."
+          placeholder="Tìm kiếm..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          className="pl-10 pr-10"
+          className="h-9 w-full rounded-full border-transparent bg-secondary/50 pl-10 pr-10 focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-primary/50 transition-all shadow-inner"
         />
+
         {query && (
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full"
+            className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full hover:bg-background/80"
             onClick={() => setQuery('')}
           >
-            <X className="h-4 w-4" />
+            <X className="h-3 w-3" />
           </Button>
         )}
       </form>
 
       {showResults && (
-        <div className="custom-scrollbar absolute top-full z-50 mt-2 w-full max-h-96 overflow-y-auto rounded-lg border bg-background shadow-lg">
+        <div className="custom-scrollbar absolute top-[calc(100%+10px)] left-0 right-0 z-50 mt-2 w-full max-h-96 overflow-y-auto rounded-2xl border border-white/10 bg-background/95 backdrop-blur-xl shadow-2xl p-2">
           {isLoading && (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -98,12 +101,12 @@ const SearchForm = () => {
             <p className="p-4 text-center text-muted-foreground">Không tìm thấy kết quả nào.</p>
           )}
           {results.length > 0 && (
-            <ul>
+            <ul className='space-y-1'>
               {results.slice(0, 7).map((movie: MovieListItem) => (
                 <li key={movie.slug}>
                   <Link
                     to={`/phim/${movie.slug}`}
-                    className="flex items-center gap-4 p-3 transition-colors hover:bg-accent"
+                    className="flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-white/10"
                     onClick={() => {
                       setQuery('')
                       setIsFocused(false)
@@ -112,23 +115,23 @@ const SearchForm = () => {
                     <img
                       src={optimizeImage(movie.thumb_url, 100)}
                       alt={movie.name}
-                      className="h-16 w-12 rounded-md object-cover"
+                      className="h-12 w-12 rounded-lg object-cover"
                     />
-                    <div className="flex-1">
-                      <p className="truncate font-semibold text-foreground">{movie.name}</p>
-                      <p className="text-sm text-muted-foreground">{movie.original_name}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate text-sm font-semibold text-foreground">{movie.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{movie.original_name}</p>
                     </div>
                   </Link>
                 </li>
               ))}
               {results.length > 7 && (
-                <li className="border-t">
-                  <Button variant="link" asChild className="w-full justify-center">
+                <li className="pt-2">
+                  <Button variant="ghost" asChild className="w-full justify-center rounded-xl">
                     <Link
                       to={`/search?q=${encodeURIComponent(query.trim())}`}
                       onClick={() => setIsFocused(false)}
                     >
-                      Xem tất cả {results.length} kết quả
+                      Xem tất cả
                     </Link>
                   </Button>
                 </li>

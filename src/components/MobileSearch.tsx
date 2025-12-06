@@ -33,7 +33,7 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedQuery(query)
-    }, 300) // Debounce nhanh hơn để có cảm giác phản hồi tốt hơn trên mobile
+    }, 300)
     return () => clearTimeout(timerId)
   }, [query])
 
@@ -53,7 +53,7 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
 
   return (
     <div className="flex h-full flex-col">
-      <form onSubmit={handleFormSubmit} className="relative">
+      <form onSubmit={handleFormSubmit} className="relative mt-2">
         <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="text"
@@ -61,7 +61,7 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-10 pr-10"
-          autoFocus // Tự động focus vào ô input khi mở
+          autoFocus
         />
         {query && (
           <Button
@@ -76,8 +76,8 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
         )}
       </form>
 
-      {/* Vùng hiển thị kết quả, có thể cuộn */}
-      <div className="custom-scrollbar mt-4 flex-1 overflow-y-auto">
+      {/* Vùng hiển thị kết quả */}
+      <div className="custom-scrollbar mt-4 flex-1 overflow-y-auto pb-4">
         {isLoading && debouncedQuery.length > 2 && (
           <div className="flex items-center justify-center p-4 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -91,27 +91,26 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
           </p>
         )}
 
-        {/* Thông báo trạng thái ban đầu */}
         {debouncedQuery.length <= 2 && (
-          <div className="flex h-full flex-col items-center justify-center p-4 text-center text-muted-foreground">
-            <Search className="mb-4 h-10 w-10 opacity-50" />
+          <div className="flex h-full flex-col items-center justify-center p-4 text-center text-muted-foreground opacity-60">
+            <Search className="mb-4 h-12 w-12" />
             <p>Nhập tên phim, diễn viên bạn muốn tìm.</p>
           </div>
         )}
 
         {results.length > 0 && (
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {results.map((movie: MovieListItem) => (
               <li key={movie.slug}>
                 <Link
                   to={`/phim/${movie.slug}`}
-                  className="flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-accent"
+                  className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-secondary/50 border border-transparent hover:border-white/5"
                   onClick={handleLinkClick}
                 >
                   <img
                     src={optimizeImage(movie.thumb_url, 100)}
                     alt={movie.name}
-                    className="h-20 w-14 flex-shrink-0 rounded-md object-cover"
+                    className="h-20 w-14 flex-shrink-0 rounded-lg object-cover"
                   />
                   <div className="flex-1 overflow-hidden">
                     <p className="truncate font-semibold text-foreground">{movie.name}</p>
@@ -120,9 +119,8 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
                 </Link>
               </li>
             ))}
-            {/* Nút xem tất cả */}
             <li className="pt-2">
-              <Button type="submit" variant="link" className="w-full" onClick={handleFormSubmit}>
+              <Button type="submit" variant="ghost" className="w-full rounded-xl" onClick={handleFormSubmit}>
                 Xem tất cả {searchData?.paginate?.total_items || results.length} kết quả
               </Button>
             </li>
