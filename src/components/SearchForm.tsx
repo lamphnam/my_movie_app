@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Loader2, Search, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { cn } from '@/lib/utils'
 
 const SearchForm = () => {
   const [query, setQuery] = useState('')
@@ -57,7 +58,6 @@ const SearchForm = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-
   const results = searchData?.items || []
   const showResults = isFocused && query.length > 2
 
@@ -89,7 +89,14 @@ const SearchForm = () => {
       </form>
 
       {showResults && (
-        <div className="custom-scrollbar absolute top-[calc(100%+10px)] left-0 right-0 z-50 mt-2 w-full max-h-96 overflow-y-auto rounded-2xl border border-white/10 bg-background/95 backdrop-blur-xl shadow-2xl p-2">
+        <div
+          className={cn(
+            "custom-scrollbar absolute top-full mt-1 left-0 right-0 z-50 w-full overflow-y-auto rounded-2xl border border-white/10 bg-background/95 backdrop-blur-xl shadow-2xl p-2",
+            "max-h-96",
+            "max-[900px]:max-h-[70vh]",
+            "max-[600px]:max-h-[60vh]"
+          )}
+        >
           {isLoading && (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -139,8 +146,9 @@ const SearchForm = () => {
             </ul>
           )}
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   )
 }
 

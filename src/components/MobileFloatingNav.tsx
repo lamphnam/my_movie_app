@@ -1,4 +1,3 @@
-// FILE: src/components/MobileFloatingNav.tsx
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
@@ -24,16 +23,10 @@ const MobileFloatingNav = () => {
     const isActive = (path: string) => location.pathname === path
 
     return (
-        // THAY ĐỔI: bottom-6 -> bottom-8 để cao hơn chút
         <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center px-4 md:hidden pointer-events-none">
-            {/* THAY ĐỔI: 
-          - w-[85%] sm:w-[400px]: Rộng 85% màn hình
-          - grid grid-cols-3: Chia làm 3 cột đều nhau
-          - h-16: Tăng chiều cao lên chút cho đẹp
-      */}
             <div className="glass-panel pointer-events-auto grid grid-cols-3 items-center w-[85%] sm:w-[400px] h-16 rounded-full px-2 shadow-2xl border border-white/10 bg-background/80 backdrop-blur-xl">
 
-                {/* Nút Home (Căn giữa cột 1) */}
+                {/* Nút Home */}
                 <div className="flex justify-center">
                     <Button
                         variant="ghost"
@@ -52,7 +45,7 @@ const MobileFloatingNav = () => {
                     </Button>
                 </div>
 
-                {/* Nút Tìm kiếm (Căn giữa cột 2) */}
+                {/* Nút Tìm kiếm */}
                 <div className="flex justify-center">
                     <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
                         <DialogTrigger asChild>
@@ -60,19 +53,29 @@ const MobileFloatingNav = () => {
                                 <Search className="h-6 w-6" />
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="top-[20%] rounded-3xl border-white/10 bg-background/90 backdrop-blur-xl sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle>Tìm kiếm</DialogTitle>
+
+                        {/* 
+               SỬA LỖI Ở ĐÂY:
+               1. top-[15%] thay vì 20%
+               2. translate-y-0 !important: Để đè lên style mặc định của Dialog (tránh bị kéo lên giữa màn hình)
+               3. data-[state=open]:slide-in-from-top-10: Animation trượt từ trên xuống nhẹ nhàng
+            */}
+                        <DialogContent className="fixed left-[50%] top-[5%] z-50 w-[95%] max-w-lg translate-x-[-50%] !translate-y-0 gap-3 border border-white/10 bg-background/95 p-4 shadow-2xl duration-200 backdrop-blur-2xl rounded-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[5%] data-[state=open]:slide-in-from-top-[3%] max-h-[90vh] landscape:max-h-[85vh] flex flex-col">
+
+                            <DialogHeader className="mb-1 flex-shrink-0">
+                                <DialogTitle className="text-left text-lg font-bold">Tìm kiếm</DialogTitle>
                                 <DialogDescription className="sr-only">Nhập tên phim</DialogDescription>
                             </DialogHeader>
-                            <div className="h-[60vh]">
+                            {/* Container cho search với overflow */}
+                            <div className="flex-1 overflow-hidden min-h-0">
                                 <MobileSearch onSearchSubmit={() => setIsSearchOpen(false)} />
                             </div>
+
                         </DialogContent>
                     </Dialog>
                 </div>
 
-                {/* Nút Menu (Căn giữa cột 3) */}
+                {/* Nút Menu */}
                 <div className="flex justify-center">
                     <Sheet>
                         <SheetTrigger asChild>

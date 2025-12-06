@@ -1,5 +1,3 @@
-// src/components/MobileSearch.tsx
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { optimizeImage } from '@/lib/image'
@@ -53,7 +51,8 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
 
   return (
     <div className="flex h-full flex-col">
-      <form onSubmit={handleFormSubmit} className="relative mt-2">
+      {/* Form tìm kiếm - flex-shrink-0 để không bị co lại */}
+      <form onSubmit={handleFormSubmit} className="relative flex-shrink-0">
         <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="text"
@@ -76,8 +75,8 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
         )}
       </form>
 
-      {/* Vùng hiển thị kết quả */}
-      <div className="custom-scrollbar mt-4 flex-1 overflow-y-auto pb-4">
+      {/* Vùng hiển thị kết quả - flex-1 với min-h-0 để scroll đúng */}
+      <div className="custom-scrollbar mt-4 flex-1 min-h-0 overflow-y-auto">
         {isLoading && debouncedQuery.length > 2 && (
           <div className="flex items-center justify-center p-4 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -99,32 +98,38 @@ const MobileSearch = ({ onSearchSubmit }: MobileSearchProps) => {
         )}
 
         {results.length > 0 && (
-          <ul className="space-y-2">
+          <div className="space-y-2 pb-4">
             {results.map((movie: MovieListItem) => (
-              <li key={movie.slug}>
-                <Link
-                  to={`/phim/${movie.slug}`}
-                  className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-secondary/50 border border-transparent hover:border-white/5"
-                  onClick={handleLinkClick}
-                >
-                  <img
-                    src={optimizeImage(movie.thumb_url, 100)}
-                    alt={movie.name}
-                    className="h-20 w-14 flex-shrink-0 rounded-lg object-cover"
-                  />
-                  <div className="flex-1 overflow-hidden">
-                    <p className="truncate font-semibold text-foreground">{movie.name}</p>
-                    <p className="truncate text-sm text-muted-foreground">{movie.original_name}</p>
-                  </div>
-                </Link>
-              </li>
+              <Link
+                key={movie.slug}
+                to={`/phim/${movie.slug}`}
+                className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-secondary/50 border border-transparent hover:border-white/5"
+                onClick={handleLinkClick}
+              >
+                <img
+                  src={optimizeImage(movie.thumb_url, 100)}
+                  alt={movie.name}
+                  className="h-20 w-14 flex-shrink-0 rounded-lg object-cover"
+                />
+                <div className="flex-1 overflow-hidden">
+                  <p className="truncate font-semibold text-foreground">{movie.name}</p>
+                  <p className="truncate text-sm text-muted-foreground">{movie.original_name}</p>
+                </div>
+              </Link>
             ))}
-            <li className="pt-2">
-              <Button type="submit" variant="ghost" className="w-full rounded-xl" onClick={handleFormSubmit}>
+
+            {/* Nút "Xem tất cả" - luôn hiển thị ở cuối danh sách */}
+            <div className="pt-2 sticky bottom-0 bg-background/95 backdrop-blur-sm">
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full rounded-xl"
+                onClick={handleFormSubmit}
+              >
                 Xem tất cả {searchData?.paginate?.total_items || results.length} kết quả
               </Button>
-            </li>
-          </ul>
+            </div>
+          </div>
         )}
       </div>
     </div>
