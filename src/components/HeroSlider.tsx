@@ -40,12 +40,12 @@ const HeroSlider = ({ movies, loading }: HeroSliderProps) => {
   if (!movies || movies.length === 0) return null
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg" ref={emblaRef}>
+    <div className="relative w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-background/50" ref={emblaRef}>
       <div className="flex">
         {movies.map((movie) => (
           <div className="relative min-w-0 flex-[0_0_100%]" key={movie.slug}>
             {/* THAY ĐỔI: Chiều cao được điều chỉnh cho mobile */}
-            <div className="relative h-[70vh] w-full sm:h-[65vh] md:h-[65vh]">
+            <div className="relative h-[60vh] w-full sm:h-[60vh] md:h-[65vh]">
               <GracefulImage
                 src={optimizeImage(movie.poster_url, 1280)}
                 alt={movie.name}

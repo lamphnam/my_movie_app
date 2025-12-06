@@ -56,49 +56,48 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
 
   return (
     <UIPagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              handlePrevious()
-            }}
-            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-          />
-        </PaginationItem>
-
-        {getPageNumbers().map((page, index) => (
-          <PaginationItem key={index}>
-            {typeof page === 'string' ? (
-              <PaginationEllipsis />
-            ) : (
-              <PaginationLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault()
-                  onPageChange(page)
-                }}
-                isActive={currentPage === page}
-              >
-                {page}
-              </PaginationLink>
-            )}
+      <div className="glass-panel inline-flex items-center rounded-full px-4 py-2 shadow-lg">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                handlePrevious()
+              }}
+              className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''} size={undefined} />
           </PaginationItem>
-        ))}
 
-        <PaginationItem>
-          <PaginationNext
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              handleNext()
-            }}
-            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </UIPagination>
+          {getPageNumbers().map((page, index) => (
+            <PaginationItem key={index}>
+              {typeof page === 'string' ? (
+                <PaginationEllipsis />
+              ) : (
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onPageChange(page)
+                  }}
+                  isActive={currentPage === page} size={undefined}              >
+                  {page}
+                </PaginationLink>
+              )}
+            </PaginationItem>
+          ))}
+
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNext()
+              }}
+              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''} size={undefined} />
+          </PaginationItem>
+        </PaginationContent>
+      </div>
+    </UIPagination >
   )
 }
 

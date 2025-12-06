@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import useLocalStorage from '@/hooks/useLocalStorage'
 import { optimizeImage } from '@/lib/image'
+import { cn } from '@/lib/utils'
 import { movieApi } from '@/services/api'
 import type { EpisodeItem, EpisodeServer, MovieListItem } from '@/types'
 import { useQuery } from '@tanstack/react-query'
@@ -182,9 +183,9 @@ const DetailPage = () => {
             </div>
 
             <div className="mt-8 lg:mt-10" ref={playerRef}>
-              <h2 className="text-2xl font-semibold tracking-tight">Xem Phim</h2>
+              <h2 className="text-2xl font-semibold tracking-tight mb-4">Xem Phim</h2>
               <div
-                className="mt-4 aspect-video w-full overflow-hidden rounded-lg bg-cover bg-center shadow-lg"
+                className="relative aspect-video w-full overflow-hidden rounded-3xl border border-white/10 bg-black shadow-[0_0_60px_-15px_rgba(var(--primary),0.4)] ring-1 ring-white/5"
                 style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
               >
                 {selectedEpisodeUrl ? (
@@ -195,8 +196,8 @@ const DetailPage = () => {
                     allowFullScreen
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-black/50">
-                    <p className="text-foreground">Chọn một tập để bắt đầu xem</p>
+                  <div className="flex h-full w-full items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <p className="text-foreground font-medium">Chọn một tập để bắt đầu xem</p>
                   </div>
                 )}
               </div>
@@ -204,22 +205,29 @@ const DetailPage = () => {
 
             {isSeries && (
               <div className="mt-8 lg:mt-10">
-                <h2 className="text-2xl font-semibold tracking-tight">Danh sách tập</h2>
-                <div className="mt-4 space-y-4">
+                <h2 className="text-2xl font-semibold tracking-tight mb-4">Danh sách tập</h2>
+                <div className="space-y-6">
                   {movie.episodes.map((server: EpisodeServer, index: number) => (
-                    <div key={index}>
-                      <h3 className="font-semibold text-muted-foreground">{server.server_name}</h3>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {server.items.map((episode: EpisodeItem) => (
-                          <Button
-                            key={episode.slug}
-                            variant={selectedEpisodeUrl === episode.embed ? 'default' : 'secondary'}
-                            onClick={() => handleSelectEpisode(episode.embed)}
-                            className="px-4 py-2 h-auto"
-                          >
-                            {episode.name}
-                          </Button>
-                        ))}
+                    <div key={index} className="space-y-3">
+                      <h3 className="font-medium text-muted-foreground ml-2">{server.server_name}</h3>
+
+                      {/* THAY ĐỔI: Bọc các nút trong glass-panel */}
+                      <div className="glass-panel rounded-3xl p-4 md:p-6 bg-secondary/20">
+                        <div className="flex flex-wrap gap-3">
+                          {server.items.map((episode: EpisodeItem) => (
+                            <Button
+                              key={episode.slug}
+                              variant={selectedEpisodeUrl === episode.embed ? 'default' : 'ghost'}
+                              onClick={() => handleSelectEpisode(episode.embed)}
+                              className={cn(
+                                "min-w-[3rem] rounded-xl transition-all",
+                                selectedEpisodeUrl !== episode.embed && "bg-background/50 hover:bg-white/20"
+                              )}
+                            >
+                              {episode.name}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   ))}
