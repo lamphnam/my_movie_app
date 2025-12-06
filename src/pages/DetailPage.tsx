@@ -12,6 +12,7 @@ import type { EpisodeItem, EpisodeServer, MovieListItem } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { Calendar, Clapperboard, Globe, Heart, Play, Tv } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 
 type CategoryItem = { id: string; name: string; slug?: string }
@@ -82,6 +83,20 @@ const DetailPage = () => {
 
   return (
     <PageWrapper>
+      {movie && (
+        <Helmet>
+          <title>{`${movie.name} - Xem Phim Online Full HD | HNAM PHIM`}</title>
+          <meta
+            name="description"
+            content={`Xem phim ${movie.name} (${movie.original_name}) ${movie.quality} Vietsub Thuyết Minh. ${movie.description?.substring(0, 120)}...`}
+          />
+          {/* Open Graph cho Facebook/Zalo */}
+          <meta property="og:title" content={`${movie.name} - HNAM PHIM`} />
+          <meta property="og:description" content={movie.description?.substring(0, 150)} />
+          <meta property="og:image" content={movie.thumb_url} />
+          <meta property="og:type" content="video.movie" />
+        </Helmet>
+      )}
       <div className="container space-y-12 lg:space-y-16">
         <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-x-12">
           {/* === CỘT TRÁI (Desktop) === */}
@@ -95,9 +110,8 @@ const DetailPage = () => {
                 </Button>
                 <Button size="lg" variant="secondary" onClick={handleToggleFavorite}>
                   <Heart
-                    className={`transition-colors ${
-                      isFavorited ? 'fill-red-500 text-red-500' : ''
-                    }`}
+                    className={`transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : ''
+                      }`}
                   />
                   Lưu
                 </Button>
