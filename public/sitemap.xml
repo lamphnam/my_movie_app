@@ -1,22 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
-		<!--	created with www.mysitemapgenerator.com	-->
-		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-<url>
-	<loc>https://hnamphim.dpdns.org/</loc>
-	<lastmod>2025-12-10T21:35:01+01:00</lastmod>
-	<changefreq>daily</changefreq>
-	<priority>1.0</priority>
-</url>
-<url>
-	<loc>https://hnamphim.dpdns.org/filter</loc>
-	<lastmod>2025-12-10T21:35:01+01:00</lastmod>
-	<changefreq>always</changefreq>
-	<priority>1.0</priority>
-</url>
-<url>
-	<loc>https://hnamphim.dpdns.org/search</loc>
-	<lastmod>2025-12-10T21:35:01+01:00</lastmod>
-	<changefreq>always</changefreq>
-	<priority>1.0</priority>
-</url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- TRANG CHỦ -->
+    <url>
+        <loc>https://hnamphim.dpdns.org/</loc>
+        <lastmod>2025-12-11</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- CÁC TRANG TĨNH -->
+    <url>
+        <loc>https://hnamphim.dpdns.org/filter</loc>
+        <lastmod>2025-12-11</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://hnamphim.dpdns.org/search</loc>
+        <lastmod>2025-12-11</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <!-- DANH MỤC (Từ src/data/filters.ts) -->
+    <url><loc>https://hnamphim.dpdns.org/category/phim-moi-cap-nhat</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/category/phim-dang-chieu</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/category/phim-bo</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/category/phim-le</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/category/tv-shows</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/category/hoat-hinh</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+
+    <!-- THỂ LOẠI (Từ src/data/filters.ts) -->
+    <url><loc>https://hnamphim.dpdns.org/genre/hanh-dong</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/phieu-luu</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/hoat-hinh</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/phim-hai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/hinh-su</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/tai-lieu</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/chinh-kich</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/gia-dinh</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/gia-tuong</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/lich-su</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/kinh-di</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/phim-nhac</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/bi-an</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/lang-man</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/khoa-hoc-vien-tuong</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/gay-can</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/chien-tranh</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/tam-ly</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/tinh-cam</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/co-trang</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/mien-tay</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/genre/phim-18</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+    <!-- QUỐC GIA (Từ src/data/filters.ts) -->
+    <url><loc>https://hnamphim.dpdns.org/country/au-my</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/anh</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/trung-quoc</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/indonesia</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/viet-nam</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/phap</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/hong-kong</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/han-quoc</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/nhat-ban</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/thai-lan</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/dai-loan</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/nga</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/ha-lan</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/philippines</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/an-do</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/country/quoc-gia-khac</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+    <!-- NĂM PHÁT HÀNH (Từ src/data/filters.ts) -->
+    <url><loc>https://hnamphim.dpdns.org/year/2025</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2024</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2023</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2022</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2021</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2020</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2019</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2018</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2017</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2016</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2015</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2014</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2013</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2012</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2011</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2010</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2009</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2008</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2007</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2006</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2005</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://hnamphim.dpdns.org/year/2004</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+
+    <!-- PHIM NỔI BẬT (Từ src/config/featuredContent.ts) -->
+    <url>
+        <loc>https://hnamphim.dpdns.org/phim/mua-do</loc>
+        <lastmod>2025-11-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://hnamphim.dpdns.org/phim/mang-me-di-bo</loc>
+        <lastmod>2025-11-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://hnamphim.dpdns.org/phim/tham-tu-kien-ky-an-khong-dau</loc>
+        <lastmod>2025-10-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://hnamphim.dpdns.org/phim/hay-cuoi-em-nhe</loc>
+        <lastmod>2025-10-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://hnamphim.dpdns.org/phim/than-den-oi-uoc-di</loc>
+        <lastmod>2025-10-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
 </urlset>
