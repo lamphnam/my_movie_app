@@ -2,6 +2,7 @@
 
 import { movieApi } from '@/services/api'
 import { useQuery } from '@tanstack/react-query'
+import { memo } from 'react'
 import MovieCarousel from './MovieCarousel'
 
 interface RelatedMoviesProps {
@@ -9,11 +10,12 @@ interface RelatedMoviesProps {
   currentMovieSlug?: string
 }
 
-const RelatedMovies = ({ genreSlug, currentMovieSlug }: RelatedMoviesProps) => {
+const RelatedMovies = memo(({ genreSlug, currentMovieSlug }: RelatedMoviesProps) => {
   const { data: relatedMoviesData, isLoading } = useQuery({
     queryKey: ['movies', 'related', genreSlug],
     queryFn: () => movieApi.getMoviesByGenre(genreSlug!, 1),
     staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
     enabled: !!genreSlug,
   })
 
@@ -34,6 +36,8 @@ const RelatedMovies = ({ genreSlug, currentMovieSlug }: RelatedMoviesProps) => {
       className="mt-12"
     />
   )
-}
+})
+
+RelatedMovies.displayName = 'RelatedMovies'
 
 export default RelatedMovies

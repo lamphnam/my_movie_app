@@ -6,7 +6,7 @@ import type { MovieListItem } from '@/types'
 import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
 import { Info, PlayCircle } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import GracefulImage from './GracefulImage'
 import { Button } from './ui/button'
@@ -16,7 +16,7 @@ interface HeroSliderProps {
   loading: boolean
 }
 
-const HeroSlider = ({ movies, loading }: HeroSliderProps) => {
+const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })])
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -125,6 +125,8 @@ const HeroSlider = ({ movies, loading }: HeroSliderProps) => {
       </div>
     </div>
   )
-}
+})
+
+HeroSlider.displayName = 'HeroSlider'
 
 export default HeroSlider

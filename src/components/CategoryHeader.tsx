@@ -1,4 +1,5 @@
 import { getCategoryBySlug, getCountryBySlug, getGenreBySlug } from '@/data/filters'
+import { memo } from 'react'
 import { Badge } from './ui/badge'
 
 interface CategoryHeaderProps {
@@ -7,7 +8,7 @@ interface CategoryHeaderProps {
   searchKeyword?: string
 }
 
-const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => {
+const CategoryHeader = memo(({ type, value, searchKeyword }: CategoryHeaderProps) => {
   const getHeaderContent = () => {
     switch (type) {
       case 'category':
@@ -90,6 +91,8 @@ const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => 
       </div>
     </div>
   )
-}
+})
+
+CategoryHeader.displayName = 'CategoryHeader'
 
 export default CategoryHeader

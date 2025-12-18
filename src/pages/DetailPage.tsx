@@ -12,7 +12,7 @@ import { movieApi } from '@/services/api'
 import type { EpisodeItem, EpisodeServer, MovieListItem } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { Calendar, Clapperboard, Globe, Heart, Play, Tv } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 
@@ -36,6 +36,8 @@ const DetailPage = () => {
     queryKey: ['movie', slug],
     queryFn: () => movieApi.getMovieDetail(slug!),
     enabled: !!slug,
+    staleTime: 15 * 60 * 1000, // 15 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
   })
 
   const movie = movieData?.movie
@@ -46,41 +48,50 @@ const DetailPage = () => {
     }
   }, [movie])
 
-  if (isLoading) return <DetailPageSkeleton />
-  if (isError || !movie) {
-    return <div className="py-20 text-center text-destructive">Không thể tải thông tin phim.</div>
-  }
+  const isFavorited = useMemo(() =>
+    favorites.some((fav) => fav.slug === slug),
+    [favorites, slug]
+  )
 
-  const isFavorited = favorites.some((fav) => fav.slug === slug)
-
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = useCallback(() => {
+    if (!movie) return
     if (isFavorited) {
       setFavorites(favorites.filter((fav) => fav.slug !== slug))
     } else {
       setFavorites([...favorites, movie])
     }
-  }
+  }, [isFavorited, favorites, setFavorites, movie, slug])
 
-  const handleWatchClick = () => {
+  const handleWatchClick = useCallback(() => {
     playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
+  }, [])
 
-  const handleSelectEpisode = (url: string) => {
+  const handleSelectEpisode = useCallback((url: string) => {
     setSelectedEpisodeUrl(url)
-    handleWatchClick()
+    playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [])
+
+  const { genreCategory, yearCategory, countryCategory, primaryGenre, isSeries, posterUrl, backgroundPlayerUrl } = useMemo(() => {
+    if (!movie) return {}
+
+    const categories: CategoryGroup[] = movie.category
+      ? (Object.values(movie.category) as CategoryGroup[])
+      : []
+    const genreCategory = categories.find((cat) => cat.group.name === 'Thể loại')
+    const yearCategory = categories.find((cat) => cat.group.name === 'Năm')
+    const countryCategory = categories.find((cat) => cat.group.name === 'Quốc gia')
+    const primaryGenre = genreCategory?.list[0]
+    const posterUrl = optimizeImage(movie.thumb_url, 500)
+    const backgroundPlayerUrl = optimizeImage(movie.poster_url, 1280)
+    const isSeries = movie.episodes.some((server: EpisodeServer) => server.items.length > 1)
+
+    return { genreCategory, yearCategory, countryCategory, primaryGenre, isSeries, posterUrl, backgroundPlayerUrl }
+  }, [movie])
+
+  if (isLoading) return <DetailPageSkeleton />
+  if (isError || !movie) {
+    return <div className="py-20 text-center text-destructive">Không thể tải thông tin phim.</div>
   }
-
-  const categories: CategoryGroup[] = movie.category
-    ? (Object.values(movie.category) as CategoryGroup[])
-    : []
-  const genreCategory = categories.find((cat) => cat.group.name === 'Thể loại')
-  const yearCategory = categories.find((cat) => cat.group.name === 'Năm')
-  const countryCategory = categories.find((cat) => cat.group.name === 'Quốc gia')
-  const primaryGenre = genreCategory?.list[0]
-
-  const posterUrl = optimizeImage(movie.thumb_url, 500)
-  const backgroundPlayerUrl = optimizeImage(movie.poster_url, 1280)
-  const isSeries = movie.episodes.some((server: EpisodeServer) => server.items.length > 1)
 
   // Structured Data for SEO
   const structuredData = {

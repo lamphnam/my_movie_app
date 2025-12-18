@@ -7,22 +7,17 @@ import type { MovieListItem } from '@/types'
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import GracefulImage from './GracefulImage'
-import { MotionDiv } from './Motion' // Import component motion
 import MovieCardTooltipContent from './MovieCardTooltipContent'
 
 interface MovieCardProps {
   movie: MovieListItem
-}
-const cardVariants = {
-  hidden: { y: 20, opacity: 0 }, // Trạng thái ban đầu
-  show: { y: 0, opacity: 1 }, // Trạng thái khi hiện ra
 }
 
 const MovieCard = memo(({ movie }: MovieCardProps) => {
   const optimizedThumbUrl = optimizeImage(movie.thumb_url, 300)
 
   return (
-    <MotionDiv variants={cardVariants}>
+    <div>
       <Popover>
         <PopoverTrigger asChild>
           <Link to={`/phim/${movie.slug}`} className="group block outline-none" tabIndex={0}>
@@ -74,8 +69,10 @@ const MovieCard = memo(({ movie }: MovieCardProps) => {
           <MovieCardTooltipContent movie={movie} />
         </PopoverContent>
       </Popover>
-    </MotionDiv>
+    </div>
   )
 })
+
+MovieCard.displayName = 'MovieCard'
 
 export default MovieCard

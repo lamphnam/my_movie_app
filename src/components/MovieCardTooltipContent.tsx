@@ -1,11 +1,12 @@
 import type { MovieListItem } from '@/types'
 import { Calendar, Clapperboard, Clock } from 'lucide-react'
+import { memo } from 'react'
 
 interface MovieCardTooltipContentProps {
   movie: MovieListItem
 }
 
-const MovieCardTooltipContent = ({ movie }: MovieCardTooltipContentProps) => {
+const MovieCardTooltipContent = memo(({ movie }: MovieCardTooltipContentProps) => {
   const year = new Date(movie.modified).getFullYear()
 
   return (
@@ -32,6 +33,8 @@ const MovieCardTooltipContent = ({ movie }: MovieCardTooltipContentProps) => {
       </p>
     </div>
   )
-}
+})
+
+MovieCardTooltipContent.displayName = 'MovieCardTooltipContent'
 
 export default MovieCardTooltipContent

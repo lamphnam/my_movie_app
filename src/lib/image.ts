@@ -7,34 +7,28 @@
  * @returns URL ảnh đã được tối ưu.
  */
 export function optimizeImage(
-  originalUrl: string | null | undefined, // Be honest about what you might receive
+  originalUrl: string | null | undefined,
   width: number,
   height?: number
 ): string {
-  // --- CORRECTED CHECK ---
-  // This guard clause now checks two things:
-  // 1. Is the type NOT a string? (Catches null, undefined, numbers, arrays, objects, etc.)
-  // 2. Is the value an empty string?
-  // If either is true, return the placeholder.
-  if (typeof originalUrl !== 'string' || !originalUrl) {
-    return '/placeholder.svg'
+  if (typeof originalUrl !== "string" || !originalUrl) {
+    return "/placeholder.svg";
   }
 
-  // If the code reaches this point, you are GUARANTEED that originalUrl is a non-empty string.
-  // The rest of your logic is now completely safe.
-
-  const urlWithoutProtocol = originalUrl.replace(/^https?:\/\//, '')
+  const urlWithoutProtocol = originalUrl.replace(/^https?:\/\//, "");
 
   const params = new URLSearchParams({
     url: urlWithoutProtocol,
     w: width.toString(),
-    fit: 'cover',
-    q: '75',
-  })
+    fit: "cover",
+    q: "80", // Increased quality slightly
+    output: "webp", // Force WebP format for better compression
+    af: "", // Auto-format fallback
+  });
 
   if (height) {
-    params.set('h', height.toString())
+    params.set("h", height.toString());
   }
 
-  return `https://images.weserv.nl/?${params.toString()}`
+  return `https://images.weserv.nl/?${params.toString()}`;
 }

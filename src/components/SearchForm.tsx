@@ -7,11 +7,11 @@ import { movieApi } from '@/services/api'
 import type { MovieListItem } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2, Search, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
-const SearchForm = () => {
+const SearchForm = memo(() => {
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -27,23 +27,28 @@ const SearchForm = () => {
     queryFn: () => movieApi.searchMovies(debouncedQuery, 1),
     enabled: debouncedQuery.length > 2,
     staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   })
 
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedQuery(query)
-    }, 500)
+    }, 300) // Reduced from 500ms for faster response
     return () => clearTimeout(timerId)
   }, [query])
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`)
       setQuery('')
       setIsFocused(false)
     }
-  }
+  }, [query, navigate])
+
+  const handleClearQuery = useCallback(() => {
+    setQuery('')
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,7 +63,7 @@ const SearchForm = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const results = searchData?.items || []
+  const results = useMemo(() => searchData?.items || [], [searchData])
   const showResults = isFocused && query.length > 2
 
   return (
@@ -84,7 +89,7 @@ const SearchForm = () => {
             variant="ghost"
             size="icon"
             className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full hover:bg-background/80"
-            onClick={() => setQuery('')}
+            onClick={handleClearQuery}
           >
             <X className="h-3 w-3" />
           </Button>
@@ -153,6 +158,8 @@ const SearchForm = () => {
       }
     </div >
   )
-}
+})
+
+SearchForm.displayName = 'SearchForm'
 
 export default SearchForm

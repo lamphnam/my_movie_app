@@ -7,6 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import { memo, useCallback, useMemo } from 'react'
 
 interface PaginationProps {
   currentPage: number
@@ -14,21 +15,21 @@ interface PaginationProps {
   onPageChange: (page: number) => void
 }
 
-const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
-  const handlePrevious = () => {
+const Pagination = memo(({ currentPage, totalPages, onPageChange }: PaginationProps) => {
+  const handlePrevious = useCallback(() => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1)
     }
-  }
+  }, [currentPage, onPageChange])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentPage < totalPages) {
       onPageChange(currentPage + 1)
     }
-  }
+  }, [currentPage, totalPages, onPageChange])
 
   // Logic để tạo ra các nút trang thông minh hơn
-  const getPageNumbers = () => {
+  const getPageNumbers = useMemo(() => {
     const pages = []
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
@@ -52,7 +53,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
       pages.push(totalPages)
     }
     return pages
-  }
+  }, [currentPage, totalPages])
 
   return (
     <UIPagination>
@@ -68,7 +69,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
               className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''} size={undefined} />
           </PaginationItem>
 
-          {getPageNumbers().map((page, index) => (
+          {getPageNumbers.map((page, index) => (
             <PaginationItem key={index}>
               {typeof page === 'string' ? (
                 <PaginationEllipsis />
@@ -99,6 +100,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
       </div>
     </UIPagination >
   )
-}
+})
+
+Pagination.displayName = 'Pagination'
 
 export default Pagination

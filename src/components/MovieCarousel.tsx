@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import type { MovieListItem } from '@/types'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from './Motion' // Import component motion
 import MovieCard from './MovieCard'
@@ -19,7 +19,7 @@ interface MovieCarouselProps {
   className?: string
 }
 
-const MovieCarousel = ({ title, movies, loading, viewAllLink, className }: MovieCarouselProps) => {
+const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: MovieCarouselProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     dragFree: true,
@@ -97,6 +97,8 @@ const MovieCarousel = ({ title, movies, loading, viewAllLink, className }: Movie
       </div>
     </MotionSection>
   )
-}
+})
+
+MovieCarousel.displayName = 'MovieCarousel'
 
 export default MovieCarousel

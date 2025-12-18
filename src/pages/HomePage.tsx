@@ -18,7 +18,8 @@ const HomePage = () => {
   } = useQuery({
     queryKey: ['movies', 'korean'],
     queryFn: () => movieApi.getMoviesByCountry('han-quoc', 1),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   })
 
   const {
@@ -28,7 +29,8 @@ const HomePage = () => {
   } = useQuery({
     queryKey: ['movies', 'chinese'],
     queryFn: () => movieApi.getMoviesByCountry('trung-quoc', 1),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   })
 
   const {
@@ -38,7 +40,8 @@ const HomePage = () => {
   } = useQuery({
     queryKey: ['movies', 'us-uk'],
     queryFn: () => movieApi.getMoviesByCountry('au-my', 1),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   })
 
   if (isKoreanError || isChineseError || isUsUkError) {
