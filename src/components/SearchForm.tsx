@@ -63,16 +63,19 @@ const SearchForm = () => {
 
   return (
     <div className="relative w-full transition-all duration-300" ref={searchContainerRef}>
-      <form onSubmit={handleSearchSubmit} className="relative group">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
+      <form onSubmit={handleSearchSubmit} className="relative group" role="search" aria-label="Tìm kiếm phim">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none" aria-hidden="true" />
 
         <Input
-          type="text"
-          placeholder="Tìm kiếm..."
+          type="search"
+          placeholder="Tìm kiếm phim..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          className="h-9 w-full rounded-full border-transparent bg-secondary/50 pl-10 pr-10 focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-primary/50 transition-all shadow-inner"
+          className="h-10 sm:h-9 w-full rounded-full border-transparent bg-secondary/50 pl-10 pr-10 text-base sm:text-sm focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-primary/50 transition-all shadow-inner"
+          aria-label="Nhập tên phim"
+          autoComplete="off"
+          spellCheck="false"
         />
 
         {query && (

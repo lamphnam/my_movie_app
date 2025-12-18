@@ -20,7 +20,7 @@ const gridContainerVariants = {
 const MovieGrid: React.FC<MovieGridProps> = ({ children }) => {
   return (
     <MotionDiv // <-- Dùng MotionDiv
-      className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+      className="grid grid-cols-2 gap-3 xs:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
       variants={gridContainerVariants}
       initial="hidden"
       animate="show"

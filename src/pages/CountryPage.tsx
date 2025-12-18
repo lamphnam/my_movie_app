@@ -67,14 +67,21 @@ const CountryPage = () => {
   return (
     <PageWrapper>
       <Helmet>
-        <title>{`Phim Quốc gia ${slug} - HNAM PHIM`}</title>
+        <title>{`Phim ${slug} - Xem Phim Quốc Gia ${slug} Mới Nhất | HNAM PHIM`}</title>
         <meta
           name="description"
-          content={`Danh sách phim từ ${slug} chọn lọc, chất lượng cao.`}
+          content={`Danh sách phim ${slug} chọn lọc, chất lượng cao. Xem phim ${slug} mới nhất, full HD, vietsub miễn phí tại HNAM PHIM.`}
         />
+        <meta name="keywords" content={`phim ${slug}, xem phim ${slug}, phim ${slug} mới nhất, phim ${slug} hay nhất`} />
         <link rel="canonical" href={canonicalUrl} />
+
+        {/* Open Graph */}
+        <meta property="og:title" content={`Phim ${slug} - HNAM PHIM`} />
+        <meta property="og:description" content={`Danh sách phim ${slug} chọn lọc, chất lượng cao`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
       </Helmet>
-      <div className="space-y-8">
+      <div className="space-y-10 lg:space-y-12">
         <CategoryHeader type="country" value={slug} />
         {renderContent()}
       </div>

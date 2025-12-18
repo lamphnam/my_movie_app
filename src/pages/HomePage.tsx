@@ -50,18 +50,29 @@ const HomePage = () => {
   return (
     <PageWrapper>
       <Helmet>
-        <title>HNAM PHIM - Xem phim online miễn phí chất lượng cao</title>
+        <title>HNAM PHIM - Xem Phim Online Miễn Phí Chất Lượng Cao Full HD</title>
         <meta
           name="description"
-          content="HNAM PHIM - Web xem phim online miễn phí, cập nhật phim Hàn Quốc, Trung Quốc, Âu Mỹ, Phim chiếu rạp mới nhất với chất lượng Full HD, Vietsub, Thuyết minh."
+          content="HNAM PHIM - Web xem phim online miễn phí, cập nhật phim Hàn Quốc, Trung Quốc, Âu Mỹ, Phim chiếu rạp mới nhất với chất lượng Full HD, Vietsub, Thuyết minh. Xem phim mượt mà không quảng cáo."
         />
+        <meta name="keywords" content="xem phim online, phim hd, phim vietsub, phim thuyết minh, phim hàn quốc, phim trung quốc, phim âu mỹ, phim mới" />
         <link rel="canonical" href={DOMAIN_URL} />
-        <meta property="og:title" content="HNAM PHIM - Xem phim online miễn phí" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="HNAM PHIM - Xem Phim Online Miễn Phí Chất Lượng Cao" />
+        <meta property="og:description" content="Web xem phim online miễn phí với chất lượng Full HD, Vietsub, Thuyết minh. Cập nhật phim mới nhất hàng ngày." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={DOMAIN_URL} />
+        <meta property="og:site_name" content="HNAM PHIM" />
+        <meta property="og:locale" content="vi_VN" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="HNAM PHIM - Xem Phim Online Miễn Phí" />
+        <meta name="twitter:description" content="Web xem phim online với chất lượng Full HD, cập nhật phim mới nhất." />
       </Helmet>
 
-      <div className="space-y-8 lg:space-y-12">
+      <div className="space-y-12 lg:space-y-16">
         {isHeroLoading ? (
           <HeroSliderSkeleton />
         ) : (

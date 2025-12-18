@@ -67,14 +67,21 @@ const YearPage = () => {
   return (
     <PageWrapper>
       <Helmet>
-        <title>{`Phim Năm ${slug} - HNAM PHIM`}</title>
+        <title>{`Phim Năm ${slug} - Xem Phim Phát Hành Năm ${slug} | HNAM PHIM`}</title>
         <meta
           name="description"
-          content={`Tổng hợp các bộ phim phát hành năm ${slug}.`}
+          content={`Tổng hợp các bộ phim phát hành năm ${slug}. Xem phim năm ${slug} chất lượng cao, full HD, vietsub miễn phí tại HNAM PHIM.`}
         />
+        <meta name="keywords" content={`phim năm ${slug}, phim ${slug}, xem phim ${slug}, phim mới ${slug}`} />
         <link rel="canonical" href={canonicalUrl} />
+
+        {/* Open Graph */}
+        <meta property="og:title" content={`Phim Năm ${slug} - HNAM PHIM`} />
+        <meta property="og:description" content={`Tổng hợp các bộ phim phát hành năm ${slug}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
       </Helmet>
-      <div className="space-y-8">
+      <div className="space-y-10 lg:space-y-12">
         <CategoryHeader type="year" value={slug} />
         {renderContent()}
       </div>

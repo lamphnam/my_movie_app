@@ -73,12 +73,21 @@ const CategoryHeader = ({ type, value, searchKeyword }: CategoryHeaderProps) => 
   const { title, subtitle, tag } = getHeaderContent()
 
   return (
-    <div className="rounded-lg bg-card p-6 text-center md:text-left">
-      <Badge variant="secondary" className="mb-4">
-        {tag}
-      </Badge>
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gradient mb-2">{title}</h1>
-      <p className="text-lg text-muted-foreground">{subtitle}</p>
+    <div className="relative overflow-hidden rounded-2xl glass-card p-6 sm:p-8 md:p-10 text-center md:text-left border border-white/10 shadow-2xl">
+      {/* Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-50"></div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <Badge variant="secondary" className="mb-3 sm:mb-4 glass-card px-3 sm:px-4 py-1.5 font-bold text-xs sm:text-sm border border-white/10 hover-glow">
+          <i className="fa-solid fa-star mr-1.5 sm:mr-2 text-yellow-400 text-xs"></i>
+          {tag}
+        </Badge>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-3 sm:mb-4 leading-tight">
+          <span className="text-gradient-gold">{title}</span>
+        </h1>
+        <p className="text-base sm:text-lg md:text-xl text-muted-foreground/90 font-medium max-w-3xl leading-relaxed">{subtitle}</p>
+      </div>
     </div>
   )
 }

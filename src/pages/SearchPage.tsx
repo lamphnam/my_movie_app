@@ -90,7 +90,7 @@ const SearchPage = () => {
         <meta name="robots" content="noindex" />
       </Helmet>
 
-      <div className="space-y-8">
+      <div className="space-y-10 lg:space-y-12">
         <CategoryHeader type="search" searchKeyword={keyword} />
         {renderContent()}
       </div>

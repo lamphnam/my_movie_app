@@ -67,14 +67,21 @@ const GenrePage = () => {
   return (
     <PageWrapper>
       <Helmet>
-        <title>{`Phim Thể loại ${slug} - HNAM PHIM`}</title>
+        <title>{`Phim Thể loại ${slug} - Xem Phim ${slug} Mới Nhất | HNAM PHIM`}</title>
         <meta
           name="description"
-          content={`Tổng hợp phim thể loại ${slug} hay và mới nhất.`}
+          content={`Tổng hợp phim thể loại ${slug} hay và mới nhất. Xem phim ${slug} chất lượng cao, full HD, vietsub miễn phí tại HNAM PHIM.`}
         />
+        <meta name="keywords" content={`phim ${slug}, xem phim ${slug}, phim ${slug} mới nhất, phim ${slug} hay`} />
         <link rel="canonical" href={canonicalUrl} />
+
+        {/* Open Graph */}
+        <meta property="og:title" content={`Phim Thể loại ${slug} - HNAM PHIM`} />
+        <meta property="og:description" content={`Tổng hợp phim thể loại ${slug} hay và mới nhất`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
       </Helmet>
-      <div className="space-y-8">
+      <div className="space-y-10 lg:space-y-12">
         <CategoryHeader type="genre" value={slug} />
         {renderContent()}
       </div>

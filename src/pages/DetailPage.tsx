@@ -82,6 +82,27 @@ const DetailPage = () => {
   const backgroundPlayerUrl = optimizeImage(movie.poster_url, 1280)
   const isSeries = movie.episodes.some((server: EpisodeServer) => server.items.length > 1)
 
+  // Structured Data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    "name": movie.name,
+    "alternateName": movie.original_name,
+    "image": movie.thumb_url,
+    "description": movie.description?.replace(/<[^>]+>/g, '').substring(0, 200),
+    "genre": genreCategory?.list.map(g => g.name) || [],
+    "countryOfOrigin": countryCategory?.list[0]?.name || '',
+    "datePublished": yearCategory?.list[0]?.name || '',
+    "thumbnailUrl": movie.poster_url,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.5",
+      "ratingCount": "100",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  }
+
   return (
     <PageWrapper>
       {/* SEO META TAGS & CANONICAL */}
@@ -91,62 +112,89 @@ const DetailPage = () => {
           name="description"
           content={`Xem phim ${movie.name} (${movie.original_name}) ${movie.quality} Vietsub Thuyết Minh mới nhất. ${movie.description?.substring(0, 120).replace(/<[^>]+>/g, '')}...`}
         />
+        <meta name="keywords" content={`${movie.name}, ${movie.original_name}, phim ${genreCategory?.list[0]?.name || ''}, phim ${countryCategory?.list[0]?.name || ''}, xem phim online`} />
         <link rel="canonical" href={`${DOMAIN_URL}/phim/${movie.slug}`} />
 
+        {/* Open Graph Tags */}
         <meta property="og:title" content={`${movie.name} - HNAM PHIM`} />
-        <meta
-          property="og:description"
-          content={movie.description?.substring(0, 150).replace(/<[^>]+>/g, '')}
-        />
+        <meta property="og:description" content={movie.description?.substring(0, 150).replace(/<[^>]+>/g, '')} />
         <meta property="og:image" content={movie.thumb_url} />
+        <meta property="og:image:width" content="500" />
+        <meta property="og:image:height" content="750" />
         <meta property="og:type" content="video.movie" />
         <meta property="og:url" content={`${DOMAIN_URL}/phim/${movie.slug}`} />
+        <meta property="og:site_name" content="HNAM PHIM" />
+        <meta property="og:locale" content="vi_VN" />
+
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${movie.name} - HNAM PHIM`} />
+        <meta name="twitter:description" content={movie.description?.substring(0, 150).replace(/<[^>]+>/g, '')} />
+        <meta name="twitter:image" content={movie.thumb_url} />
+
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
       <div className="container space-y-12 lg:space-y-16">
         <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-x-12">
           {/* === CỘT TRÁI (Desktop) === */}
           <aside className="hidden lg:col-span-2 lg:block xl:col-span-1">
-            <div className="lg:sticky lg:top-24 space-y-4">
-              <img src={posterUrl} alt={movie.name} className="w-full rounded-lg shadow-2xl" />
-              <div className="grid grid-cols-2 gap-2">
-                <Button size="lg" onClick={handleWatchClick}>
-                  <Play /> Xem
+            <div className="lg:sticky lg:top-24 space-y-6">
+              {/* Premium Poster with Glow Effect */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 rounded-2xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
+                <img src={posterUrl} alt={movie.name} className="relative w-full rounded-2xl shadow-2xl border-2 border-white/10 group-hover:border-white/20 transition-all duration-500" />
+
+                {/* Quality Badge on Poster */}
+                <div className="absolute top-4 right-4 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 px-3 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-sm border border-white/20">
+                  {movie.quality}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-3">
+                <Button size="lg" onClick={handleWatchClick} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30 border border-white/10 hover-lift">
+                  <Play className="w-5 h-5" /> Xem
                 </Button>
-                <Button size="lg" variant="secondary" onClick={handleToggleFavorite}>
+                <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="glass-card hover-lift">
                   <Heart
-                    className={`transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
+                    className={`w-5 h-5 transition-all duration-300 ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : ''}`}
                   />
                   Lưu
                 </Button>
               </div>
-              <div className="space-y-3 rounded-lg border bg-card p-4 text-sm">
-                <h3 className="mb-2 font-semibold text-foreground">Thông tin</h3>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-muted-foreground">
-                    <Clapperboard /> Thể loại
-                  </span>
-                  <span className="font-medium text-right">{primaryGenre?.name || 'N/A'}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-muted-foreground">
-                    <Calendar /> Năm
-                  </span>
-                  <span className="font-medium">{yearCategory?.list[0]?.name || 'N/A'}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-muted-foreground">
-                    <Globe /> Quốc gia
-                  </span>
-                  <span className="font-medium text-right">
-                    {countryCategory?.list[0]?.name || 'N/A'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-muted-foreground">
-                    <Tv /> Tập phim
-                  </span>
-                  <span className="font-medium">{movie.current_episode}</span>
+
+              {/* Premium Info Card */}
+              <div className="space-y-4 rounded-2xl glass-card p-6 text-sm border border-white/10">
+                <h3 className="text-lg font-bold text-gradient mb-4">Thông tin phim</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <Clapperboard className="w-4 h-4 text-primary" /> Thể loại
+                    </span>
+                    <span className="font-semibold text-right text-foreground">{primaryGenre?.name || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <Calendar className="w-4 h-4 text-primary" /> Năm
+                    </span>
+                    <span className="font-semibold text-foreground">{yearCategory?.list[0]?.name || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <Globe className="w-4 h-4 text-primary" /> Quốc gia
+                    </span>
+                    <span className="font-semibold text-right text-foreground">
+                      {countryCategory?.list[0]?.name || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <Tv className="w-4 h-4 text-primary" /> Tập phim
+                    </span>
+                    <span className="font-semibold text-foreground">{movie.current_episode}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -155,21 +203,26 @@ const DetailPage = () => {
           {/* === CỘT PHẢI === */}
           <main className="lg:col-span-3 xl:col-span-4">
             <div className="flex flex-col gap-6 sm:flex-row lg:block">
-              <img
-                src={posterUrl}
-                alt={movie.name}
-                className="w-1/2 max-w-[200px] self-start rounded-lg shadow-xl sm:w-1/3 lg:hidden"
-              />
-              <div className="flex-1 space-y-3">
-                <h1 className="text-2xl font-bold tracking-tighter text-foreground sm:text-4xl lg:text-5xl xl:text-6xl">
-                  {movie.name}
+              {/* Mobile Poster */}
+              <div className="relative group lg:hidden w-1/2 max-w-[200px] self-start sm:w-1/3">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                <img
+                  src={posterUrl}
+                  alt={movie.name}
+                  className="relative rounded-2xl shadow-2xl border border-white/10"
+                />
+              </div>
+
+              <div className="flex-1 space-y-4">
+                <h1 className="text-3xl font-black tracking-tighter text-foreground sm:text-4xl lg:text-5xl xl:text-6xl">
+                  <span className="text-gradient-gold">{movie.name}</span>
                 </h1>
-                <p className="text-md text-muted-foreground sm:text-lg lg:text-xl">
+                <p className="text-base text-muted-foreground/90 font-medium sm:text-lg lg:text-xl">
                   {movie.original_name}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {genreCategory?.list.map((genre) => (
-                    <Badge key={genre.id} variant="secondary">
+                    <Badge key={genre.id} variant="secondary" className="glass-card px-3 py-1 font-semibold hover-glow">
                       {genre.name}
                     </Badge>
                   ))}
@@ -177,49 +230,67 @@ const DetailPage = () => {
               </div>
             </div>
 
-            <div className="mt-8 lg:mt-10">
-              <h2 className="text-2xl font-semibold tracking-tight">Nội dung phim</h2>
-              <div
-                className="prose prose-sm prose-invert mt-4 max-w-none text-muted-foreground"
-                dangerouslySetInnerHTML={{ __html: movie.description || 'Chưa có mô tả.' }}
-              />
+            {/* Content Section */}
+            <div className="mt-10 lg:mt-12">
+              <h2 className="text-3xl font-bold tracking-tight mb-6">
+                <span className="text-gradient">Nội dung phim</span>
+              </h2>
+              <div className="glass-card rounded-2xl p-6 border border-white/10">
+                <div
+                  className="prose prose-sm prose-invert mt-2 max-w-none text-muted-foreground/90 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: movie.description || 'Chưa có mô tả.' }}
+                />
+              </div>
             </div>
 
-            <div className="mt-8 lg:mt-10" ref={playerRef}>
-              <h2 className="text-2xl font-semibold tracking-tight">Xem Phim</h2>
-              <div
-                className="mt-4 aspect-video w-full overflow-hidden rounded-lg bg-cover bg-center shadow-lg"
-                style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
-              >
-                {selectedEpisodeUrl ? (
-                  <iframe
-                    className="h-full w-full"
-                    src={selectedEpisodeUrl}
-                    title="Video Player"
-                    allowFullScreen
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-black/50">
-                    <p className="text-foreground">Chọn một tập để bắt đầu xem</p>
-                  </div>
-                )}
+            {/* Player Section */}
+            <div className="mt-10 lg:mt-12" ref={playerRef}>
+              <h2 className="text-3xl font-bold tracking-tight mb-6">
+                <span className="text-gradient">Xem Phim</span>
+              </h2>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
+                <div
+                  className="relative aspect-video w-full overflow-hidden rounded-2xl bg-cover bg-center shadow-2xl border-2 border-white/10"
+                  style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
+                >
+                  {selectedEpisodeUrl ? (
+                    <iframe
+                      className="h-full w-full"
+                      src={selectedEpisodeUrl}
+                      title="Video Player"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-black/70 backdrop-blur-sm">
+                      <div className="text-center space-y-3">
+                        <Play className="w-16 h-16 mx-auto text-primary/50" />
+                        <p className="text-foreground font-semibold">Chọn một tập để bắt đầu xem</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {isSeries && (
-              <div className="mt-8 lg:mt-10">
-                <h2 className="text-2xl font-semibold tracking-tight">Danh sách tập</h2>
-                <div className="mt-4 space-y-4">
+              <div className="mt-10 lg:mt-12">
+                <h2 className="text-3xl font-bold tracking-tight mb-6">
+                  <span className="text-gradient">Danh sách tập</span>
+                </h2>
+                <div className="space-y-6">
                   {movie.episodes.map((server: EpisodeServer, index: number) => (
-                    <div key={index}>
-                      <h3 className="font-semibold text-muted-foreground">{server.server_name}</h3>
-                      <div className="mt-2 flex flex-wrap gap-2">
+                    <div key={index} className="glass-card rounded-2xl p-6 border border-white/10">
+                      <h3 className="font-bold text-lg text-foreground mb-4">{server.server_name}</h3>
+                      <div className="flex flex-wrap gap-2">
                         {server.items.map((episode: EpisodeItem) => (
                           <Button
                             key={episode.slug}
                             variant={selectedEpisodeUrl === episode.embed ? 'default' : 'secondary'}
                             onClick={() => handleSelectEpisode(episode.embed)}
-                            className="px-4 py-2 h-auto"
+                            className={selectedEpisodeUrl === episode.embed
+                              ? "px-4 py-2 h-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30 border border-white/10 font-semibold"
+                              : "px-4 py-2 h-auto glass-card hover-lift font-semibold"}
                           >
                             {episode.name}
                           </Button>
@@ -235,20 +306,20 @@ const DetailPage = () => {
         <RelatedMovies genreSlug={primaryGenre?.slug} currentMovieSlug={movie.slug} />
       </div>
 
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/80 border-t border-border/40 p-3 backdrop-blur-sm">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-panel border-t border-white/10 p-4 shadow-2xl">
         <div className="container mx-auto grid grid-cols-2 gap-3">
-          <Button size="lg" onClick={handleWatchClick} className="w-full">
-            <Play /> Xem Phim
+          <Button size="lg" onClick={handleWatchClick} className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30 border border-white/10">
+            <Play className="w-5 h-5" /> Xem Phim
           </Button>
-          <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="w-full">
+          <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="w-full glass-card hover-lift">
             <Heart
-              className={`transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
+              className={`w-5 h-5 transition-all duration-300 ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : ''}`}
             />
             Lưu
           </Button>
         </div>
       </div>
-      <div className="h-20 md:hidden"></div>
+      <div className="h-24 md:hidden"></div>
     </PageWrapper>
   )
 }

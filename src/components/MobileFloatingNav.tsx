@@ -23,8 +23,8 @@ const MobileFloatingNav = () => {
     const isActive = (path: string) => location.pathname === path
 
     return (
-        <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center px-4 md:hidden pointer-events-none">
-            <div className="glass-panel pointer-events-auto grid grid-cols-3 items-center w-[85%] sm:w-[400px] h-16 rounded-full px-2 shadow-2xl border border-white/10 bg-background/80 backdrop-blur-xl">
+        <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-3 md:hidden pointer-events-none safe-area-bottom">
+            <div className="glass-panel pointer-events-auto grid grid-cols-3 items-center w-[90%] max-w-[420px] h-[72px] rounded-full px-3 shadow-2xl border border-white/10 bg-background/80 backdrop-blur-xl">
 
                 {/* Nút Home */}
                 <div className="flex justify-center">
@@ -32,14 +32,14 @@ const MobileFloatingNav = () => {
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            "rounded-full h-12 w-12 transition-all duration-300",
+                            "rounded-full h-14 w-14 transition-all duration-300",
                             isActive('/')
                                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                : "hover:bg-white/10 text-muted-foreground"
+                                : "hover:bg-white/10 text-muted-foreground active:bg-white/20"
                         )}
                         asChild
                     >
-                        <Link to="/">
+                        <Link to="/" aria-label="Trang chủ">
                             <Home className="h-6 w-6" />
                         </Link>
                     </Button>
@@ -49,7 +49,7 @@ const MobileFloatingNav = () => {
                 <div className="flex justify-center">
                     <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 hover:bg-white/10 text-muted-foreground">
+                            <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20" aria-label="Tìm kiếm phim">
                                 <Search className="h-6 w-6" />
                             </Button>
                         </DialogTrigger>
@@ -82,7 +82,8 @@ const MobileFloatingNav = () => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="rounded-full h-12 w-12 hover:bg-white/10 text-muted-foreground"
+                                className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20"
+                                aria-label="Menu danh mục"
                             >
                                 <Menu className="h-6 w-6" />
                             </Button>
