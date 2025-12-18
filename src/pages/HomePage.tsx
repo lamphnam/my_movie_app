@@ -1,12 +1,14 @@
 // src/pages/HomePage.tsx
 
 import HeroSlider from '@/components/HeroSlider'
-import HeroSliderSkeleton from '@/components/HeroSliderSkeleton' // <-- IMPORT SKELETON MỚI
+import HeroSliderSkeleton from '@/components/HeroSliderSkeleton'
 import MovieCarousel from '@/components/MovieCarousel'
 import PageWrapper from '@/components/PageWrapper'
 import { featuredMovies } from '@/config/featuredContent'
+import { DOMAIN_URL } from '@/constants'
 import { movieApi } from '@/services/api'
 import { useQuery } from '@tanstack/react-query'
+import { Helmet } from 'react-helmet-async'
 
 const HomePage = () => {
   const {
@@ -47,6 +49,18 @@ const HomePage = () => {
 
   return (
     <PageWrapper>
+      <Helmet>
+        <title>HNAM PHIM - Xem phim online miễn phí chất lượng cao</title>
+        <meta
+          name="description"
+          content="HNAM PHIM - Web xem phim online miễn phí, cập nhật phim Hàn Quốc, Trung Quốc, Âu Mỹ, Phim chiếu rạp mới nhất với chất lượng Full HD, Vietsub, Thuyết minh."
+        />
+        <link rel="canonical" href={DOMAIN_URL} />
+        <meta property="og:title" content="HNAM PHIM - Xem phim online miễn phí" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={DOMAIN_URL} />
+      </Helmet>
+
       <div className="space-y-8 lg:space-y-12">
         {isHeroLoading ? (
           <HeroSliderSkeleton />

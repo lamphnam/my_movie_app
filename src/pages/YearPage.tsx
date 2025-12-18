@@ -1,19 +1,21 @@
 // src/pages/YearPage.tsx
 
-import { useMoviePagination } from '@/hooks/useMoviePagination'
-import { movieApi } from '@/services/api'
-import { useState } from 'react'
-import { useParams } from 'react-router-dom'
-
 import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
 import MovieGrid from '@/components/MovieGrid'
 import PageWrapper from '@/components/PageWrapper'
 import Pagination from '@/components/Pagination'
+import { DOMAIN_URL } from '@/constants'
+import { useMoviePagination } from '@/hooks/useMoviePagination'
+import { movieApi } from '@/services/api'
+import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
+import { useLocation, useParams } from 'react-router-dom'
 
 const YearPage = () => {
   const { slug = '' } = useParams<{ slug: string }>()
+  const location = useLocation()
   const [currentPage, setCurrentPage] = useState(1)
 
   const { movies, pagination, isLoading, isError, error } = useMoviePagination(
@@ -60,8 +62,18 @@ const YearPage = () => {
     )
   }
 
+  const canonicalUrl = `${DOMAIN_URL}${location.pathname}`
+
   return (
     <PageWrapper>
+      <Helmet>
+        <title>{`Phim Năm ${slug} - HNAM PHIM`}</title>
+        <meta
+          name="description"
+          content={`Tổng hợp các bộ phim phát hành năm ${slug}.`}
+        />
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       <div className="space-y-8">
         <CategoryHeader type="year" value={slug} />
         {renderContent()}

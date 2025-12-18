@@ -1,19 +1,21 @@
 // src/pages/CountryPage.tsx
 
-import { useMoviePagination } from '@/hooks/useMoviePagination'
-import { movieApi } from '@/services/api'
-import { useState } from 'react'
-import { useParams } from 'react-router-dom'
-
 import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
 import MovieGrid from '@/components/MovieGrid'
 import PageWrapper from '@/components/PageWrapper'
 import Pagination from '@/components/Pagination'
+import { DOMAIN_URL } from '@/constants'
+import { useMoviePagination } from '@/hooks/useMoviePagination'
+import { movieApi } from '@/services/api'
+import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
+import { useLocation, useParams } from 'react-router-dom'
 
 const CountryPage = () => {
   const { slug = '' } = useParams<{ slug: string }>()
+  const location = useLocation()
   const [currentPage, setCurrentPage] = useState(1)
 
   const { movies, pagination, isLoading, isError, error } = useMoviePagination(
@@ -36,7 +38,6 @@ const CountryPage = () => {
         </MovieGrid>
       )
     }
-    // SỬA LỖI: Kiểm tra isError trước khi truy cập error.message
     if (isError) return <div className="text-center text-destructive">{error?.message}</div>
     if (movies.length === 0)
       return <div className="text-center text-muted-foreground">Không tìm thấy phim nào.</div>
@@ -61,8 +62,18 @@ const CountryPage = () => {
     )
   }
 
+  const canonicalUrl = `${DOMAIN_URL}${location.pathname}`
+
   return (
     <PageWrapper>
+      <Helmet>
+        <title>{`Phim Quốc gia ${slug} - HNAM PHIM`}</title>
+        <meta
+          name="description"
+          content={`Danh sách phim từ ${slug} chọn lọc, chất lượng cao.`}
+        />
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       <div className="space-y-8">
         <CategoryHeader type="country" value={slug} />
         {renderContent()}

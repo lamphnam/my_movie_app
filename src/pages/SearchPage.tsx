@@ -1,7 +1,4 @@
-import { movieApi } from '@/services/api'
-import type { MovieListApiResponse, MovieListItem } from '@/types' // SỬA LỖI: Thêm import MovieListItem
-import { useQuery } from '@tanstack/react-query' // SỬA LỖI: Thêm import useQuery
-import { useSearchParams } from 'react-router-dom'
+// src/pages/SearchPage.tsx
 
 import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
@@ -9,6 +6,11 @@ import MovieCardSkeleton from '@/components/MovieCardSkeleton'
 import MovieGrid from '@/components/MovieGrid'
 import PageWrapper from '@/components/PageWrapper'
 import Pagination from '@/components/Pagination'
+import { movieApi } from '@/services/api'
+import type { MovieListApiResponse, MovieListItem } from '@/types'
+import { useQuery } from '@tanstack/react-query'
+import { Helmet } from 'react-helmet-async'
+import { useSearchParams } from 'react-router-dom'
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -18,7 +20,7 @@ const SearchPage = () => {
   const { data, isLoading, isError, error } = useQuery<MovieListApiResponse, Error>({
     queryKey: ['movies', 'search', keyword, currentPage],
     queryFn: () => movieApi.searchMovies(keyword, currentPage),
-    enabled: !!keyword, // Chỉ thực hiện query khi keyword không rỗng
+    enabled: !!keyword,
   })
 
   const movies = data?.items || []
@@ -48,7 +50,6 @@ const SearchPage = () => {
       return (
         <>
           <MovieGrid>
-            {/* SỬA LỖI: Định nghĩa kiểu cho 'movie' */}
             {movies.map((movie: MovieListItem) => (
               <MovieCard key={movie.slug} movie={movie} />
             ))}
@@ -83,6 +84,12 @@ const SearchPage = () => {
 
   return (
     <PageWrapper>
+      {/* Search Page nên để NoIndex để tránh spam index */}
+      <Helmet>
+        <title>{`Tìm kiếm: ${keyword} - HNAM PHIM`}</title>
+        <meta name="robots" content="noindex" />
+      </Helmet>
+
       <div className="space-y-8">
         <CategoryHeader type="search" searchKeyword={keyword} />
         {renderContent()}
