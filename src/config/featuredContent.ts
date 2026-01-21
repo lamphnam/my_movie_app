@@ -4,26 +4,6 @@ import type { MovieListItem } from "@/types";
 
 export const featuredMovies: MovieListItem[] = [
   {
-    name: "Mưa Đỏ",
-    slug: "mua-do",
-    original_name: "Red Rain",
-    thumb_url:
-      "https://phim.nguonc.com/public/images/Film/bLrNhlqhAMHycAe5jZj1U8lpWrQ.jpg",
-    poster_url:
-      "https://phim.nguonc.com/public/images/Film/xgOS4pOeZX510GY42YBdpCbjuXi.jpg",
-    created: "2025-11-17T16:12:23.000000Z",
-    modified: "2025-11-17T16:23:04.000000Z",
-    description:
-      "“Mưa Đỏ” - Phim truyện điện ảnh về đề tài chiến tranh cách mạng, kịch bản của nhà văn Chu Lai, lấy cảm hứng và hư cấu từ sự kiện 81 ngày đêm chiến đấu anh dũng, kiên cường của nhân dân và cán bộ, chiến sĩ bảo vệ Thành Cổ Quảng Trị năm 1972. Tiểu đội 1 gồm toàn những thanh niên trẻ tuổi và đầy nhiệt huyết là một trong những đơn vị chiến đấu, bám trụ tại trận địa khốc liệt này. Bộ phim là khúc tráng ca bằng hình ảnh, là nén tâm nhang tri ân và tưởng nhớ những người con đã dâng hiến tuổi thanh xuân cho đất nước, mang âm hưởng của tình yêu, tình đồng đội thiêng liêng, là khát vọng hòa bình, hoà hợp dân tộc của nhân dân Việt Nam.",
-    total_episodes: 1,
-    current_episode: "FULL",
-    time: "124 phút",
-    quality: "HD",
-    language: "Vietsub",
-    director: "Đặng Thái Huyền",
-    casts: "Đỗ Nhật Hoàng, Steven Nguyễn, Phương Nam",
-  },
-  {
     name: "Tiếng Yêu Này, Anh Dịch Được Không?",
     slug: "tieng-yeu-nay-anh-dich-duoc-khong",
     original_name: "Can This Love Be Translated?",
