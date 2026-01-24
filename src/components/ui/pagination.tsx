@@ -46,10 +46,12 @@ const PaginationLink = ({ className, isActive, size = 'icon', ...props }: Pagina
     aria-current={isActive ? 'page' : undefined}
     className={cn(
       buttonVariants({
-        variant: isActive ? 'outline' : 'ghost',
+        variant: isActive ? 'default' : 'ghost',
         size: 'icon',
       }),
-      'h-9 min-w-9 rounded-full text-sm flex items-center justify-center',
+      'h-9 min-w-9 rounded-full text-sm font-medium flex items-center justify-center transition-all touch-target',
+      isActive && 'bg-primary text-primary-foreground shadow-md',
+      !isActive && 'hover:bg-primary/10 hover:text-primary',
       className,
     )}
     {...props}
@@ -63,7 +65,7 @@ const PaginationPrevious = ({
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="Go to previous page"
-    className={cn('px-3 gap-1', className)}
+    className={cn('px-4 gap-1.5 font-medium hover:bg-primary/10 hover:text-primary transition-all touch-target', className)}
     {...props}
   >
     <ChevronLeft className="h-4 w-4" />
@@ -75,7 +77,7 @@ PaginationPrevious.displayName = 'PaginationPrevious'
 const PaginationNext = ({ className, ...props }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="Go to next page"
-    className={cn('px-3 gap-1', className)}
+    className={cn('px-4 gap-1.5 font-medium hover:bg-primary/10 hover:text-primary transition-all touch-target', className)}
     {...props}
   >
     <span className="hidden sm:inline">Next</span>
@@ -87,7 +89,7 @@ PaginationNext.displayName = 'PaginationNext'
 const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<'span'>) => (
   <span
     aria-hidden
-    className={cn('flex h-9 w-9 items-center justify-center', className)}
+    className={cn('flex h-9 w-9 items-center justify-center text-muted-foreground', className)}
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />

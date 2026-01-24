@@ -74,13 +74,13 @@ const CategoryHeader = memo(({ type, value, searchKeyword }: CategoryHeaderProps
   const { title, subtitle, tag } = getHeaderContent()
 
   return (
-    <div className="relative overflow-hidden rounded-2xl glass-card p-6 sm:p-8 md:p-10 text-center md:text-left border border-white/10 shadow-2xl">
+    <div className="relative overflow-hidden rounded-2xl glass-card p-6 sm:p-8 md:p-10 text-center md:text-left border border-white/10 shadow-xl">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-50"></div>
 
       {/* Content */}
       <div className="relative z-10">
-        <Badge variant="secondary" className="mb-3 sm:mb-4 glass-card px-3 sm:px-4 py-1.5 font-bold text-xs sm:text-sm border border-white/10 hover-glow">
+        <Badge variant="secondary" className="mb-3 sm:mb-4 glass-card px-3 sm:px-4 py-1.5 font-bold text-xs sm:text-sm border border-white/10">
           <i className="fa-solid fa-star mr-1.5 sm:mr-2 text-yellow-400 text-xs"></i>
           {tag}
         </Badge>

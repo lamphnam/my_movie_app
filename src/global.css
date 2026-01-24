@@ -6,32 +6,32 @@
   :root {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-    --card: 224 71% 6%;
+    --card: 222 47% 8%;
     --card-foreground: 210 40% 98%;
-    --popover: 224 71% 6%;
+    --popover: 222 47% 8%;
     --popover-foreground: 210 40% 98%;
-    --primary: 263 70% 65%;
+    --primary: 173 80% 40%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 263 70% 65%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 190 85% 45%;
+    --accent-foreground: 222 47% 11%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 15%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 263 70% 65%;
+    --ring: 173 80% 40%;
 
     --radius: 1rem;
 
-    /* Premium Gradient Palettes */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --gradient-gold: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    --gradient-dark: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    /* Brand Gradient (limited use) */
+    --gradient-brand: linear-gradient(
+      135deg,
+      hsl(173 80% 40%) 0%,
+      hsl(190 85% 45%) 100%
+    );
   }
   .dark {
     --background: 222.2 84% 4.9%;
@@ -67,7 +67,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
@@ -94,44 +96,44 @@
   }
 }
 
-/* Premium Text Gradients */
+/* Premium Text Gradients (reduced usage) */
 .text-gradient {
-  background: var(--gradient-primary);
+  background: var(--gradient-brand);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-gold {
-  background: var(--gradient-gold);
+  background: linear-gradient(135deg, hsl(43 90% 65%) 0%, hsl(25 95% 65%) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-accent {
-  background: var(--gradient-accent);
+  background: var(--gradient-brand);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Premium Glass Morphism */
+/* Glass Morphism (optimized for mobile performance) */
 .glass-panel {
-  @apply bg-background/80 backdrop-blur-2xl border border-white/10 shadow-2xl;
+  @apply bg-background/90 md:backdrop-blur-sm border border-white/10 shadow-lg;
 }
 
 .glass-card {
-  @apply bg-card/40 backdrop-blur-md border border-white/5 shadow-xl;
+  @apply bg-card/50 md:backdrop-blur-sm border border-white/5 shadow-lg;
 }
 
-/* Premium Hover Effects */
+/* Hover Effects (no colored glows) */
 .hover-lift {
   @apply transition-all duration-300 ease-out;
 }
 
 .hover-lift:hover {
-  @apply -translate-y-2 shadow-2xl shadow-primary/20;
+  @apply -translate-y-1 shadow-xl;
 }
 
 .hover-glow {
@@ -139,7 +141,7 @@
 }
 
 .hover-glow:hover {
-  @apply shadow-lg shadow-primary/50;
+  @apply shadow-lg;
 }
 
 /* Scrollbar Utilities */
@@ -151,7 +153,7 @@
   scrollbar-width: none;
 }
 
-/* Premium Animations */
+/* Animations with reduced motion support */
 @keyframes shimmer {
   0% {
     background-position: -1000px 0;
@@ -166,7 +168,7 @@
   background: linear-gradient(
     to right,
     transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 50%,
     transparent 100%
   );
   background-size: 1000px 100%;
@@ -189,15 +191,28 @@
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   }
   50% {
-    box-shadow: 0 0 40px rgba(102, 126, 234, 0.8);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
   }
 }
 
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Disable non-essential animations with reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer,
+  .animate-float,
+  .animate-pulse-glow {
+    animation: none;
+  }
+
+  .hover-lift {
+    transition: none;
+  }
 }
 
 /* Mobile-specific utilities */
@@ -223,26 +238,19 @@
     min-height: 44px;
     min-width: 44px;
   }
-}
 
-@layer components {
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px; /* Độ rộng của thanh cuộn */
+  /* Smooth scroll with reduced motion support */
+  .smooth-scroll {
+    scroll-behavior: smooth;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background-color: hsl(var(--secondary)); /* Màu nền của rãnh cuộn */
-    border-radius: 10px;
+  /* Content visibility for performance */
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--muted-foreground)); /* Màu của con trượt */
-    border-radius: 10px;
-    border: 2px solid hsl(var(--secondary)); /* Tạo một khoảng cách nhỏ quanh con trượt */
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--foreground)); /* Màu của con trượt khi hover */
+  @media (prefers-reduced-motion: reduce) {
   }
 
   /* Hỗ trợ cho Firefox */

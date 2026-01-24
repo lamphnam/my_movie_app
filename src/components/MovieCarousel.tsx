@@ -2,11 +2,10 @@
 
 import { cn } from '@/lib/utils'
 import type { MovieListItem } from '@/types'
-import useEmblaCarousel from 'embla-carousel-react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { MotionSection } from './Motion' // Import component motion
+import { MotionSection } from './Motion'
 import MovieCard from './MovieCard'
 import MovieCardSkeleton from './MovieCardSkeleton'
 import { Button } from './ui/button'
@@ -20,35 +19,36 @@ interface MovieCarouselProps {
 }
 
 const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: MovieCarouselProps) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
-    dragFree: true,
-    containScroll: 'trimSnaps',
-  })
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  const scrollPrev = useCallback(() => {
-    if (!emblaApi) return
-    const currentIndex = emblaApi.selectedScrollSnap()
-    const targetIndex = Math.max(currentIndex - 2, 0)
-    emblaApi.scrollTo(targetIndex)
-  }, [emblaApi])
+  const scroll = useCallback((direction: 'left' | 'right') => {
+    if (!scrollRef.current) return
 
-  const scrollNext = useCallback(() => {
-    if (!emblaApi) return
-    const currentIndex = emblaApi.selectedScrollSnap()
-    const maxIndex = emblaApi.scrollSnapList().length - 1
-    const targetIndex = Math.min(currentIndex + 2, maxIndex)
-    emblaApi.scrollTo(targetIndex)
-  }, [emblaApi])
+    const container = scrollRef.current
+    const scrollAmount = container.offsetWidth * 0.8 // Scroll 80% of container width
+    const targetScroll = direction === 'left'
+      ? container.scrollLeft - scrollAmount
+      : container.scrollLeft + scrollAmount
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    container.scrollTo({
+      left: targetScroll,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth'
+    })
+  }, [])
+
+  const scrollPrev = useCallback(() => scroll('left'), [scroll])
+  const scrollNext = useCallback(() => scroll('right'), [scroll])
 
   return (
-    <MotionSection // Thay thế <section> bằng <MotionSection>
+    <MotionSection
       className={cn('space-y-6', className)}
-      // Định nghĩa animation
-      initial={{ opacity: 0, y: 20 }} // Trạng thái ban đầu: vô hình, dịch xuống 20px
-      whileInView={{ opacity: 1, y: 0 }} // Animate khi component xuất hiện trong viewport
-      viewport={{ once: true, amount: 0.2 }} // Animation chỉ chạy 1 lần, khi 20% component hiện ra
-      transition={{ duration: 0.6, ease: 'easeInOut' }} // Thời gian và kiểu animation
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: 'easeInOut' }}
     >
       <div className="flex items-center justify-between">
         <h2 className="text-3xl md:text-4xl font-black tracking-tight">
@@ -64,36 +64,49 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
             </Button>
           )}
           <div className="hidden sm:flex gap-2">
-            <Button variant="ghost" size="icon" onClick={scrollPrev} className="rounded-full hover:bg-primary/10 hover:text-primary transition-all">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={scrollPrev}
+              className="rounded-full hover:bg-primary/10 hover:text-primary transition-all touch-target"
+              aria-label="Scroll left"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={scrollNext} className="rounded-full hover:bg-primary/10 hover:text-primary transition-all">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={scrollNext}
+              className="rounded-full hover:bg-primary/10 hover:text-primary transition-all touch-target"
+              aria-label="Scroll right"
+            >
               <ArrowRight className="h-5 w-5" />
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex space-x-4 pb-4">
-          {loading
-            ? Array.from({ length: 6 }).map((_, index) => (
-              <div
-                key={index}
-                className="min-w-0 flex-[0_0_50%] sm:flex-[0_0_33.33%] md:flex-[0_0_25%] lg:flex-[0_0_20%]"
-              >
-                <MovieCardSkeleton />
-              </div>
-            ))
-            : movies.map((movie) => (
-              <div
-                key={movie.slug}
-                className="min-w-0 flex-[0_0_50%] sm:flex-[0_0_33.33%] md:flex-[0_0_25%] lg:flex-[0_0_20%]"
-              >
-                <MovieCard movie={movie} />
-              </div>
-            ))}
-        </div>
+      <div
+        ref={scrollRef}
+        className="flex gap-4 px-1 pb-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]"
+      >
+        {loading
+          ? Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="w-[85vw] sm:w-[280px] md:w-[240px] lg:w-[220px] flex-shrink-0 snap-start"
+            >
+              <MovieCardSkeleton />
+            </div>
+          ))
+          : movies.map((movie) => (
+            <div
+              key={movie.slug}
+              className="w-[85vw] sm:w-[280px] md:w-[240px] lg:w-[220px] flex-shrink-0 snap-start"
+            >
+              <MovieCard movie={movie} />
+            </div>
+          ))}
       </div>
     </MotionSection>
   )

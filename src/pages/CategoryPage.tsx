@@ -50,7 +50,7 @@ const CategoryPage = () => {
           ))}
         </MovieGrid>
         {pagination && pagination.total_page > 1 && (
-          <div className="mt-8">
+          <div className="mt-12 flex justify-center">
             <Pagination
               currentPage={pagination.current_page}
               totalPages={pagination.total_page}

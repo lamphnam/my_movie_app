@@ -1,7 +1,7 @@
 // src/components/GracefulImage.tsx
 
 import { cn } from '@/lib/utils'
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useRef, useState } from 'react'
 
 type GracefulImageProps = React.ImgHTMLAttributes<HTMLImageElement>
 
@@ -10,19 +10,19 @@ const GracefulImage = memo((props: GracefulImageProps) => {
   const [hasError, setHasError] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
 
-  useEffect(() => {
-    if (!props.src) return
-
-    const img = new Image()
-    img.src = props.src
-    img.onload = () => setIsLoaded(true)
-    img.onerror = () => setHasError(true)
-
-    return () => {
-      img.onload = null
-      img.onerror = null
+  const handleLoad = async () => {
+    // Try to decode before showing to reduce jank
+    try {
+      await imgRef.current?.decode()
+    } catch {
+      // Decode failed or not supported, continue anyway
     }
-  }, [props.src])
+    setIsLoaded(true)
+  }
+
+  const handleError = () => {
+    setHasError(true)
+  }
 
   if (hasError) {
     return (
@@ -36,6 +36,8 @@ const GracefulImage = memo((props: GracefulImageProps) => {
     <img
       ref={imgRef}
       {...props}
+      onLoad={handleLoad}
+      onError={handleError}
       loading={props.loading || 'lazy'}
       decoding="async"
       className={cn(

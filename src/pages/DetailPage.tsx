@@ -152,23 +152,23 @@ const DetailPage = () => {
           {/* === CỘT TRÁI (Desktop) === */}
           <aside className="hidden lg:col-span-2 lg:block xl:col-span-1">
             <div className="lg:sticky lg:top-24 space-y-6">
-              {/* Premium Poster with Glow Effect */}
+              {/* Poster */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 rounded-2xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
-                <img src={posterUrl} alt={movie.name} className="relative w-full rounded-2xl shadow-2xl border-2 border-white/10 group-hover:border-white/20 transition-all duration-500" />
+                <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                <img src={posterUrl} alt={movie.name} className="relative w-full rounded-2xl shadow-xl border-2 border-white/10 group-hover:border-white/20 transition-all duration-500" />
 
                 {/* Quality Badge on Poster */}
-                <div className="absolute top-4 right-4 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 px-3 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-sm border border-white/20">
+                <div className="absolute top-4 right-4 rounded-lg bg-gradient-to-r from-primary to-accent px-3 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-sm border border-white/20">
                   {movie.quality}
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3">
-                <Button size="lg" onClick={handleWatchClick} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30 border border-white/10 hover-lift">
+                <Button size="lg" onClick={handleWatchClick} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg border border-white/10 hover-lift touch-target">
                   <Play className="w-5 h-5" /> Xem
                 </Button>
-                <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="glass-card hover-lift">
+                <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="glass-card hover-lift touch-target">
                   <Heart
                     className={`w-5 h-5 transition-all duration-300 ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : ''}`}
                   />
@@ -176,7 +176,7 @@ const DetailPage = () => {
                 </Button>
               </div>
 
-              {/* Premium Info Card */}
+              {/* Info Card */}
               <div className="space-y-4 rounded-2xl glass-card p-6 text-sm border border-white/10">
                 <h3 className="text-lg font-bold text-gradient mb-4">Thông tin phim</h3>
                 <div className="space-y-4">
@@ -216,7 +216,7 @@ const DetailPage = () => {
             <div className="flex flex-col gap-6 sm:flex-row lg:block">
               {/* Mobile Poster */}
               <div className="relative group lg:hidden w-1/2 max-w-[200px] self-start sm:w-1/3">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                 <img
                   src={posterUrl}
                   alt={movie.name}
@@ -260,7 +260,7 @@ const DetailPage = () => {
                 <span className="text-gradient">Xem Phim</span>
               </h2>
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
+                <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                 <div
                   className="relative aspect-video w-full overflow-hidden rounded-2xl bg-cover bg-center shadow-2xl border-2 border-white/10"
                   style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
@@ -300,8 +300,8 @@ const DetailPage = () => {
                             variant={selectedEpisodeUrl === episode.embed ? 'default' : 'secondary'}
                             onClick={() => handleSelectEpisode(episode.embed)}
                             className={selectedEpisodeUrl === episode.embed
-                              ? "px-4 py-2 h-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30 border border-white/10 font-semibold"
-                              : "px-4 py-2 h-auto glass-card hover-lift font-semibold"}
+                              ? "px-4 py-2 h-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg border border-white/10 font-semibold touch-target"
+                              : "px-4 py-2 h-auto glass-card hover-lift font-semibold touch-target"}
                           >
                             {episode.name}
                           </Button>
@@ -317,12 +317,12 @@ const DetailPage = () => {
         <RelatedMovies genreSlug={primaryGenre?.slug} currentMovieSlug={movie.slug} />
       </div>
 
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-panel border-t border-white/10 p-4 shadow-2xl">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-panel border-t border-white/10 p-4 pb-safe shadow-xl safe-area-bottom">
         <div className="container mx-auto grid grid-cols-2 gap-3">
-          <Button size="lg" onClick={handleWatchClick} className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30 border border-white/10">
+          <Button size="lg" onClick={handleWatchClick} className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg border border-white/10 touch-target">
             <Play className="w-5 h-5" /> Xem Phim
           </Button>
-          <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="w-full glass-card hover-lift">
+          <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="w-full glass-card hover-lift touch-target">
             <Heart
               className={`w-5 h-5 transition-all duration-300 ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : ''}`}
             />

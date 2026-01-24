@@ -99,7 +99,7 @@ const SearchForm = memo(() => {
       {showResults && (
         <div
           className={cn(
-            "custom-scrollbar absolute top-full mt-1 left-0 right-0 z-50 w-full overflow-y-auto rounded-2xl border border-white/10 bg-background/95 backdrop-blur-xl shadow-2xl p-2",
+            "custom-scrollbar absolute top-full mt-1 left-0 right-0 z-50 w-full overflow-y-auto rounded-2xl border border-white/10 bg-background/95 backdrop-blur-md shadow-xl p-2",
             "max-h-96",
             "max-[900px]:max-h-[70vh]",
             "max-[600px]:max-h-[60vh]"

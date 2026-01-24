@@ -24,7 +24,7 @@ const MobileFloatingNav = () => {
 
     return (
         <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-3 md:hidden pointer-events-none safe-area-bottom">
-            <div className="glass-panel pointer-events-auto grid grid-cols-3 items-center w-[90%] max-w-[420px] h-[72px] rounded-full px-3 shadow-2xl border border-white/10 bg-background/80 backdrop-blur-xl">
+            <div className="glass-panel pointer-events-auto grid grid-cols-3 items-center w-[90%] max-w-[420px] h-[72px] rounded-full px-3 shadow-xl border border-white/10 bg-background/80 backdrop-blur-md md:backdrop-blur-xl">
 
                 {/* Nút Home */}
                 <div className="flex justify-center">
@@ -32,9 +32,9 @@ const MobileFloatingNav = () => {
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            "rounded-full h-14 w-14 transition-all duration-300",
+                            "rounded-full h-14 w-14 transition-all duration-300 touch-target",
                             isActive('/')
-                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                                ? "bg-primary text-primary-foreground shadow-lg"
                                 : "hover:bg-white/10 text-muted-foreground active:bg-white/20"
                         )}
                         asChild
@@ -49,18 +49,12 @@ const MobileFloatingNav = () => {
                 <div className="flex justify-center">
                     <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20" aria-label="Tìm kiếm phim">
+                            <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20 touch-target" aria-label="Tìm kiếm phim">
                                 <Search className="h-6 w-6" />
                             </Button>
                         </DialogTrigger>
 
-                        {/* 
-               SỬA LỖI Ở ĐÂY:
-               1. top-[15%] thay vì 20%
-               2. translate-y-0 !important: Để đè lên style mặc định của Dialog (tránh bị kéo lên giữa màn hình)
-               3. data-[state=open]:slide-in-from-top-10: Animation trượt từ trên xuống nhẹ nhàng
-            */}
-                        <DialogContent className="fixed left-[50%] top-[5%] z-50 w-[95%] max-w-lg translate-x-[-50%] !translate-y-0 gap-3 border border-white/10 bg-background/95 p-4 shadow-2xl duration-200 backdrop-blur-2xl rounded-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[5%] data-[state=open]:slide-in-from-top-[3%] max-h-[90vh] landscape:max-h-[85vh] flex flex-col">
+                        <DialogContent className="fixed left-[50%] top-[5%] z-50 w-[95%] max-w-lg translate-x-[-50%] !translate-y-0 gap-3 border border-white/10 bg-background/95 p-4 shadow-xl duration-200 backdrop-blur-md rounded-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[5%] data-[state=open]:slide-in-from-top-[3%] max-h-[90vh] landscape:max-h-[85vh] flex flex-col">
 
                             <DialogHeader className="mb-1 flex-shrink-0">
                                 <DialogTitle className="text-left text-lg font-bold">Tìm kiếm</DialogTitle>
@@ -82,13 +76,13 @@ const MobileFloatingNav = () => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20"
+                                className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20 touch-target"
                                 aria-label="Menu danh mục"
                             >
                                 <Menu className="h-6 w-6" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="bottom" className="h-[80vh] rounded-t-[2rem] border-t-white/10 bg-background/90 backdrop-blur-xl">
+                        <SheetContent side="bottom" className="h-[80vh] rounded-t-[2rem] border-t-white/10 bg-background/90 backdrop-blur-md safe-area-bottom">
                             <SheetHeader>
                                 <SheetTitle className="text-center">Danh mục</SheetTitle>
                             </SheetHeader>
@@ -99,7 +93,7 @@ const MobileFloatingNav = () => {
                                         <AccordionContent>
                                             <div className="grid grid-cols-2 gap-2">
                                                 {filterData.genres.map(item => (
-                                                    <Link key={item.id} to={`/genre/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5">
+                                                    <Link key={item.id} to={`/genre/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5 touch-target">
                                                         {item.name}
                                                     </Link>
                                                 ))}
@@ -111,7 +105,7 @@ const MobileFloatingNav = () => {
                                         <AccordionContent>
                                             <div className="grid grid-cols-2 gap-2">
                                                 {filterData.countries.map(item => (
-                                                    <Link key={item.id} to={`/country/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5">
+                                                    <Link key={item.id} to={`/country/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5 touch-target">
                                                         {item.name}
                                                     </Link>
                                                 ))}
@@ -123,7 +117,7 @@ const MobileFloatingNav = () => {
                                         <AccordionContent>
                                             <div className="grid grid-cols-3 gap-2">
                                                 {filterData.years.map(item => (
-                                                    <Link key={item.id} to={`/year/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5">
+                                                    <Link key={item.id} to={`/year/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5 touch-target">
                                                         {item.name}
                                                     </Link>
                                                 ))}

@@ -82,26 +82,32 @@ const HomePage = () => {
           <HeroSlider movies={featuredMovies} loading={isHeroLoading} />
         )}
 
-        <MovieCarousel
-          title="Phim Hàn Quốc"
-          movies={koreanData?.items || []}
-          loading={koreanMoviesLoading}
-          viewAllLink="/country/han-quoc"
-        />
+        <div className="content-auto">
+          <MovieCarousel
+            title="Phim Hàn Quốc"
+            movies={koreanData?.items || []}
+            loading={koreanMoviesLoading}
+            viewAllLink="/country/han-quoc"
+          />
+        </div>
 
-        <MovieCarousel
-          title="Phim Trung Quốc"
-          movies={chineseData?.items || []}
-          loading={chineseMoviesLoading}
-          viewAllLink="/country/trung-quoc"
-        />
+        <div className="content-auto">
+          <MovieCarousel
+            title="Phim Trung Quốc"
+            movies={chineseData?.items || []}
+            loading={chineseMoviesLoading}
+            viewAllLink="/country/trung-quoc"
+          />
+        </div>
 
-        <MovieCarousel
-          title="Phim Âu Mỹ"
-          movies={usUkData?.items || []}
-          loading={usUkMoviesLoading}
-          viewAllLink="/country/au-my"
-        />
+        <div className="content-auto">
+          <MovieCarousel
+            title="Phim Âu Mỹ"
+            movies={usUkData?.items || []}
+            loading={usUkMoviesLoading}
+            viewAllLink="/country/au-my"
+          />
+        </div>
       </div>
     </PageWrapper>
   )

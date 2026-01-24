@@ -8,17 +8,17 @@ import MobileFloatingNav from './MobileFloatingNav'
 
 const Layout = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="flex min-h-screen flex-col bg-background selection:bg-primary/30">
+    <div className="flex min-h-[100svh] flex-col bg-background selection:bg-primary/30">
       <Header />
 
-      {/* THAY ĐỔI: pt-24 để tránh Header nổi, pb-28 để tránh Mobile Nav nổi (tăng từ 24) */}
-      <main className="flex-grow pt-24 pb-28 md:pb-8">
+      {/* Proper spacing for fixed header and mobile nav with safe areas */}
+      <main className="flex-grow pt-24 pb-32 md:pb-8 safe-area-bottom">
         <div className="container px-3 sm:px-4 md:px-6">{children || <Outlet />}</div>
       </main>
 
       <Footer />
 
-      {/* Thêm menu nổi cho mobile */}
+      {/* Mobile floating navigation */}
       <MobileFloatingNav />
     </div>
   )

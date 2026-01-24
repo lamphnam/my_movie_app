@@ -56,9 +56,9 @@ const Pagination = memo(({ currentPage, totalPages, onPageChange }: PaginationPr
   }, [currentPage, totalPages])
 
   return (
-    <UIPagination>
-      <div className="glass-panel inline-flex items-center rounded-full px-4 py-2 shadow-lg">
-        <PaginationContent>
+    <UIPagination className="mt-12 mb-8">
+      <div className="glass-card inline-flex items-center rounded-full px-3 py-2.5 shadow-xl border border-white/10">
+        <PaginationContent className="gap-1.5">
           <PaginationItem>
             <PaginationPrevious
               href="#"

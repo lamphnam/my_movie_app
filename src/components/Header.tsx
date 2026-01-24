@@ -10,18 +10,19 @@ import {
 } from '@/components/ui/navigation-menu'
 import { filterData } from '@/data/filters'
 import { cn } from '@/lib/utils'
+import { Film } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const Header = () => {
   return (
-    <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-      <div className="glass-panel pointer-events-auto flex h-16 w-full max-w-6xl items-center justify-between rounded-full px-6 md:px-8 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 border-white/10">
+    <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none safe-area-top">
+      <div className="glass-panel pointer-events-auto flex h-16 w-full max-w-6xl items-center justify-between rounded-full px-6 md:px-8 transition-all duration-300 hover:shadow-xl border-white/10">
 
         {/* === Logo === */}
         <div className="flex-1 md:flex-none flex justify-center md:justify-start">
           <Link to="/" className="flex items-center gap-3 font-bold group">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform duration-300">
-              <i className="fa-solid fa-film text-white text-lg"></i>
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <Film className="text-primary-foreground w-5 h-5" />
             </div>
             <span className="text-xl md:text-2xl font-black">
               <span className="text-gradient">HNAM</span>
