@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Play, Star } from 'lucide-react';
 import GracefulImage from './GracefulImage';
-import { optimizeImage } from '@/lib/image';
+import { optimizeImage, generatePosterSrcSet, POSTER_SIZES_MOBILE_GRID } from '@/lib/image';
 import { Badge } from './ui/badge';
 
 interface MovieCardCompactProps {
@@ -32,17 +32,22 @@ export default function MovieCardCompact({ movie }: MovieCardCompactProps) {
             to={`/phim/${slug}`}
             className="group block tap-target"
         >
+            {/* Poster container: aspect ratio set here, image uses object-cover */}
             <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">
                 <GracefulImage
-                    src={optimizeImage(posterUrl, 280)}
+                    src={optimizeImage(posterUrl, 360, 540)}
+                    srcSet={generatePosterSrcSet(posterUrl)}
+                    sizes={POSTER_SIZES_MOBILE_GRID}
                     alt={title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-active:scale-105"
+                    width={360}
+                    height={540}
+                    className="w-full h-full object-cover object-center poster-image"
                 />
 
-                {/* Play overlay on tap */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-active:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-                        <Play className="w-6 h-6 text-primary-foreground fill-current" />
+                {/* Play overlay on tap - opacity only, no scale on mobile */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-active:opacity-100 transition-opacity duration-150 flex items-center justify-center pointer-events-none">
+                    <div className="w-11 h-11 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
+                        <Play className="w-5 h-5 text-primary-foreground fill-current ml-0.5" />
                     </div>
                 </div>
 

@@ -1,32 +1,41 @@
 // src/components/GracefulImage.tsx
 
 import { cn } from '@/lib/utils'
-import { memo, useRef, useState } from 'react'
+import { memo, useState, useCallback } from 'react'
 
-type GracefulImageProps = React.ImgHTMLAttributes<HTMLImageElement>
+interface GracefulImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  /** srcSet for responsive images */
+  srcSet?: string
+  /** sizes attribute for responsive images */
+  sizes?: string
+}
 
-const GracefulImage = memo((props: GracefulImageProps) => {
+const GracefulImage = memo(({
+  srcSet,
+  sizes,
+  className,
+  onLoad,
+  onError,
+  loading = 'lazy',
+  decoding = 'async',
+  ...props
+}: GracefulImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
-  const imgRef = useRef<HTMLImageElement>(null)
 
-  const handleLoad = async () => {
-    // Try to decode before showing to reduce jank
-    try {
-      await imgRef.current?.decode()
-    } catch {
-      // Decode failed or not supported, continue anyway
-    }
+  const handleLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     setIsLoaded(true)
-  }
+    onLoad?.(e)
+  }, [onLoad])
 
-  const handleError = () => {
+  const handleError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     setHasError(true)
-  }
+    onError?.(e)
+  }, [onError])
 
   if (hasError) {
     return (
-      <div className={cn('bg-muted flex items-center justify-center', props.className)}>
+      <div className={cn('bg-muted flex items-center justify-center', className)}>
         <span className="text-muted-foreground text-xs">Image unavailable</span>
       </div>
     )
@@ -34,16 +43,17 @@ const GracefulImage = memo((props: GracefulImageProps) => {
 
   return (
     <img
-      ref={imgRef}
       {...props}
+      srcSet={srcSet}
+      sizes={sizes}
       onLoad={handleLoad}
       onError={handleError}
-      loading={props.loading || 'lazy'}
-      decoding="async"
+      loading={loading}
+      decoding={decoding}
       className={cn(
-        'transition-opacity duration-300 ease-in-out',
+        'transition-opacity duration-200',
         isLoaded ? 'opacity-100' : 'opacity-0',
-        props.className,
+        className,
       )}
     />
   )

@@ -855,6 +855,43 @@
 }
 
 /* --------------------------------------------------------------------------
+   11.5. MOBILE POSTER PERFORMANCE (iOS Safari blur fix)
+   -------------------------------------------------------------------------- */
+@layer components {
+  /* Poster image base - no transforms on mobile to avoid iOS bitmap blur */
+  .poster-image {
+    transform: translateZ(0); /* Force GPU layer */
+    will-change: opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* On touch devices (mobile), disable scale transforms on images */
+  @media (hover: none) and (pointer: coarse) {
+    .poster-image {
+      transform: none !important;
+    }
+
+    /* Disable hover scale effects on touch - use opacity feedback instead */
+    .group:active .poster-image,
+    .group-active\:scale-105 {
+      transform: none !important;
+    }
+  }
+
+  /* Desktop only: enable hover scale */
+  @media (hover: hover) and (pointer: fine) {
+    .poster-image-scalable {
+      transition: transform 0.3s ease;
+    }
+
+    .group:hover .poster-image-scalable {
+      transform: scale(1.03);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
    12. HERO SECTION (Desktop)
    -------------------------------------------------------------------------- */
 @layer components {

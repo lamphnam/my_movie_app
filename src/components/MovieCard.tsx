@@ -1,7 +1,7 @@
 // src/components/MovieCard.tsx
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { optimizeImage } from '@/lib/image'
+import { optimizeImage, generatePosterSrcSet, POSTER_SIZES_DESKTOP_GRID } from '@/lib/image'
 import type { MovieListItem } from '@/types'
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
@@ -14,7 +14,7 @@ interface MovieCardProps {
 }
 
 const MovieCard = memo(({ movie }: MovieCardProps) => {
-  const optimizedThumbUrl = optimizeImage(movie.thumb_url, 300)
+  const posterUrl = movie.thumb_url || movie.poster_url || ''
 
   return (
     <Popover>
@@ -23,10 +23,13 @@ const MovieCard = memo(({ movie }: MovieCardProps) => {
           {/* Poster Container */}
           <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">
             <GracefulImage
-              src={optimizedThumbUrl}
+              src={optimizeImage(posterUrl, 360, 540)}
+              srcSet={generatePosterSrcSet(posterUrl)}
+              sizes={POSTER_SIZES_DESKTOP_GRID}
               alt={movie.name}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-              width="300"
+              width={360}
+              height={540}
+              className="h-full w-full object-cover object-center poster-image poster-image-scalable"
             />
 
             {/* Quality Badge - Top Left */}
@@ -44,8 +47,8 @@ const MovieCard = memo(({ movie }: MovieCardProps) => {
             </div>
 
             {/* Hover Overlay - Simple centered play button */}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full bg-primary/90 flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-200">
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+              <div className="w-12 h-12 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
                 <Play className="w-5 h-5 text-primary-foreground fill-current ml-0.5" />
               </div>
             </div>
