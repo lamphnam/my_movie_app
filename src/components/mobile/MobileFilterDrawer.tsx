@@ -38,6 +38,8 @@ const filterGroups = [
         title: 'Năm',
         icon: Calendar,
         items: [
+            { label: '2026', path: '/year/2026' },
+            { label: '2025', path: '/year/2025' },
             { label: '2024', path: '/year/2024' },
             { label: '2023', path: '/year/2023' },
             { label: '2022', path: '/year/2022' },

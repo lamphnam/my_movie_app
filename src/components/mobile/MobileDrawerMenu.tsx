@@ -26,8 +26,8 @@ const menuItems = [
     { to: '/category/hoat-hinh', label: 'Hoạt hình', icon: PlayCircle },
     { to: '/country/trung-quoc', label: 'Phim Trung Quốc', icon: Globe },
     { to: '/country/han-quoc', label: 'Phim Hàn Quốc', icon: Globe },
-    { to: '/year/2024', label: 'Phim 2024', icon: Calendar },
-    { to: '/year/2023', label: 'Phim 2023', icon: Calendar },
+    { to: '/year/2026', label: 'Phim 2026', icon: Calendar },
+    { to: '/year/2025', label: 'Phim 2025', icon: Calendar },
 ];
 
 export default function MobileDrawerMenu({
