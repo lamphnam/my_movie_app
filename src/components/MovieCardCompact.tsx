@@ -29,7 +29,7 @@ export default function MovieCardCompact({ movie }: MovieCardCompactProps) {
 
     return (
         <Link
-            to={`/movie/${slug}`}
+            to={`/phim/${slug}`}
             className="group block tap-target"
         >
             <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">
