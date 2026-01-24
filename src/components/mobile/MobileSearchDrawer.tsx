@@ -6,7 +6,6 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, X } from 'lucide-react';
 
@@ -33,20 +32,20 @@ export default function MobileSearchDrawer({
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent side="top" className="h-auto">
+            <SheetContent side="top" className="liquid-glass-elevated h-auto border-b border-white/10">
                 <SheetHeader>
-                    <SheetTitle>Tìm kiếm phim</SheetTitle>
+                    <SheetTitle className="text-sm font-medium">Tìm kiếm phim</SheetTitle>
                 </SheetHeader>
-                <form onSubmit={handleSearch} className="mt-6">
+                <form onSubmit={handleSearch} className="mt-4">
                     <div className="flex gap-2">
-                        <div className="relative flex-1">
+                        <div className="relative flex-1 glass-solid-fill rounded-xl">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input
+                            <input
                                 type="search"
                                 placeholder="Nhập tên phim..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                className="pl-10 pr-10 h-12"
+                                className="w-full h-12 pl-10 pr-10 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
                                 autoFocus
                             />
                             {query && (
@@ -59,7 +58,7 @@ export default function MobileSearchDrawer({
                                 </button>
                             )}
                         </div>
-                        <Button type="submit" size="lg" className="tap-target">
+                        <Button type="submit" size="lg" className="tap-target rounded-xl px-6">
                             Tìm
                         </Button>
                     </div>

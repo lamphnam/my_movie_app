@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { MovieListItem } from '@/types'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import { memo, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from './Motion'
@@ -26,7 +26,7 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
     if (!scrollRef.current) return
 
     const container = scrollRef.current
-    const scrollAmount = container.offsetWidth * 0.8
+    const scrollAmount = container.offsetWidth * 0.75
     const targetScroll = direction === 'left'
       ? container.scrollLeft - scrollAmount
       : container.scrollLeft + scrollAmount
@@ -43,52 +43,54 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
   const scrollNext = useCallback(() => scroll('right'), [scroll])
 
   const content = (
-    <div className={cn('space-y-4 md:space-y-6', className)}>
+    <div className={cn('space-y-3 lg:space-y-4', className)}>
+      {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight">
-          {title}
-        </h2>
-        <div className="flex items-center gap-2 md:gap-3">
+        <h2 className="text-h2">{title}</h2>
+        <div className="flex items-center gap-2">
           {viewAllLink && (
-            <Button asChild variant="link" className="hidden text-muted-foreground hover:text-primary sm:inline-flex font-semibold group text-sm">
-              <Link to={viewAllLink}>
-                Xem tất cả
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+            <Link
+              to={viewAllLink}
+              className="hidden lg:inline-flex items-center gap-1 text-body-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Xem tất cả
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           )}
-          <div className="hidden sm:flex gap-2">
+          {/* Desktop scroll buttons */}
+          <div className="hidden lg:flex items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
               onClick={scrollPrev}
-              className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors tap-target"
+              className="h-8 w-8 rounded-md hover:bg-muted"
               aria-label="Scroll left"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={scrollNext}
-              className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors tap-target"
+              className="h-8 w-8 rounded-md hover:bg-muted"
               aria-label="Scroll right"
             >
-              <ArrowRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
 
+      {/* Scrollable Track */}
       <div
         ref={scrollRef}
-        className="flex gap-3 md:gap-4 px-1 pb-3 md:pb-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]"
+        className="flex gap-3 lg:gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide overscroll-x-contain touch-pan-x"
       >
         {loading
           ? Array.from({ length: 6 }).map((_, index) => (
             <div
               key={index}
-              className="w-[40vw] sm:w-[280px] md:w-[240px] lg:w-[220px] flex-shrink-0 snap-start"
+              className="w-[42vw] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start"
             >
               <MovieCardSkeleton />
             </div>
@@ -96,13 +98,13 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
           : movies.map((movie) => (
             <div
               key={movie.slug}
-              className="w-[40vw] sm:w-[280px] md:w-[240px] lg:w-[220px] flex-shrink-0 snap-start"
+              className="w-[42vw] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start"
             >
               {/* Use compact card on mobile, regular on desktop */}
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <MovieCardCompact movie={movie} />
               </div>
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <MovieCard movie={movie} />
               </div>
             </div>
@@ -114,15 +116,13 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
   // No motion on mobile for performance
   return (
     <>
-      <div className="md:hidden">
-        {content}
-      </div>
-      <div className="hidden md:block">
+      <div className="lg:hidden">{content}</div>
+      <div className="hidden lg:block">
         <MotionSection
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           {content}
         </MotionSection>

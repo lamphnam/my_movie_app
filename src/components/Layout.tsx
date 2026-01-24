@@ -25,36 +25,40 @@ const Layout = ({ children }: { children?: React.ReactNode }) => {
   }
 
   return (
-    <div className="flex min-h-[100svh] flex-col bg-background selection:bg-primary/30">
-      {/* Desktop Header (md+) */}
-      <div className="hidden md:block">
+    <div className="flex min-h-[100svh] flex-col bg-background">
+      {/* Desktop Header (lg+) */}
+      <div className="hidden lg:block">
         <Header />
       </div>
 
-      {/* Mobile Top Bar (<md) */}
-      <MobileTopBar
-        onMenuClick={() => setMenuOpen(true)}
-        onSearchClick={handleSearchClick}
-      />
+      {/* Mobile Top Bar (<lg) */}
+      <div className="lg:hidden">
+        <MobileTopBar
+          onMenuClick={() => setMenuOpen(true)}
+          onSearchClick={handleSearchClick}
+        />
+      </div>
 
-      {/* Main Content with proper spacing */}
-      <main className="flex-grow pt-14 pb-20 md:pt-24 md:pb-8">
-        <div className="container px-3 sm:px-4 md:px-6">
+      {/* Main Content - desktop uses container-desktop for proper max-width */}
+      <main className="flex-grow pt-14 pb-20 lg:pt-20 lg:pb-12">
+        <div className="container-desktop">
           {children || <Outlet />}
         </div>
       </main>
 
-      {/* Desktop Footer (md+) */}
-      <div className="hidden md:block">
+      {/* Desktop Footer (lg+) */}
+      <div className="hidden lg:block">
         <Footer />
       </div>
 
-      {/* Mobile Bottom Navigation (<md) */}
-      <MobileBottomNav
-        onSearchClick={handleSearchClick}
-        onFilterClick={handleFilterClick}
-        onMenuClick={() => setMenuOpen(true)}
-      />
+      {/* Mobile Bottom Navigation (<lg) */}
+      <div className="lg:hidden">
+        <MobileBottomNav
+          onSearchClick={handleSearchClick}
+          onFilterClick={handleFilterClick}
+          onMenuClick={() => setMenuOpen(true)}
+        />
+      </div>
 
       {/* Mobile Drawers */}
       <MobileDrawerMenu open={menuOpen} onOpenChange={setMenuOpen} />

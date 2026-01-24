@@ -1,52 +1,79 @@
+import { Film, Info, ExternalLink } from 'lucide-react'
+
 const Footer = () => {
   return (
-    <footer className="mt-12 sm:mt-16 lg:mt-20 border-t border-white/10 bg-background/95 backdrop-blur-sm" role="contentinfo">
-      <div className="container py-8 sm:py-10 lg:py-12 px-3 sm:px-4">
-        {/* Disclaimer Section */}
-        <div className="mb-8 sm:mb-10 glass-card rounded-2xl p-4 sm:p-6 border border-white/10">
-          <div className="flex items-start gap-2 sm:gap-3">
-            <i className="fa-solid fa-info-circle text-primary text-lg sm:text-xl mt-0.5 sm:mt-1 flex-shrink-0" aria-hidden="true"></i>
-            <p className="text-xs sm:text-sm text-muted-foreground/90 leading-relaxed">
-              Đây là một dự án cá nhân được tạo ra với mục đích học tập và xây dựng portfolio. Trang
-              web không có bất kỳ hoạt động kinh doanh hay thu lợi nhuận nào. Tất cả nội dung của
-              trang web này được thu thập từ các trang web video chính thống trên Internet và không
-              cung cấp phát trực tuyến chính hãng. Nếu quyền lợi của bạn bị vi phạm, vui lòng thông
-              báo cho chúng tôi, chúng tôi sẽ xóa nội dung vi phạm kịp thời. Cảm ơn sự hợp tác của
-              bạn!
-            </p>
-          </div>
-        </div>
-
-        {/* Footer Bottom */}
-        <div className="flex flex-col items-center justify-between gap-4 sm:gap-6 md:flex-row">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg flex-shrink-0">
-              <i className="fa-solid fa-film text-white text-xs sm:text-sm" aria-hidden="true"></i>
+    <footer className="mt-8 lg:mt-12 border-t border-border bg-muted/30" role="contentinfo">
+      <div className="container-desktop py-6 lg:py-8">
+        {/* Desktop: Grid layout | Mobile: Stack */}
+        <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-start">
+          {/* Disclaimer */}
+          <div className="surface-card p-4 lg:p-5">
+            <div className="flex gap-3">
+              <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <p className="text-body-sm leading-relaxed">
+                Đây là một dự án cá nhân được tạo ra với mục đích học tập và xây dựng portfolio. Trang
+                web không có bất kỳ hoạt động kinh doanh hay thu lợi nhuận nào. Tất cả nội dung được
+                thu thập từ các trang web video chính thống trên Internet. Nếu quyền lợi của bạn bị
+                vi phạm, vui lòng thông báo để chúng tôi xử lý kịp thời.
+              </p>
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground font-medium text-center sm:text-left">
-              &copy; {new Date().getFullYear()} <span className="text-gradient font-bold">HNAM Phim</span>. All rights reserved.
-            </p>
           </div>
 
-          <nav aria-label="Footer navigation" className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm flex-wrap justify-center">
-            <a href="#" className="text-muted-foreground transition-all hover:text-primary focus:text-primary font-medium hover-glow" aria-label="Giới thiệu">
+          {/* Quick Links - Desktop only */}
+          <nav aria-label="Footer navigation" className="hidden lg:flex flex-col gap-2 text-body-sm">
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
               Giới thiệu
             </a>
             <a
               href="https://phim.nguonc.com/khieu-nai-ban-quyen"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground transition-all hover:text-primary focus:text-primary font-medium hover-glow"
-              aria-label="Khiếu nại bản quyền"
+              className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
             >
               Khiếu nại bản quyền
+              <ExternalLink className="w-3 h-3" />
             </a>
             <a
               href="https://phim.nguonc.com/api-document"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground transition-all hover:text-primary focus:text-primary font-medium hover-glow"
-              aria-label="Tài liệu API"
+              className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+            >
+              API
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </nav>
+        </div>
+
+        {/* Footer Bottom */}
+        <div className="mt-6 pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
+              <Film className="w-3.5 h-3.5 text-primary-foreground" />
+            </div>
+            <p className="text-body-sm">
+              &copy; {new Date().getFullYear()} <span className="font-semibold text-foreground">HNAM Phim</span>
+            </p>
+          </div>
+
+          {/* Mobile only links */}
+          <nav aria-label="Footer navigation" className="flex lg:hidden items-center gap-4 text-body-sm">
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              Giới thiệu
+            </a>
+            <a
+              href="https://phim.nguonc.com/khieu-nai-ban-quyen"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Bản quyền
+            </a>
+            <a
+              href="https://phim.nguonc.com/api-document"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               API
             </a>

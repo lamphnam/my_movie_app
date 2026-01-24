@@ -9,7 +9,7 @@ interface MovieGridProps {
 
 const MovieGrid = memo(({ children }: MovieGridProps) => {
   return (
-    <div className="grid grid-cols-2 gap-3 xs:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
       {children}
     </div>
   )

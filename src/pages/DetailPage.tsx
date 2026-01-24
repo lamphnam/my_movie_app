@@ -3,7 +3,6 @@
 import DetailPageSkeleton from '@/components/DetailPageSkeleton'
 import PageWrapper from '@/components/PageWrapper'
 import RelatedMovies from '@/components/RelatedMovies'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DOMAIN_URL } from '@/constants'
 import useLocalStorage from '@/hooks/useLocalStorage'
@@ -147,161 +146,150 @@ const DetailPage = () => {
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
-      <div className="container space-y-12 lg:space-y-16">
-        <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-x-12">
-          {/* === CỘT TRÁI (Desktop) === */}
-          <aside className="hidden lg:col-span-2 lg:block xl:col-span-1">
-            <div className="lg:sticky lg:top-24 space-y-6">
+      <div className="container-desktop space-y-8 lg:space-y-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
+          {/* === LEFT COLUMN - Poster & Info (Desktop) === */}
+          <aside className="hidden lg:block lg:col-span-3">
+            <div className="lg:sticky lg:top-20 space-y-4">
               {/* Poster */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                <img src={posterUrl} alt={movie.name} className="relative w-full rounded-2xl shadow-xl border-2 border-white/10 group-hover:border-white/20 transition-all duration-500" />
-
-                {/* Quality Badge on Poster */}
-                <div className="absolute top-4 right-4 rounded-lg bg-gradient-to-r from-primary to-accent px-3 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-sm border border-white/20">
+              <div className="relative">
+                <img
+                  src={posterUrl}
+                  alt={movie.name}
+                  className="w-full rounded-lg shadow-lg"
+                />
+                {/* Quality Badge */}
+                <span className="badge-primary absolute top-2 right-2">
                   {movie.quality}
-                </div>
+                </span>
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-3">
-                <Button size="lg" onClick={handleWatchClick} className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg border border-white/10 hover-lift touch-target">
-                  <Play className="w-5 h-5" /> Xem
+              <div className="grid grid-cols-2 gap-2">
+                <Button onClick={handleWatchClick} className="h-10">
+                  <Play className="w-4 h-4 fill-current" /> Xem
                 </Button>
-                <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="glass-card hover-lift touch-target">
+                <Button variant="outline" onClick={handleToggleFavorite} className="h-10">
                   <Heart
-                    className={`w-5 h-5 transition-all duration-300 ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : ''}`}
+                    className={`w-4 h-4 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
                   />
                   Lưu
                 </Button>
               </div>
 
               {/* Info Card */}
-              <div className="space-y-4 rounded-2xl glass-card p-6 text-sm border border-white/10">
-                <h3 className="text-lg font-bold text-gradient mb-4">Thông tin phim</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Clapperboard className="w-4 h-4 text-primary" /> Thể loại
+              <div className="surface-card p-4 space-y-3">
+                <h3 className="text-h3 mb-3">Thông tin</h3>
+                <div className="space-y-2 text-body-sm">
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Clapperboard className="w-3.5 h-3.5" /> Thể loại
                     </span>
-                    <span className="font-semibold text-right text-foreground">{primaryGenre?.name || 'N/A'}</span>
+                    <span className="font-medium">{primaryGenre?.name || 'N/A'}</span>
                   </div>
-                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Calendar className="w-4 h-4 text-primary" /> Năm
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5" /> Năm
                     </span>
-                    <span className="font-semibold text-foreground">{yearCategory?.list[0]?.name || 'N/A'}</span>
+                    <span className="font-medium">{yearCategory?.list[0]?.name || 'N/A'}</span>
                   </div>
-                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Globe className="w-4 h-4 text-primary" /> Quốc gia
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5" /> Quốc gia
                     </span>
-                    <span className="font-semibold text-right text-foreground">
-                      {countryCategory?.list[0]?.name || 'N/A'}
-                    </span>
+                    <span className="font-medium">{countryCategory?.list[0]?.name || 'N/A'}</span>
                   </div>
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Tv className="w-4 h-4 text-primary" /> Tập phim
+                  <div className="flex justify-between py-1.5">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Tv className="w-3.5 h-3.5" /> Tập
                     </span>
-                    <span className="font-semibold text-foreground">{movie.current_episode}</span>
+                    <span className="font-medium">{movie.current_episode}</span>
                   </div>
                 </div>
               </div>
             </div>
           </aside>
 
-          {/* === CỘT PHẢI === */}
-          <main className="lg:col-span-3 xl:col-span-4">
-            <div className="flex flex-col gap-6 sm:flex-row lg:block">
+          {/* === MAIN CONTENT === */}
+          <main className="lg:col-span-9">
+            <div className="flex flex-col gap-4 sm:flex-row lg:block">
               {/* Mobile Poster */}
-              <div className="relative group lg:hidden w-1/2 max-w-[200px] self-start sm:w-1/3">
-                <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+              <div className="relative lg:hidden w-1/2 max-w-[160px] self-start sm:w-1/3">
                 <img
                   src={posterUrl}
                   alt={movie.name}
-                  className="relative rounded-2xl shadow-2xl border border-white/10"
+                  className="rounded-lg shadow-lg"
                 />
+                <span className="badge-primary absolute top-2 right-2 text-[10px]">
+                  {movie.quality}
+                </span>
               </div>
 
-              <div className="flex-1 space-y-4">
-                <h1 className="text-3xl font-black tracking-tighter text-foreground sm:text-4xl lg:text-5xl xl:text-6xl">
-                  <span className="text-gradient-gold">{movie.name}</span>
-                </h1>
-                <p className="text-base text-muted-foreground/90 font-medium sm:text-lg lg:text-xl">
-                  {movie.original_name}
-                </p>
-                <div className="flex flex-wrap gap-2">
+              <div className="flex-1 space-y-3">
+                <h1 className="text-h1">{movie.name}</h1>
+                <p className="text-body text-muted-foreground">{movie.original_name}</p>
+                <div className="flex flex-wrap gap-1.5">
                   {genreCategory?.list.map((genre) => (
-                    <Badge key={genre.id} variant="secondary" className="glass-card px-3 py-1 font-semibold hover-glow">
+                    <span key={genre.id} className="badge-outline">
                       {genre.name}
-                    </Badge>
+                    </span>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Content Section */}
-            <div className="mt-10 lg:mt-12">
-              <h2 className="text-3xl font-bold tracking-tight mb-6">
-                <span className="text-gradient">Nội dung phim</span>
-              </h2>
-              <div className="glass-card rounded-2xl p-6 border border-white/10">
+            {/* Description */}
+            <div className="mt-6 lg:mt-8">
+              <h2 className="text-h2 mb-3">Nội dung phim</h2>
+              <div className="surface-card p-4">
                 <div
-                  className="prose prose-sm prose-invert mt-2 max-w-none text-muted-foreground/90 leading-relaxed"
+                  className="prose prose-sm prose-invert max-w-none text-muted-foreground leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: movie.description || 'Chưa có mô tả.' }}
                 />
               </div>
             </div>
 
             {/* Player Section */}
-            <div className="mt-10 lg:mt-12" ref={playerRef}>
-              <h2 className="text-3xl font-bold tracking-tight mb-6">
-                <span className="text-gradient">Xem Phim</span>
-              </h2>
-              <div className="relative group">
-                <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                <div
-                  className="relative aspect-video w-full overflow-hidden rounded-2xl bg-cover bg-center shadow-2xl border-2 border-white/10"
-                  style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
-                >
-                  {selectedEpisodeUrl ? (
-                    <iframe
-                      className="h-full w-full"
-                      src={selectedEpisodeUrl}
-                      title="Video Player"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-black/70 backdrop-blur-sm">
-                      <div className="text-center space-y-3">
-                        <Play className="w-16 h-16 mx-auto text-primary/50" />
-                        <p className="text-foreground font-semibold">Chọn một tập để bắt đầu xem</p>
-                      </div>
+            <div className="mt-6 lg:mt-8" ref={playerRef}>
+              <h2 className="text-h2 mb-3">Xem Phim</h2>
+              <div
+                className="relative aspect-video w-full overflow-hidden rounded-lg bg-cover bg-center shadow-lg border border-border"
+                style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
+              >
+                {selectedEpisodeUrl ? (
+                  <iframe
+                    className="h-full w-full"
+                    src={selectedEpisodeUrl}
+                    title="Video Player"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-black/80">
+                    <div className="text-center space-y-2">
+                      <Play className="w-12 h-12 mx-auto text-muted-foreground" />
+                      <p className="text-body-sm">Chọn một tập để bắt đầu xem</p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Episodes List */}
             {isSeries && (
-              <div className="mt-10 lg:mt-12">
-                <h2 className="text-3xl font-bold tracking-tight mb-6">
-                  <span className="text-gradient">Danh sách tập</span>
-                </h2>
-                <div className="space-y-6">
+              <div className="mt-6 lg:mt-8">
+                <h2 className="text-h2 mb-3">Danh sách tập</h2>
+                <div className="space-y-4">
                   {movie.episodes.map((server: EpisodeServer, index: number) => (
-                    <div key={index} className="glass-card rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-bold text-lg text-foreground mb-4">{server.server_name}</h3>
+                    <div key={index} className="surface-card p-4">
+                      <h3 className="text-body font-medium mb-3">{server.server_name}</h3>
                       <div className="flex flex-wrap gap-2">
                         {server.items.map((episode: EpisodeItem) => (
                           <Button
                             key={episode.slug}
-                            variant={selectedEpisodeUrl === episode.embed ? 'default' : 'secondary'}
+                            variant={selectedEpisodeUrl === episode.embed ? 'default' : 'outline'}
+                            size="sm"
                             onClick={() => handleSelectEpisode(episode.embed)}
-                            className={selectedEpisodeUrl === episode.embed
-                              ? "px-4 py-2 h-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg border border-white/10 font-semibold touch-target"
-                              : "px-4 py-2 h-auto glass-card hover-lift font-semibold touch-target"}
+                            className="h-8 px-3"
                           >
                             {episode.name}
                           </Button>
@@ -314,23 +302,26 @@ const DetailPage = () => {
             )}
           </main>
         </div>
+
+        {/* Related Movies */}
         <RelatedMovies genreSlug={primaryGenre?.slug} currentMovieSlug={movie.slug} />
       </div>
 
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-panel border-t border-white/10 p-4 pb-safe shadow-xl safe-area-bottom">
-        <div className="container mx-auto grid grid-cols-2 gap-3">
-          <Button size="lg" onClick={handleWatchClick} className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg border border-white/10 touch-target">
-            <Play className="w-5 h-5" /> Xem Phim
+      {/* Mobile Fixed Actions */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-3 pb-safe safe-area-bottom">
+        <div className="container-desktop grid grid-cols-2 gap-2">
+          <Button onClick={handleWatchClick} className="h-11">
+            <Play className="w-4 h-4 fill-current" /> Xem Phim
           </Button>
-          <Button size="lg" variant="secondary" onClick={handleToggleFavorite} className="w-full glass-card hover-lift touch-target">
+          <Button variant="outline" onClick={handleToggleFavorite} className="h-11">
             <Heart
-              className={`w-5 h-5 transition-all duration-300 ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : ''}`}
+              className={`w-4 h-4 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
             />
             Lưu
           </Button>
         </div>
       </div>
-      <div className="h-24 md:hidden"></div>
+      <div className="h-20 lg:hidden"></div>
     </PageWrapper>
   )
 }

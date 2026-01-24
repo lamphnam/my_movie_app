@@ -23,114 +23,148 @@ const MobileFloatingNav = () => {
     const isActive = (path: string) => location.pathname === path
 
     return (
-        <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-3 md:hidden pointer-events-none safe-area-bottom">
-            <div className="glass-panel pointer-events-auto grid grid-cols-3 items-center w-[90%] max-w-[420px] h-[72px] rounded-full px-3 shadow-xl border border-white/10 bg-background/80 backdrop-blur-md md:backdrop-blur-xl">
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-4 lg:hidden pointer-events-none safe-area-bottom">
+            {/* Liquid Glass Pill Nav Bar */}
+            <nav className="liquid-glass-pill pointer-events-auto grid grid-cols-3 items-center w-full max-w-[380px] h-16 px-2">
 
-                {/* Nút Home */}
+                {/* Home Button */}
                 <div className="flex justify-center">
                     <Button
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            "rounded-full h-14 w-14 transition-all duration-300 touch-target",
+                            "rounded-full h-12 w-12 transition-colors touch-target",
                             isActive('/')
-                                ? "bg-primary text-primary-foreground shadow-lg"
-                                : "hover:bg-white/10 text-muted-foreground active:bg-white/20"
+                                ? "bg-primary/20 text-primary"
+                                : "text-muted-foreground hover:text-foreground hover:bg-white/10 active:bg-white/15"
                         )}
                         asChild
                     >
                         <Link to="/" aria-label="Trang chủ">
-                            <Home className="h-6 w-6" />
+                            <Home className="h-5 w-5" />
                         </Link>
                     </Button>
                 </div>
 
-                {/* Nút Tìm kiếm */}
+                {/* Search Button */}
                 <div className="flex justify-center">
                     <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20 touch-target" aria-label="Tìm kiếm phim">
-                                <Search className="h-6 w-6" />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-full h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-white/10 active:bg-white/15 touch-target"
+                                aria-label="Tìm kiếm phim"
+                            >
+                                <Search className="h-5 w-5" />
                             </Button>
                         </DialogTrigger>
 
-                        <DialogContent className="fixed left-[50%] top-[5%] z-50 w-[95%] max-w-lg translate-x-[-50%] !translate-y-0 gap-3 border border-white/10 bg-background/95 p-4 shadow-xl duration-200 backdrop-blur-md rounded-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[5%] data-[state=open]:slide-in-from-top-[3%] max-h-[90vh] landscape:max-h-[85vh] flex flex-col">
-
+                        <DialogContent className="fixed left-[50%] top-[5%] z-50 w-[95%] max-w-lg translate-x-[-50%] !translate-y-0 gap-3 liquid-glass-elevated p-4 duration-200 rounded-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 max-h-[90vh] landscape:max-h-[85vh] flex flex-col">
                             <DialogHeader className="mb-1 flex-shrink-0">
                                 <DialogTitle className="text-left text-lg font-bold">Tìm kiếm</DialogTitle>
                                 <DialogDescription className="sr-only">Nhập tên phim</DialogDescription>
                             </DialogHeader>
-                            {/* Container cho search với overflow */}
                             <div className="flex-1 overflow-hidden min-h-0">
                                 <MobileSearch onSearchSubmit={() => setIsSearchOpen(false)} />
                             </div>
-
                         </DialogContent>
                     </Dialog>
                 </div>
 
-                {/* Nút Menu */}
+                {/* Menu Button */}
                 <div className="flex justify-center">
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="rounded-full h-14 w-14 hover:bg-white/10 text-muted-foreground active:bg-white/20 touch-target"
-                                aria-label="Menu danh mục"
+                                className="rounded-full h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-white/10 active:bg-white/15 touch-target"
+                                aria-label="Menu"
                             >
-                                <Menu className="h-6 w-6" />
+                                <Menu className="h-5 w-5" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="bottom" className="h-[80vh] rounded-t-[2rem] border-t-white/10 bg-background/90 backdrop-blur-md safe-area-bottom">
-                            <SheetHeader>
-                                <SheetTitle className="text-center">Danh mục</SheetTitle>
+
+                        <SheetContent side="bottom" className="liquid-glass-elevated rounded-t-[28px] max-h-[85vh] landscape:max-h-[90vh] overflow-y-auto scrollbar-thin">
+                            <SheetHeader className="mb-4">
+                                <SheetTitle className="text-lg font-bold">Menu</SheetTitle>
                             </SheetHeader>
-                            <div className="mt-8 h-full overflow-y-auto pb-20">
-                                <Accordion type="single" collapsible className="w-full">
-                                    <AccordionItem value="the-loai" className="border-b-white/10">
-                                        <AccordionTrigger>Thể loại</AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {filterData.genres.map(item => (
-                                                    <Link key={item.id} to={`/genre/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5 touch-target">
-                                                        {item.name}
+
+                            <nav className="space-y-2">
+                                {/* Quick Links */}
+                                <div className="grid grid-cols-2 gap-2 mb-4">
+                                    <Link
+                                        to="/category/phim-le"
+                                        className="glass-solid-fill flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
+                                    >
+                                        Phim Lẻ
+                                    </Link>
+                                    <Link
+                                        to="/category/phim-bo"
+                                        className="glass-solid-fill flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
+                                    >
+                                        Phim Bộ
+                                    </Link>
+                                    <Link
+                                        to="/category/hoat-hinh"
+                                        className="glass-solid-fill flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
+                                    >
+                                        Hoạt Hình
+                                    </Link>
+                                    <Link
+                                        to="/filter"
+                                        className="glass-solid-fill flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
+                                    >
+                                        Bộ Lọc
+                                    </Link>
+                                </div>
+
+                                {/* Genres Accordion */}
+                                <Accordion type="single" collapsible className="space-y-2">
+                                    <AccordionItem value="genres" className="border-0">
+                                        <AccordionTrigger className="glass-solid-fill rounded-xl px-4 py-3 text-sm font-medium hover:no-underline hover:bg-white/10">
+                                            Thể Loại
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-2 pb-0">
+                                            <div className="grid grid-cols-2 gap-1.5">
+                                                {filterData.genres.slice(0, 12).map((genre) => (
+                                                    <Link
+                                                        key={genre.slug}
+                                                        to={`/genre/${genre.slug}`}
+                                                        className="p-2 text-sm rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                                                    >
+                                                        {genre.name}
                                                     </Link>
                                                 ))}
                                             </div>
                                         </AccordionContent>
                                     </AccordionItem>
-                                    <AccordionItem value="quoc-gia" className="border-b-white/10">
-                                        <AccordionTrigger>Quốc gia</AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {filterData.countries.map(item => (
-                                                    <Link key={item.id} to={`/country/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5 touch-target">
-                                                        {item.name}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                    <AccordionItem value="nam" className="border-b-white/10">
-                                        <AccordionTrigger>Năm Phát Hành</AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="grid grid-cols-3 gap-2">
-                                                {filterData.years.map(item => (
-                                                    <Link key={item.id} to={`/year/${item.slug}`} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 text-center text-sm transition-colors border border-white/5 touch-target">
-                                                        {item.name}
+
+                                    <AccordionItem value="countries" className="border-0">
+                                        <AccordionTrigger className="glass-solid-fill rounded-xl px-4 py-3 text-sm font-medium hover:no-underline hover:bg-white/10">
+                                            Quốc Gia
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-2 pb-0">
+                                            <div className="grid grid-cols-2 gap-1.5">
+                                                {filterData.countries.slice(0, 10).map((country) => (
+                                                    <Link
+                                                        key={country.slug}
+                                                        to={`/country/${country.slug}`}
+                                                        className="p-2 text-sm rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                                                    >
+                                                        {country.name}
                                                     </Link>
                                                 ))}
                                             </div>
                                         </AccordionContent>
                                     </AccordionItem>
                                 </Accordion>
-                            </div>
+                            </nav>
                         </SheetContent>
                     </Sheet>
                 </div>
-
-            </div>
+            </nav>
         </div>
     )
 }

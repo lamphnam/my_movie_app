@@ -10,74 +10,130 @@ import {
 } from '@/components/ui/navigation-menu'
 import { filterData } from '@/data/filters'
 import { cn } from '@/lib/utils'
-import { Film } from 'lucide-react'
+import { Film, Clock, Bookmark, Search, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { Button } from './ui/button'
+import { useState } from 'react'
 
 const Header = () => {
-  return (
-    <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none safe-area-top">
-      <div className="glass-panel pointer-events-auto flex h-16 w-full max-w-6xl items-center justify-between rounded-full px-6 md:px-8 transition-all duration-300 hover:shadow-xl border-white/10">
+  const [showSearch, setShowSearch] = useState(false)
 
-        {/* === Logo === */}
-        <div className="flex-1 md:flex-none flex justify-center md:justify-start">
-          <Link to="/" className="flex items-center gap-3 font-bold group">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-              <Film className="text-primary-foreground w-5 h-5" />
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Desktop: Floating Liquid Glass bar */}
+      <div className="hidden lg:block py-3 px-4">
+        <div className="liquid-glass container-desktop flex h-14 items-center justify-between gap-4 px-4">
+
+          {/* === Logo === */}
+          <Link to="/" className="flex items-center gap-2.5 font-bold shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <Film className="text-primary-foreground w-4 h-4" />
             </div>
-            <span className="text-xl md:text-2xl font-black">
-              <span className="text-gradient">HNAM</span>
-              <span className="text-foreground ml-1">Phim</span>
+            <span className="text-base font-extrabold tracking-tight">
+              <span className="text-primary">HNAM</span>
+              <span className="text-foreground">Phim</span>
             </span>
           </Link>
-        </div>
 
-        {/* === Desktop Menu (Giữ nguyên, chỉ hiện ở md trở lên) === */}
-        <div className="hidden md:flex">
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:bg-white/10 rounded-full h-10 px-4 font-semibold data-[state=open]:bg-white/10 transition-all">Thể loại</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] glass-card rounded-2xl border border-white/10">
-                    {filterData.genres.map((genre) => (
-                      <ListItem key={genre.id} to={`/genre/${genre.slug}`} title={genre.name} />
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:bg-white/10 rounded-full h-10 px-4 font-semibold data-[state=open]:bg-white/10 transition-all">Quốc gia</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] glass-card rounded-2xl border border-white/10">
-                    {filterData.countries.map((country) => (
-                      <ListItem
-                        key={country.id}
-                        to={`/country/${country.slug}`}
-                        title={country.name}
-                      />
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:bg-white/10 rounded-full h-10 px-4 font-semibold data-[state=open]:bg-white/10 transition-all">Năm</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] glass-card rounded-2xl border border-white/10">
-                    {filterData.years.map((year) => (
-                      <ListItem key={year.id} to={`/year/${year.slug}`} title={year.name} />
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
+          {/* === Desktop Navigation === */}
+          <nav className="flex items-center gap-0.5">
+            <Link to="/" className="px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-white/5">
+              Trang chủ
+            </Link>
+            <NavigationMenu>
+              <NavigationMenuList className="gap-0">
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="h-8 px-3 text-sm font-medium bg-transparent hover:bg-white/5 data-[state=open]:bg-white/10 rounded-lg">
+                    Thể loại
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[480px] gap-1 p-3 grid-cols-3 liquid-glass-elevated">
+                      {filterData.genres.slice(0, 12).map((genre) => (
+                        <ListItem key={genre.id} to={`/genre/${genre.slug}`} title={genre.name} />
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="h-8 px-3 text-sm font-medium bg-transparent hover:bg-white/5 data-[state=open]:bg-white/10 rounded-lg">
+                    Quốc gia
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-1 p-3 grid-cols-2 liquid-glass-elevated">
+                      {filterData.countries.slice(0, 10).map((country) => (
+                        <ListItem key={country.id} to={`/country/${country.slug}`} title={country.name} />
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="h-8 px-3 text-sm font-medium bg-transparent hover:bg-white/5 data-[state=open]:bg-white/10 rounded-lg">
+                    Năm
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[320px] gap-1 p-3 grid-cols-3 liquid-glass-elevated">
+                      {filterData.years.slice(0, 9).map((year) => (
+                        <ListItem key={year.id} to={`/year/${year.slug}`} title={year.name} />
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+            <Link to="/filter" className="px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-white/5">
+              Lọc phim
+            </Link>
+          </nav>
 
-        {/* === Search (Desktop Only) === */}
-        <div className="hidden md:block w-[320px]">
-          <SearchForm />
+          {/* === Center Search (Semi-opaque pill inside glass bar) === */}
+          <div className="flex-1 max-w-md mx-4">
+            <div className="glass-solid-fill rounded-full">
+              <SearchForm />
+            </div>
+          </div>
+
+          {/* === Right Actions === */}
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg">
+              <Clock className="h-4 w-4" />
+              <span className="text-sm">Lịch sử</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg">
+              <Bookmark className="h-4 w-4" />
+              <span className="text-sm">Đã lưu</span>
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile: Simple top bar (Liquid Glass applied in Layout) */}
+      <div className="lg:hidden flex h-14 items-center justify-between px-4 bg-background/80 backdrop-blur-sm border-b border-border/30">
+        <Link to="/" className="flex items-center gap-2 font-bold">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <Film className="text-primary-foreground w-4 h-4" />
+          </div>
+          <span className="text-base font-extrabold">
+            <span className="text-primary">HNAM</span>
+            <span className="text-foreground">Phim</span>
+          </span>
+        </Link>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 rounded-full hover:bg-white/10"
+          onClick={() => setShowSearch(!showSearch)}
+        >
+          {showSearch ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      {/* Mobile Search Dropdown */}
+      {showSearch && (
+        <div className="lg:hidden border-b border-border/30 bg-background/95 backdrop-blur-sm p-3">
+          <SearchForm />
+        </div>
+      )}
     </header>
   )
 }
@@ -89,11 +145,12 @@ const ListItem = ({ className, title, to }: { title: string; to: string; classNa
         <Link
           to={to}
           className={cn(
-            'block select-none space-y-1 rounded-xl p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-primary/10 hover:text-primary focus:bg-primary/10 focus:text-primary border border-transparent hover:border-primary/20',
+            'block select-none rounded-lg px-3 py-2 text-sm leading-none no-underline outline-none transition-colors',
+            'text-foreground/80 hover:bg-white/10 hover:text-foreground focus:bg-white/10',
             className,
           )}
         >
-          <div className="text-sm font-semibold leading-none">{title}</div>
+          {title}
         </Link>
       </NavigationMenuLink>
     </li>

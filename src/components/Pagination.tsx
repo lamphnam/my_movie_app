@@ -56,49 +56,54 @@ const Pagination = memo(({ currentPage, totalPages, onPageChange }: PaginationPr
   }, [currentPage, totalPages])
 
   return (
-    <UIPagination className="mt-12 mb-8">
-      <div className="glass-card inline-flex items-center rounded-full px-3 py-2.5 shadow-xl border border-white/10">
-        <PaginationContent className="gap-1.5">
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                handlePrevious()
-              }}
-              className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''} size={undefined} />
-          </PaginationItem>
+    <UIPagination className="mt-10 mb-8">
+      <PaginationContent className="flex-wrap gap-1">
+        <PaginationItem>
+          <PaginationPrevious
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              handlePrevious()
+            }}
+            className={`h-9 px-3 ${currentPage === 1 ? 'pointer-events-none opacity-50' : ''}`}
+            size={undefined}
+          />
+        </PaginationItem>
 
-          {getPageNumbers.map((page, index) => (
-            <PaginationItem key={index}>
-              {typeof page === 'string' ? (
-                <PaginationEllipsis />
-              ) : (
-                <PaginationLink
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    onPageChange(page)
-                  }}
-                  isActive={currentPage === page} size={undefined}              >
-                  {page}
-                </PaginationLink>
-              )}
-            </PaginationItem>
-          ))}
-
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                handleNext()
-              }}
-              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''} size={undefined} />
+        {getPageNumbers.map((page, index) => (
+          <PaginationItem key={index}>
+            {typeof page === 'string' ? (
+              <PaginationEllipsis className="w-9 h-9" />
+            ) : (
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  onPageChange(page)
+                }}
+                isActive={currentPage === page}
+                size={undefined}
+                className="h-9 w-9 p-0 flex items-center justify-center"
+              >
+                {page}
+              </PaginationLink>
+            )}
           </PaginationItem>
-        </PaginationContent>
-      </div>
-    </UIPagination >
+        ))}
+
+        <PaginationItem>
+          <PaginationNext
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              handleNext()
+            }}
+            className={`h-9 px-3 ${currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}`}
+            size={undefined}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </UIPagination>
   )
 })
 
