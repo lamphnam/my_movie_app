@@ -112,7 +112,7 @@ export default function HeroDesktop({ featuredMovie, trendingMovies, loading }: 
                         Xu hướng hôm nay
                     </h3>
                     <div className="space-y-1">
-                        {trendingMovies.slice(0, 6).map((item, index) => (
+                        {trendingMovies.slice(0, 4).map((item, index) => (
                             <Link
                                 key={item.slug}
                                 to={`/phim/${item.slug}`}
