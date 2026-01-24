@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
+import MovieCardCompact from '@/components/MovieCardCompact'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
 import MovieFilters from '@/components/MovieFilters'
 import MovieGrid from '@/components/MovieGrid'
@@ -63,7 +64,14 @@ const FilterPage = () => {
       <>
         <MovieGrid>
           {movies.map((movie) => (
-            <MovieCard key={movie.slug} movie={movie} />
+            <div key={movie.slug}>
+              <div className="md:hidden">
+                <MovieCardCompact movie={movie} />
+              </div>
+              <div className="hidden md:block">
+                <MovieCard movie={movie} />
+              </div>
+            </div>
           ))}
         </MovieGrid>
         {pagination && pagination.total_page > 1 && (

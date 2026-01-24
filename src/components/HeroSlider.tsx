@@ -118,7 +118,7 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
   if (!movies || movies.length === 0) return null
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-xl bg-card/30 backdrop-blur-sm">
+    <div className="relative w-full overflow-hidden rounded-lg md:rounded-2xl border border-white/10 shadow-lg md:shadow-xl bg-card/20">
       <div
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]"
@@ -130,58 +130,60 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
       >
         {movies.map((movie) => (
           <div className="relative w-full flex-shrink-0 snap-start" key={movie.slug}>
-            <div className="relative h-[55svh] w-full sm:h-[60svh] md:h-[70vh] lg:h-[75vh]">
+            <div className="relative h-[50svh] w-full sm:h-[55svh] md:h-[65vh]">
               <GracefulImage
                 src={optimizeImage(movie.poster_url, 1280)}
                 alt={movie.name}
                 className="h-full w-full object-cover object-center"
                 loading="eager"
               />
-              {/* Gradient Overlays - optimized for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/50 to-transparent"></div>
+              {/* Simplified gradients for mobile */}
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent md:via-background/50"></div>
             </div>
 
-            <div className="absolute inset-0 z-10 flex items-end pb-16 sm:items-center sm:pb-0">
-              <div className="container flex flex-col items-center gap-6 text-center sm:flex-row sm:gap-10 sm:text-left px-4 sm:px-6">
-                {/* Poster */}
-                <div className="hidden sm:block relative group flex-shrink-0">
-                  <div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+            <div className="absolute inset-0 z-10 flex items-end pb-20 sm:pb-16 md:items-center md:pb-0">
+              <div className="container flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-8 sm:text-left px-4 sm:px-6">
+                {/* Poster - desktop only */}
+                <div className="hidden md:block relative group flex-shrink-0">
                   <GracefulImage
-                    src={optimizeImage(movie.thumb_url, 500)}
+                    src={optimizeImage(movie.thumb_url, 400)}
                     alt={`Poster of ${movie.name}`}
-                    className="relative h-auto w-48 rounded-xl object-cover shadow-xl border-2 border-white/10 group-hover:border-white/30 transition-all duration-500 md:w-64 lg:w-72"
+                    className="h-auto w-48 rounded-lg object-cover shadow-lg border border-white/10 lg:w-56"
                   />
                 </div>
 
-                <div className="max-w-2xl space-y-3 sm:space-y-4 md:space-y-5">
-                  {/* Badge */}
+                <div className="max-w-2xl space-y-2 sm:space-y-3">
+                  {/* Badge - simplified on mobile */}
                   <div className="flex justify-center sm:justify-start">
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-md border border-yellow-500/30 px-4 py-1.5 text-xs font-bold text-yellow-200 shadow-lg">
-                      <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 px-3 py-1 text-xs font-bold text-yellow-200">
+                      <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                       PHIM NỔI BẬT
                     </span>
                   </div>
 
-                  <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground md:text-4xl lg:text-5xl xl:text-6xl leading-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)' }}>
-                    <span className="text-gradient-gold">{movie.name}</span>
+                  {/* Title - no gradient on mobile */}
+                  <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground md:text-3xl lg:text-4xl leading-tight" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.8)' }}>
+                    <span className="md:text-gradient-gold">{movie.name}</span>
                   </h1>
 
-                  <p className="line-clamp-2 sm:line-clamp-3 text-sm leading-relaxed text-foreground/90 sm:text-base md:text-lg" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.8)' }}>
+                  {/* Description - mobile optimized */}
+                  <p className="line-clamp-2 text-sm leading-relaxed text-foreground/85 md:text-base" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}>
                     {movie.description?.replace(/<[^>]+>/g, '') ||
                       'Nội dung phim đang được cập nhật.'}
                   </p>
 
-                  <div className="flex justify-center gap-2 sm:justify-start sm:gap-3 md:gap-4">
-                    <Button asChild size="lg" className="h-11 sm:h-12 px-4 sm:px-6 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg border border-white/10 hover-lift text-sm sm:text-base touch-target">
+                  {/* Action buttons - mobile optimized */}
+                  <div className="flex justify-center gap-2 sm:justify-start sm:gap-3">
+                    <Button asChild size="default" className="tap-target bg-primary hover:bg-primary/90 shadow-md">
                       <Link to={`/phim/${movie.slug}`} aria-label={`Xem phim ${movie.name}`}>
-                        <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <PlayCircle className="w-4 h-4" />
                         Xem Phim
                       </Link>
                     </Button>
-                    <Button asChild size="lg" variant="secondary" className="h-11 sm:h-12 px-4 sm:px-6 bg-card/60 hover:bg-card/80 text-sm sm:text-base touch-target">
+                    <Button asChild size="default" variant="secondary" className="tap-target bg-card/80 hover:bg-card">
                       <Link to={`/phim/${movie.slug}`} aria-label={`Xem chi tiết ${movie.name}`}>
-                        <Info className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <Info className="w-4 h-4" />
                         Chi Tiết
                       </Link>
                     </Button>
@@ -193,17 +195,17 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
         ))}
       </div>
 
-      {/* Pagination Dots */}
-      <div className="absolute bottom-6 left-0 right-0 z-20 flex items-center justify-center gap-2">
+      {/* Pagination Dots - simplified */}
+      <div className="absolute bottom-4 left-0 right-0 z-20 flex items-center justify-center gap-1.5">
         {movies.map((_, index) => (
           <button
             key={index}
             onClick={() => scrollToIndex(index)}
             className={cn(
-              'h-2 rounded-full transition-all duration-500 hover:bg-primary touch-target',
+              'h-1.5 rounded-full transition-all tap-target',
               selectedIndex === index
-                ? 'w-8 bg-gradient-to-r from-primary to-accent shadow-lg'
-                : 'w-2 bg-white/30 hover:bg-white/50',
+                ? 'w-6 bg-primary'
+                : 'w-1.5 bg-white/40 hover:bg-white/60',
             )}
             aria-label={`Go to slide ${index + 1}`}
           />

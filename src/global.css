@@ -24,13 +24,18 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 173 80% 40%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Brand Gradient (limited use) */
+    /* Minimal gradient system - brand only */
     --gradient-brand: linear-gradient(
       135deg,
       hsl(173 80% 40%) 0%,
       hsl(190 85% 45%) 100%
+    );
+    --gradient-gold: linear-gradient(
+      135deg,
+      hsl(43 90% 65%) 0%,
+      hsl(25 95% 65%) 100%
     );
   }
   .dark {
@@ -96,7 +101,16 @@
   }
 }
 
-/* Premium Text Gradients (reduced usage) */
+/* Text gradients - desktop only, minimal usage */
+@media (max-width: 767px) {
+  .text-gradient,
+  .text-gradient-gold {
+    background: none !important;
+    -webkit-text-fill-color: inherit !important;
+    color: hsl(var(--foreground)) !important;
+  }
+}
+
 .text-gradient {
   background: var(--gradient-brand);
   -webkit-background-clip: text;
@@ -105,26 +119,31 @@
 }
 
 .text-gradient-gold {
-  background: linear-gradient(135deg, hsl(43 90% 65%) 0%, hsl(25 95% 65%) 100%);
+  background: var(--gradient-gold);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.text-gradient-accent {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Glass Morphism (optimized for mobile performance) */
+/* Surface effects - mobile-first (no blur on mobile) */
 .glass-panel {
-  @apply bg-background/90 md:backdrop-blur-sm border border-white/10 shadow-lg;
+  @apply bg-background/95 border border-white/10 shadow-md;
+}
+
+@media (min-width: 768px) {
+  .glass-panel {
+    @apply backdrop-blur-sm;
+  }
 }
 
 .glass-card {
-  @apply bg-card/50 md:backdrop-blur-sm border border-white/5 shadow-lg;
+  @apply bg-card/60 border border-white/5 shadow-sm;
+}
+
+@media (min-width: 768px) {
+  .glass-card {
+    @apply backdrop-blur-sm;
+  }
 }
 
 /* Hover Effects (no colored glows) */
@@ -215,8 +234,26 @@
   }
 }
 
-/* Mobile-specific utilities */
+/* Mobile-first utilities */
 @layer utilities {
+  /* Safe area support */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Legacy aliases */
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -225,32 +262,53 @@
     padding-top: env(safe-area-inset-top);
   }
 
-  /* Prevent text selection on interactive elements */
-  .no-select {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  /* Touch-friendly (44px minimum) */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
   }
 
-  /* Touch-friendly buttons */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
 
-  /* Smooth scroll with reduced motion support */
-  .smooth-scroll {
-    scroll-behavior: smooth;
+  /* No text selection on interactive elements */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   /* Content visibility for performance */
+  .render-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+
   .content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 500px;
   }
 
+  /* Smooth scroll with motion support */
+  .scroll-smooth-safe {
+    scroll-behavior: smooth;
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .scroll-smooth-safe {
+      scroll-behavior: auto;
+    }
+  }
+
+  .smooth-scroll {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .smooth-scroll {
+      scroll-behavior: auto;
+    }
   }
 
   /* Hỗ trợ cho Firefox */

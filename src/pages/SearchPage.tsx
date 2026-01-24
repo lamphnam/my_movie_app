@@ -2,6 +2,7 @@
 
 import CategoryHeader from '@/components/CategoryHeader'
 import MovieCard from '@/components/MovieCard'
+import MovieCardCompact from '@/components/MovieCardCompact'
 import MovieCardSkeleton from '@/components/MovieCardSkeleton'
 import MovieGrid from '@/components/MovieGrid'
 import PageWrapper from '@/components/PageWrapper'
@@ -51,7 +52,14 @@ const SearchPage = () => {
         <>
           <MovieGrid>
             {movies.map((movie: MovieListItem) => (
-              <MovieCard key={movie.slug} movie={movie} />
+              <div key={movie.slug}>
+                <div className="md:hidden">
+                  <MovieCardCompact movie={movie} />
+                </div>
+                <div className="hidden md:block">
+                  <MovieCard movie={movie} />
+                </div>
+              </div>
             ))}
           </MovieGrid>
           {pagination && pagination.total_page > 1 && (
