@@ -1,6 +1,7 @@
 // src/App.tsx (Cập nhật)
 
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import { AnimatePresence } from 'framer-motion' // <-- IMPORT
 import { lazy, Suspense } from 'react'
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom'
@@ -42,6 +43,7 @@ function App() {
         <Suspense fallback={<Loader />}>
           <AnimatedRoutes />
         </Suspense>
+        <SpeedInsights />
         <Analytics />
       </Layout>
     </Router>
