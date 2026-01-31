@@ -10,15 +10,16 @@ const DomainHandler = () => {
     const isSecondaryDomain = currentHost.includes('dpdns.org');
 
     useEffect(() => {
-    // If on secondary domain and not already on primary, redirect immediately
-    // This prevents issues with Vercel Analytics and other domain-specific features
-    if (isSecondaryDomain && SITE_ORIGIN.includes('vercel.app')) {
-      const currentPath = window.location.pathname + window.location.search;
-      const canonicalUrl = `${SITE_ORIGIN}${currentPath}`;
-      
-      // Redirect immediately to primary domain
-      console.warn(`⚠️ Redirecting from secondary domain to: ${canonicalUrl}`);
-      window.location.replace(canonicalUrl);
+        // If on secondary domain and not already on primary, redirect immediately
+        // This prevents issues with Vercel Analytics and other domain-specific features
+        if (isSecondaryDomain && SITE_ORIGIN.includes('vercel.app')) {
+            const currentPath = window.location.pathname + window.location.search;
+            const canonicalUrl = `${SITE_ORIGIN}${currentPath}`;
+
+            // Redirect immediately to primary domain
+            console.warn(`⚠️ Redirecting from secondary domain to: ${canonicalUrl}`);
+            window.location.replace(canonicalUrl);
+        }
     }, [isSecondaryDomain]);
 
     // Add noindex meta tag if on secondary domain
