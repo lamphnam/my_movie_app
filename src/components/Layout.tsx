@@ -10,6 +10,7 @@ import MobileBottomNav from './mobile/MobileBottomNav'
 import MobileDrawerMenu from './mobile/MobileDrawerMenu'
 import MobileSearchDrawer from './mobile/MobileSearchDrawer'
 import MobileFilterDrawer from './mobile/MobileFilterDrawer'
+import DomainHandler from './DomainHandler'
 
 const Layout = ({ children }: { children?: React.ReactNode }) => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -26,6 +27,9 @@ const Layout = ({ children }: { children?: React.ReactNode }) => {
 
   return (
     <div className="flex min-h-[100svh] flex-col bg-background">
+      {/* Domain Handler - manages secondary domain noindex */}
+      <DomainHandler />
+
       {/* Desktop Header (lg+) */}
       <div className="hidden lg:block">
         <Header />
