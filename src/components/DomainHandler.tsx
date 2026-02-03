@@ -7,12 +7,12 @@ import { SITE_ORIGIN } from '@/constants';
 
 const DomainHandler = () => {
     const currentHost = typeof window !== 'undefined' ? window.location.host : '';
-    const isSecondaryDomain = currentHost.includes('dpdns.org');
+    const isSecondaryDomain = currentHost.includes('vercel.app');
 
     useEffect(() => {
-        // If on secondary domain and not already on primary, redirect immediately
-        // This prevents issues with Vercel Analytics and other domain-specific features
-        if (isSecondaryDomain && SITE_ORIGIN.includes('vercel.app')) {
+        // If on secondary domain (vercel.app) redirect to primary (dpdns.org)
+        // This prevents issues and ensures users access via the primary domain
+        if (isSecondaryDomain && SITE_ORIGIN.includes('dpdns.org')) {
             const currentPath = window.location.pathname + window.location.search;
             const canonicalUrl = `${SITE_ORIGIN}${currentPath}`;
 
