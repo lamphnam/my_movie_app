@@ -40,8 +40,8 @@ const MobileFloatingNav = () => {
                         )}
                         asChild
                     >
-                        <Link to="/" aria-label="Trang chủ">
-                            <Home className="h-5 w-5" />
+                        <Link to="/" aria-label="Trang chủ" aria-current={isActive('/') ? 'page' : undefined}>
+                            <Home className="h-5 w-5" aria-hidden="true" />
                         </Link>
                     </Button>
                 </div>
@@ -56,7 +56,7 @@ const MobileFloatingNav = () => {
                                 className="rounded-full h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-white/10 active:bg-white/15 touch-target"
                                 aria-label="Tìm kiếm phim"
                             >
-                                <Search className="h-5 w-5" />
+                                <Search className="h-5 w-5" aria-hidden="true" />
                             </Button>
                         </DialogTrigger>
 
@@ -82,7 +82,7 @@ const MobileFloatingNav = () => {
                                 className="rounded-full h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-white/10 active:bg-white/15 touch-target"
                                 aria-label="Menu"
                             >
-                                <Menu className="h-5 w-5" />
+                                <Menu className="h-5 w-5" aria-hidden="true" />
                             </Button>
                         </SheetTrigger>
 

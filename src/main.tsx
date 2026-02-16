@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
 import App from './App.tsx'
 import './global.css'
+import { Toaster } from 'sonner'
 import { initPerformanceHints } from './lib/performance'
 
 // Initialize performance hints
@@ -27,6 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <App />
+        <Toaster position="top-center" richColors closeButton />
       </QueryClientProvider>
     </HelmetProvider>
   </React.StrictMode>,

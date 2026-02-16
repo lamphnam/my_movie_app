@@ -6,6 +6,11 @@ import { useState } from 'react'
 function useLocalStorage<T>(key: string, initialValue: T) {
   // State để lưu trữ giá trị
   const [storedValue, setStoredValue] = useState<T>(() => {
+    // SSR-safe check - return initial value if window is undefined
+    if (typeof window === 'undefined') {
+      return initialValue
+    }
+    
     try {
       // Lấy từ local storage theo key
       const item = window.localStorage.getItem(key)
@@ -13,7 +18,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       return item ? JSON.parse(item) : initialValue
     } catch (error) {
       // Nếu có lỗi thì return initialValue
-      console.log(error)
+      console.error(`Error reading localStorage key "${key}":`, error)
       return initialValue
     }
   })
@@ -25,11 +30,14 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       const valueToStore = value instanceof Function ? value(storedValue) : value
       // Lưu vào state
       setStoredValue(valueToStore)
-      // Lưu vào local storage
-      window.localStorage.setItem(key, JSON.stringify(valueToStore))
+      
+      // Lưu vào local storage - SSR-safe
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore))
+      }
     } catch (error) {
-      // Một implementation nâng cao hơn sẽ handle error case
-      console.log(error)
+      // Log error for debugging
+      console.error(`Error setting localStorage key "${key}":`, error)
     }
   }
 

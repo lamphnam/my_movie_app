@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import type { MovieListItem } from '@/types'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
-import { memo, useCallback, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from './Motion'
 import MovieCard from './MovieCard'
@@ -21,6 +21,21 @@ interface MovieCarouselProps {
 
 const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: MovieCarouselProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  // Check scroll position and update button states
+  const updateScrollButtons = useCallback(() => {
+    if (!scrollRef.current) return
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
+    setCanScrollLeft(scrollLeft > 0)
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
+  }, [])
+
+  // Update on mount and when movies change
+  useEffect(() => {
+    updateScrollButtons()
+  }, [movies, updateScrollButtons])
 
   const scroll = useCallback((direction: 'left' | 'right') => {
     if (!scrollRef.current) return
@@ -37,7 +52,10 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
       left: targetScroll,
       behavior: prefersReducedMotion ? 'auto' : 'smooth'
     })
-  }, [])
+
+    // Update button states after scroll
+    setTimeout(updateScrollButtons, 100)
+  }, [updateScrollButtons])
 
   const scrollPrev = useCallback(() => scroll('left'), [scroll])
   const scrollNext = useCallback(() => scroll('right'), [scroll])
@@ -63,7 +81,8 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
               variant="ghost"
               size="icon"
               onClick={scrollPrev}
-              className="h-8 w-8 rounded-md hover:bg-muted"
+              disabled={!canScrollLeft}
+              className="h-8 w-8 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Scroll left"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -72,7 +91,8 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
               variant="ghost"
               size="icon"
               onClick={scrollNext}
-              className="h-8 w-8 rounded-md hover:bg-muted"
+              disabled={!canScrollRight}
+              className="h-8 w-8 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Scroll right"
             >
               <ChevronRight className="h-4 w-4" />
@@ -84,6 +104,7 @@ const MovieCarousel = memo(({ title, movies, loading, viewAllLink, className }: 
       {/* Scrollable Track */}
       <div
         ref={scrollRef}
+        onScroll={updateScrollButtons}
         className="flex gap-3 lg:gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide overscroll-x-contain touch-pan-x"
       >
         {loading

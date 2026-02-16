@@ -15,6 +15,7 @@ const SearchForm = memo(() => {
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
   const navigate = useNavigate()
   const searchContainerRef = useRef<HTMLDivElement>(null)
 
@@ -57,6 +58,7 @@ const SearchForm = memo(() => {
         !searchContainerRef.current.contains(event.target as Node)
       ) {
         setIsFocused(false)
+        setSelectedIndex(-1)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -65,6 +67,34 @@ const SearchForm = memo(() => {
 
   const results = useMemo(() => searchData?.items || [], [searchData])
   const showResults = isFocused && query.length > 2
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isFocused || results.length === 0) return
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev))
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault()
+        const selectedMovie = results[selectedIndex]
+        navigate(`/phim/${selectedMovie.slug}`)
+        setQuery('')
+        setIsFocused(false)
+        setSelectedIndex(-1)
+      } else if (e.key === 'Escape') {
+        setIsFocused(false)
+        setSelectedIndex(-1)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isFocused, results, selectedIndex, navigate])
 
   return (
     <div className="relative w-full transition-all duration-300" ref={searchContainerRef}>
@@ -117,15 +147,22 @@ const SearchForm = memo(() => {
           )}
           {results.length > 0 && (
             <ul className='space-y-1'>
-              {results.slice(0, 7).map((movie: MovieListItem) => (
+              {results.slice(0, 7).map((movie: MovieListItem, index: number) => (
                 <li key={movie.slug}>
                   <Link
                     to={`/phim/${movie.slug}`}
-                    className="flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-white/10"
+                    className={cn(
+                      "flex items-center gap-4 rounded-xl p-2 transition-colors",
+                      index === selectedIndex
+                        ? "bg-primary/20 border border-primary/50"
+                        : "hover:bg-white/10"
+                    )}
                     onClick={() => {
                       setQuery('')
                       setIsFocused(false)
+                      setSelectedIndex(-1)
                     }}
+                    onMouseEnter={() => setSelectedIndex(index)}
                   >
                     <img
                       src={optimizeImage(movie.thumb_url, 100)}

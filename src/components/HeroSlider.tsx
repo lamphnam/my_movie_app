@@ -118,10 +118,11 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
   if (!movies || movies.length === 0) return null
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg md:rounded-2xl border border-white/10 shadow-lg md:shadow-xl bg-card/20">
+    <div className="relative w-full overflow-hidden rounded-lg md:rounded-2xl border border-white/10 shadow-lg md:shadow-xl bg-card/20" role="region" aria-label="Phim nổi bật" aria-live="polite">
       <div
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]"
+        style={{ willChange: 'scroll-position' }}
         onScroll={handleScroll}
         onPointerDown={handleInteractionStart}
         onPointerUp={handleInteractionEnd}
@@ -157,7 +158,7 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
                   {/* Badge - simplified on mobile */}
                   <div className="flex justify-center sm:justify-start">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 px-3 py-1 text-xs font-bold text-yellow-200">
-                      <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                      <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" aria-hidden="true" />
                       PHIM NỔI BẬT
                     </span>
                   </div>
@@ -177,13 +178,13 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
                   <div className="flex justify-center gap-2 sm:justify-start sm:gap-3">
                     <Button asChild size="default" className="tap-target bg-primary hover:bg-primary/90 shadow-md">
                       <Link to={`/phim/${movie.slug}`} aria-label={`Xem phim ${movie.name}`}>
-                        <PlayCircle className="w-4 h-4" />
+                        <PlayCircle className="w-4 h-4" aria-hidden="true" />
                         Xem Phim
                       </Link>
                     </Button>
                     <Button asChild size="default" variant="secondary" className="tap-target bg-card/80 hover:bg-card">
                       <Link to={`/phim/${movie.slug}`} aria-label={`Xem chi tiết ${movie.name}`}>
-                        <Info className="w-4 h-4" />
+                        <Info className="w-4 h-4" aria-hidden="true" />
                         Chi Tiết
                       </Link>
                     </Button>

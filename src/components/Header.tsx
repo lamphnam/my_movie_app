@@ -94,12 +94,12 @@ const Header = () => {
 
           {/* === Right Actions === */}
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg">
-              <Clock className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg" aria-label="Xem lịch sử xem phim">
+              <Clock className="h-4 w-4" aria-hidden="true" />
               <span className="text-sm">Lịch sử</span>
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg">
-              <Bookmark className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg" aria-label="Xem phim đã lưu">
+              <Bookmark className="h-4 w-4" aria-hidden="true" />
               <span className="text-sm">Đã lưu</span>
             </Button>
           </div>
@@ -108,9 +108,9 @@ const Header = () => {
 
       {/* Mobile: Simple top bar (Liquid Glass applied in Layout) */}
       <div className="lg:hidden flex h-14 items-center justify-between px-4 bg-background/80 backdrop-blur-sm border-b border-border/30">
-        <Link to="/" className="flex items-center gap-2 font-bold">
+        <Link to="/" className="flex items-center gap-2 font-bold" aria-label="Trang chủ HNAM Phim">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Film className="text-primary-foreground w-4 h-4" />
+            <Film className="text-primary-foreground w-4 h-4" aria-hidden="true" />
           </div>
           <span className="text-base font-extrabold">
             <span className="text-primary">HNAM</span>
@@ -123,8 +123,9 @@ const Header = () => {
           size="icon"
           className="h-9 w-9 rounded-full hover:bg-white/10"
           onClick={() => setShowSearch(!showSearch)}
+          aria-label={showSearch ? "Đóng tìm kiếm" : "Mở tìm kiếm"}
         >
-          {showSearch ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+          {showSearch ? <X className="h-5 w-5" aria-hidden="true" /> : <Search className="h-5 w-5" aria-hidden="true" />}
         </Button>
       </div>
 

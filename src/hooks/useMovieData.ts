@@ -29,7 +29,8 @@ export const useMovieData = (fetcher: Fetcher) => {
     }
 
     fetchData()
-  }, [fetcher])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Run once on mount - fetcher should be stable or memoized by caller
 
   return { movies, loading, error }
 }

@@ -9,7 +9,7 @@ const Footer = () => {
           {/* Disclaimer */}
           <div className="surface-card p-4 lg:p-5">
             <div className="flex gap-3">
-              <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" aria-hidden="true" />
               <p className="text-body-sm leading-relaxed">
                 Đây là một dự án cá nhân được tạo ra với mục đích học tập và xây dựng portfolio. Trang
                 web không có bất kỳ hoạt động kinh doanh hay thu lợi nhuận nào. Tất cả nội dung được
@@ -21,26 +21,28 @@ const Footer = () => {
 
           {/* Quick Links - Desktop only */}
           <nav aria-label="Footer navigation" className="hidden lg:flex flex-col gap-2 text-body-sm">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            <button className="text-muted-foreground hover:text-foreground transition-colors text-left">
               Giới thiệu
-            </a>
+            </button>
             <a
               href="https://phim.nguonc.com/khieu-nai-ban-quyen"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              aria-label="Khiếu nại bản quyền (mở trong tab mới)"
             >
               Khiếu nại bản quyền
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3 h-3" aria-hidden="true" />
             </a>
             <a
               href="https://phim.nguonc.com/api-document"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              aria-label="Tài liệu API (mở trong tab mới)"
             >
               API
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3 h-3" aria-hidden="true" />
             </a>
           </nav>
         </div>
@@ -49,7 +51,7 @@ const Footer = () => {
         <div className="mt-6 pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-              <Film className="w-3.5 h-3.5 text-primary-foreground" />
+              <Film className="w-3.5 h-3.5 text-primary-foreground" aria-hidden="true" />
             </div>
             <p className="text-body-sm">
               &copy; {new Date().getFullYear()} <span className="font-semibold text-foreground">HNAM Phim</span>
@@ -58,14 +60,15 @@ const Footer = () => {
 
           {/* Mobile only links */}
           <nav aria-label="Footer navigation" className="flex lg:hidden items-center gap-4 text-body-sm">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            <button className="text-muted-foreground hover:text-foreground transition-colors">
               Giới thiệu
-            </a>
+            </button>
             <a
               href="https://phim.nguonc.com/khieu-nai-ban-quyen"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Khiếu nại bản quyền (mở trong tab mới)"
             >
               Bản quyền
             </a>
@@ -74,6 +77,7 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Tài liệu API (mở trong tab mới)"
             >
               API
             </a>

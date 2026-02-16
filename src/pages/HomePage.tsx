@@ -5,15 +5,18 @@ import HeroSliderSkeleton from '@/components/HeroSliderSkeleton'
 import HeroDesktop from '@/components/HeroDesktop'
 import MovieCarousel from '@/components/MovieCarousel'
 import PageWrapper from '@/components/PageWrapper'
+import ContinueWatchingCard from '@/components/ContinueWatchingCard'
 import { featuredMovies } from '@/config/featuredContent'
 import { DOMAIN_URL } from '@/constants'
 import { movieApi } from '@/services/api'
+import { useWatchHistory } from '@/hooks/useWatchHistory'
 import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const HomePage = () => {
+  const { history } = useWatchHistory()
   const {
     data: koreanData,
     isLoading: koreanMoviesLoading,
@@ -109,6 +112,25 @@ const HomePage = () => {
             )}
           </div>
         </section>
+
+        {/* Continue Watching Section - Data from video embed */}
+        {history.length > 0 && (
+          <section className="section">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-h2">Xem Tiếp</h2>
+            </div>
+            <div className="flex gap-3 lg:gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide overscroll-x-contain touch-pan-x pb-2">
+              {history.slice(0, 10).map((entry) => (
+                <div
+                  key={entry.slug}
+                  className="w-[42vw] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start"
+                >
+                  <ContinueWatchingCard entry={entry} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Content Sections */}
         <section className="section space-y-8 lg:space-y-10">

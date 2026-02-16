@@ -1,6 +1,7 @@
 // src/components/RelatedMovies.tsx
 
 import { movieApi } from '@/services/api'
+import type { MovieListItem } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { memo } from 'react'
 import MovieCarousel from './MovieCarousel'
@@ -19,9 +20,9 @@ const RelatedMovies = memo(({ genreSlug, currentMovieSlug }: RelatedMoviesProps)
     enabled: !!genreSlug,
   })
 
-  const filteredMovies =
+  const filteredMovies: MovieListItem[] =
     relatedMoviesData?.items.filter(
-      (movie: { slug: string | undefined }) => movie.slug !== currentMovieSlug,
+      (movie: MovieListItem) => movie.slug !== currentMovieSlug,
     ) || []
 
   if (!genreSlug || filteredMovies.length === 0) {

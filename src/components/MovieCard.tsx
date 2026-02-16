@@ -19,7 +19,7 @@ const MovieCard = memo(({ movie }: MovieCardProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Link to={`/phim/${movie.slug}`} className="movie-card-desktop group block outline-none" tabIndex={0}>
+        <Link to={`/phim/${movie.slug}`} className="movie-card-desktop group block outline-none" tabIndex={0} aria-label={`Xem phim ${movie.name}`}>
           {/* Poster Container */}
           <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">
             <GracefulImage
@@ -47,9 +47,9 @@ const MovieCard = memo(({ movie }: MovieCardProps) => {
             </div>
 
             {/* Hover Overlay - Simple centered play button */}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none" style={{ willChange: 'opacity' }}>
               <div className="w-12 h-12 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
-                <Play className="w-5 h-5 text-primary-foreground fill-current ml-0.5" />
+                <Play className="w-5 h-5 text-primary-foreground fill-current ml-0.5" aria-hidden="true" />
               </div>
             </div>
           </div>

@@ -60,15 +60,11 @@ const Pagination = memo(({ currentPage, totalPages, onPageChange }: PaginationPr
       <PaginationContent className="flex-wrap gap-1">
         <PaginationItem>
           <PaginationPrevious
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              handlePrevious()
-            }}
-            className={`h-9 px-3 ${currentPage === 1 ? 'pointer-events-none opacity-50' : ''}`}
+            onClick={handlePrevious}
+            className={`h-9 px-3 cursor-pointer ${currentPage === 1 ? 'pointer-events-none opacity-50' : ''}`}
             size={undefined}
-          />
-        </PaginationItem>
+            aria-disabled={currentPage === 1}
+          />        </PaginationItem>
 
         {getPageNumbers.map((page, index) => (
           <PaginationItem key={index}>
@@ -76,14 +72,11 @@ const Pagination = memo(({ currentPage, totalPages, onPageChange }: PaginationPr
               <PaginationEllipsis className="w-9 h-9" />
             ) : (
               <PaginationLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault()
-                  onPageChange(page)
-                }}
+                onClick={() => onPageChange(page)}
                 isActive={currentPage === page}
                 size={undefined}
-                className="h-9 w-9 p-0 flex items-center justify-center"
+                className="h-9 w-9 p-0 flex items-center justify-center cursor-pointer"
+                aria-current={currentPage === page ? 'page' : undefined}
               >
                 {page}
               </PaginationLink>
@@ -93,13 +86,10 @@ const Pagination = memo(({ currentPage, totalPages, onPageChange }: PaginationPr
 
         <PaginationItem>
           <PaginationNext
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              handleNext()
-            }}
-            className={`h-9 px-3 ${currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}`}
+            onClick={handleNext}
+            className={`h-9 px-3 cursor-pointer ${currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}`}
             size={undefined}
+            aria-disabled={currentPage === totalPages}
           />
         </PaginationItem>
       </PaginationContent>

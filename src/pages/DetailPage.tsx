@@ -10,10 +10,11 @@ import { optimizeImage } from '@/lib/image'
 import { movieApi } from '@/services/api'
 import type { EpisodeItem, EpisodeServer, MovieListItem } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { Calendar, Clapperboard, Globe, Heart, Play, Tv } from 'lucide-react'
+import { Calendar, Clapperboard, Globe, Heart, Play, Tv, SkipForward } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 type CategoryItem = { id: string; name: string; slug?: string }
 type CategoryGroup = {
@@ -26,6 +27,7 @@ const DetailPage = () => {
   const playerRef = useRef<HTMLDivElement>(null)
   const [favorites, setFavorites] = useLocalStorage<MovieListItem[]>('favorites', [])
   const [selectedEpisodeUrl, setSelectedEpisodeUrl] = useState<string | null>(null)
+  const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState({ serverIndex: 0, episodeIndex: 0 })
 
   const {
     data: movieData,
@@ -44,6 +46,7 @@ const DetailPage = () => {
   useEffect(() => {
     if (movie?.episodes?.[0]?.items?.[0]) {
       setSelectedEpisodeUrl(movie.episodes[0].items[0].embed)
+      setCurrentEpisodeIndex({ serverIndex: 0, episodeIndex: 0 })
     }
   }, [movie])
 
@@ -56,8 +59,10 @@ const DetailPage = () => {
     if (!movie) return
     if (isFavorited) {
       setFavorites(favorites.filter((fav) => fav.slug !== slug))
+      toast.success('Đã xóa khỏi danh sách yêu thích')
     } else {
       setFavorites([...favorites, movie])
+      toast.success('Đã thêm vào danh sách yêu thích')
     }
   }, [isFavorited, favorites, setFavorites, movie, slug])
 
@@ -65,8 +70,9 @@ const DetailPage = () => {
     playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }, [])
 
-  const handleSelectEpisode = useCallback((url: string) => {
+  const handleSelectEpisode = useCallback((url: string, serverIdx: number, episodeIdx: number) => {
     setSelectedEpisodeUrl(url)
+    setCurrentEpisodeIndex({ serverIndex: serverIdx, episodeIndex: episodeIdx })
     playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }, [])
 
@@ -86,6 +92,45 @@ const DetailPage = () => {
 
     return { genreCategory, yearCategory, countryCategory, primaryGenre, isSeries, posterUrl, backgroundPlayerUrl }
   }, [movie])
+
+  // Get next episode
+  const getNextEpisode = useCallback(() => {
+    if (!movie || !isSeries) return null
+
+    const currentServer = movie.episodes[currentEpisodeIndex.serverIndex]
+    if (!currentServer) return null
+
+    // Check if there's a next episode in current server
+    if (currentEpisodeIndex.episodeIndex < currentServer.items.length - 1) {
+      return {
+        episode: currentServer.items[currentEpisodeIndex.episodeIndex + 1],
+        serverIndex: currentEpisodeIndex.serverIndex,
+        episodeIndex: currentEpisodeIndex.episodeIndex + 1
+      }
+    }
+
+    // Check if there's a next server
+    if (currentEpisodeIndex.serverIndex < movie.episodes.length - 1) {
+      const nextServer = movie.episodes[currentEpisodeIndex.serverIndex + 1]
+      if (nextServer.items.length > 0) {
+        return {
+          episode: nextServer.items[0],
+          serverIndex: currentEpisodeIndex.serverIndex + 1,
+          episodeIndex: 0
+        }
+      }
+    }
+
+    return null
+  }, [movie, isSeries, currentEpisodeIndex])
+
+  const handleNextEpisode = useCallback(() => {
+    const nextEp = getNextEpisode()
+    if (nextEp) {
+      handleSelectEpisode(nextEp.episode.embed, nextEp.serverIndex, nextEp.episodeIndex)
+      toast.info(`Đang phát: ${nextEp.episode.name}`)
+    }
+  }, [getNextEpisode, handleSelectEpisode])
 
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !movie) {
@@ -274,21 +319,35 @@ const DetailPage = () => {
               </div>
             </div>
 
+            {/* Next Episode Button */}
+            {isSeries && getNextEpisode() && (
+              <div className="mt-4">
+                <Button
+                  onClick={handleNextEpisode}
+                  variant="outline"
+                  className="w-full h-10 gap-2"
+                >
+                  <SkipForward className="w-4 h-4" aria-hidden="true" />
+                  Tập tiếp theo: {getNextEpisode()?.episode.name}
+                </Button>
+              </div>
+            )}
+
             {/* Episodes List */}
             {isSeries && (
               <div className="mt-6 lg:mt-8">
                 <h2 className="text-h2 mb-3">Danh sách tập</h2>
                 <div className="space-y-4">
-                  {movie.episodes.map((server: EpisodeServer, index: number) => (
-                    <div key={index} className="surface-card p-4">
+                  {movie.episodes.map((server: EpisodeServer, serverIndex: number) => (
+                    <div key={serverIndex} className="surface-card p-4">
                       <h3 className="text-body font-medium mb-3">{server.server_name}</h3>
                       <div className="flex flex-wrap gap-2">
-                        {server.items.map((episode: EpisodeItem) => (
+                        {server.items.map((episode: EpisodeItem, episodeIndex: number) => (
                           <Button
                             key={episode.slug}
                             variant={selectedEpisodeUrl === episode.embed ? 'default' : 'outline'}
                             size="sm"
-                            onClick={() => handleSelectEpisode(episode.embed)}
+                            onClick={() => handleSelectEpisode(episode.embed, serverIndex, episodeIndex)}
                             className="h-8 px-3"
                           >
                             {episode.name}

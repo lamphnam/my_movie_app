@@ -42,20 +42,27 @@ const GracefulImage = memo(({
   }
 
   return (
-    <img
-      {...props}
-      srcSet={srcSet}
-      sizes={sizes}
-      onLoad={handleLoad}
-      onError={handleError}
-      loading={loading}
-      decoding={decoding}
-      className={cn(
-        'transition-opacity duration-200',
-        isLoaded ? 'opacity-100' : 'opacity-0',
-        className,
+    <div className="relative">
+      {/* Loading skeleton */}
+      {!isLoaded && (
+        <div className={cn('absolute inset-0 bg-muted animate-pulse rounded', className)} />
       )}
-    />
+
+      <img
+        {...props}
+        srcSet={srcSet}
+        sizes={sizes}
+        onLoad={handleLoad}
+        onError={handleError}
+        loading={loading}
+        decoding={decoding}
+        className={cn(
+          'transition-opacity duration-200',
+          isLoaded ? 'opacity-100' : 'opacity-0',
+          className,
+        )}
+      />
+    </div>
   )
 })
 
