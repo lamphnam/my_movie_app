@@ -10,73 +10,124 @@ import { featuredMovies } from '@/config/featuredContent'
 import { DOMAIN_URL } from '@/constants'
 import { movieApi } from '@/services/api'
 import { useWatchHistory } from '@/hooks/useWatchHistory'
-import { useQuery } from '@tanstack/react-query'
+import type { MovieListApiResponse, MovieListItem } from '@/types'
+import { useQueries } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+
+// --------------- Section Config ---------------
+
+type HomeSectionType = 'country' | 'category' | 'genre'
+
+interface HomeSection {
+  id: string
+  title: string
+  type: HomeSectionType
+  slug: string
+  viewAllLink: string
+}
+
+const HOME_SECTIONS: HomeSection[] = [
+  // ── initial (fetched on load) ─────────────────────────────────────────────
+  { id: 'korea', title: 'Phim Hàn Quốc', type: 'country', slug: 'han-quoc', viewAllLink: '/country/han-quoc' },
+  { id: 'vietnam', title: 'Phim Việt Nam', type: 'country', slug: 'viet-nam', viewAllLink: '/country/viet-nam' },
+  { id: 'china', title: 'Phim Trung Quốc', type: 'country', slug: 'trung-quoc', viewAllLink: '/country/trung-quoc' },
+  // ── lazy – countries ─────────────────────────────────────────────────────
+  { id: 'us-uk', title: 'Phim Âu Mỹ', type: 'country', slug: 'au-my', viewAllLink: '/country/au-my' },
+  { id: 'japan', title: 'Phim Nhật Bản', type: 'country', slug: 'nhat-ban', viewAllLink: '/country/nhat-ban' },
+  { id: 'thai', title: 'Phim Thái Lan', type: 'country', slug: 'thai-lan', viewAllLink: '/country/thai-lan' },
+  { id: 'hong-kong', title: 'Phim Hồng Kông', type: 'country', slug: 'hong-kong', viewAllLink: '/country/hong-kong' },
+  { id: 'taiwan', title: 'Phim Đài Loan', type: 'country', slug: 'dai-loan', viewAllLink: '/country/dai-loan' },
+  { id: 'india', title: 'Phim Ấn Độ', type: 'country', slug: 'an-do', viewAllLink: '/country/an-do' },
+  // ── lazy – categories ────────────────────────────────────────────────────
+  { id: 'feature-film', title: 'Phim Lẻ', type: 'category', slug: 'phim-le', viewAllLink: '/category/phim-le' },
+  { id: 'series', title: 'Phim Bộ', type: 'category', slug: 'phim-bo', viewAllLink: '/category/phim-bo' },
+  { id: 'animation', title: 'Hoạt Hình', type: 'category', slug: 'hoat-hinh', viewAllLink: '/category/hoat-hinh' },
+  { id: 'tv-shows', title: 'TV Shows', type: 'category', slug: 'tv-shows', viewAllLink: '/category/tv-shows' },
+  // ── lazy – genres ────────────────────────────────────────────────────────
+  { id: 'action', title: 'Phim Hành Động', type: 'genre', slug: 'hanh-dong', viewAllLink: '/genre/hanh-dong' },
+  { id: 'romance', title: 'Phim Tình Cảm', type: 'genre', slug: 'tinh-cam', viewAllLink: '/genre/tinh-cam' },
+  { id: 'horror', title: 'Phim Kinh Dị', type: 'genre', slug: 'kinh-di', viewAllLink: '/genre/kinh-di' },
+]
+
+const INITIAL_COUNT = 3
+const LOAD_BATCH = 2
+
+// --------------- Query factory ---------------
+
+function buildQueryFn(section: HomeSection): () => Promise<MovieListApiResponse> {
+  switch (section.type) {
+    case 'country':
+      return () => movieApi.getMoviesByCountry(section.slug, 1)
+    case 'category':
+      return () => movieApi.getMoviesByCategory(section.slug, 1)
+    case 'genre':
+      return () => movieApi.getMoviesByGenre(section.slug, 1)
+    default:
+      return () => movieApi.getMoviesByCountry(section.slug, 1)
+  }
+}
+
+// --------------- Component ---------------
 
 const HomePage = () => {
   const { history } = useWatchHistory()
-  const {
-    data: koreanData,
-    isLoading: koreanMoviesLoading,
-    isError: isKoreanError,
-  } = useQuery({
-    queryKey: ['movies', 'korean'],
-    queryFn: () => movieApi.getMoviesByCountry('han-quoc', 1),
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+
+  // ── Infinite-scroll state ──────────────────────────────────────────────────
+  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const isTriggering = useRef(false)
+
+  const visibleSections = HOME_SECTIONS.slice(0, visibleCount)
+
+  // ── Fetch all currently-visible sections with a single useQueries call ─────
+  const sectionQueries = useQueries({
+    queries: visibleSections.map((section) => ({
+      queryKey: ['home-section', section.type, section.slug] as const,
+      queryFn: buildQueryFn(section),
+      staleTime: 10 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+    })),
   })
 
-  const {
-    data: vietnamData,
-    isLoading: vietnamMoviesLoading,
-    isError: isVietnamError,
-  } = useQuery({
-    queryKey: ['movies', 'vietnam'],
-    queryFn: () => movieApi.getMoviesByCountry('viet-nam', 1),
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  })
+  // ── IntersectionObserver sentinel ─────────────────────────────────────────
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel || visibleCount >= HOME_SECTIONS.length) return
 
-  const {
-    data: chineseData,
-    isLoading: chineseMoviesLoading,
-    isError: isChineseError,
-  } = useQuery({
-    queryKey: ['movies', 'chinese'],
-    queryFn: () => movieApi.getMoviesByCountry('trung-quoc', 1),
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  })
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isTriggering.current) {
+          isTriggering.current = true
+          setVisibleCount((prev) => Math.min(prev + LOAD_BATCH, HOME_SECTIONS.length))
+        }
+      },
+      { rootMargin: '800px 0px' },
+    )
 
-  const {
-    data: usUkData,
-    isLoading: usUkMoviesLoading,
-    isError: isUsUkError,
-  } = useQuery({
-    queryKey: ['movies', 'us-uk'],
-    queryFn: () => movieApi.getMoviesByCountry('au-my', 1),
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  })
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [visibleCount])
 
-  const {
-    data: japanData,
-    isLoading: japanLoading,
-  } = useQuery({
-    queryKey: ['movies', 'japan'],
-    queryFn: () => movieApi.getMoviesByCountry('nhat-ban', 1),
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  })
+  // Reset debounce flag after each batch is appended
+  useEffect(() => {
+    isTriggering.current = false
+  }, [visibleCount])
 
-  if (isKoreanError || isChineseError || isUsUkError || isVietnamError) {
+  // ── Hero / trending derived from the first INITIAL_COUNT queries ───────────
+  const initialQueries = sectionQueries.slice(0, INITIAL_COUNT)
+  const isInitialError = initialQueries.some((q) => q.isError)
+  const isLoading = initialQueries.some((q) => q.isLoading || q.isPending)
+
+  if (isInitialError) {
     return <div className="py-10 text-center text-destructive">Đã có lỗi xảy ra.</div>
   }
 
-  const isLoading = koreanMoviesLoading || chineseMoviesLoading || vietnamMoviesLoading
-  const trendingMovies = [...(koreanData?.items || []), ...(chineseData?.items || []), ...(vietnamData?.items || [])].slice(0, 10)
+  const trendingMovies: MovieListItem[] = initialQueries
+    .flatMap((q) => q.data?.items ?? [])
+    .slice(0, 10)
 
   return (
     <PageWrapper>
@@ -143,57 +194,32 @@ const HomePage = () => {
           </section>
         )}
 
-        {/* Content Sections */}
+        {/* Content Sections – infinite scroll by section */}
         <section className="section space-y-8 lg:space-y-10">
-          {/* Korean Movies */}
-          <div className="render-auto">
-            <MovieCarousel
-              title="Phim Hàn Quốc"
-              movies={koreanData?.items || []}
-              loading={koreanMoviesLoading}
-              viewAllLink="/country/han-quoc"
-            />
-          </div>
+          {visibleSections.map((section, idx) => {
+            const q = sectionQueries[idx]
+            const items: MovieListItem[] = q?.data?.items ?? []
+            return (
+              <div className="render-auto" key={section.id}>
+                <MovieCarousel
+                  title={section.title}
+                  movies={items}
+                  loading={q?.isLoading ?? false}
+                  viewAllLink={section.viewAllLink}
+                />
+                {q?.isError && (
+                  <p className="mt-2 text-sm text-destructive">
+                    Mục này gặp lỗi khi tải. Vui lòng thử lại sau.
+                  </p>
+                )}
+              </div>
+            )
+          })}
 
-          {/* Vietnam Movies */}
-          <div className="render-auto">
-            <MovieCarousel
-              title="Phim Việt Nam"
-              movies={vietnamData?.items || []}
-              loading={vietnamMoviesLoading}
-              viewAllLink="/country/viet-nam"
-            />
-          </div>
-
-          {/* Chinese Movies */}
-          <div className="render-auto">
-            <MovieCarousel
-              title="Phim Trung Quốc"
-              movies={chineseData?.items || []}
-              loading={chineseMoviesLoading}
-              viewAllLink="/country/trung-quoc"
-            />
-          </div>
-
-          {/* US/UK Movies */}
-          <div className="render-auto">
-            <MovieCarousel
-              title="Phim Âu Mỹ"
-              movies={usUkData?.items || []}
-              loading={usUkMoviesLoading}
-              viewAllLink="/country/au-my"
-            />
-          </div>
-
-          {/* Japan Movies */}
-          <div className="render-auto">
-            <MovieCarousel
-              title="Phim Nhật Bản"
-              movies={japanData?.items || []}
-              loading={japanLoading}
-              viewAllLink="/country/nhat-ban"
-            />
-          </div>
+          {/* Sentinel – triggers next batch when scrolled into viewport */}
+          {visibleCount < HOME_SECTIONS.length && (
+            <div ref={sentinelRef} aria-hidden="true" className="h-px" />
+          )}
         </section>
 
         {/* Quick Links Section - Desktop */}
