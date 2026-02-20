@@ -29,6 +29,17 @@ const HomePage = () => {
   })
 
   const {
+    data: vietnamData,
+    isLoading: vietnamMoviesLoading,
+    isError: isVietnamError,
+  } = useQuery({
+    queryKey: ['movies', 'vietnam'],
+    queryFn: () => movieApi.getMoviesByCountry('viet-nam', 1),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  })
+
+  const {
     data: chineseData,
     isLoading: chineseMoviesLoading,
     isError: isChineseError,
@@ -60,12 +71,12 @@ const HomePage = () => {
     gcTime: 30 * 60 * 1000,
   })
 
-  if (isKoreanError || isChineseError || isUsUkError) {
+  if (isKoreanError || isChineseError || isUsUkError || isVietnamError) {
     return <div className="py-10 text-center text-destructive">Đã có lỗi xảy ra.</div>
   }
 
-  const isLoading = koreanMoviesLoading || chineseMoviesLoading
-  const trendingMovies = [...(koreanData?.items || []), ...(chineseData?.items || [])].slice(0, 10)
+  const isLoading = koreanMoviesLoading || chineseMoviesLoading || vietnamMoviesLoading
+  const trendingMovies = [...(koreanData?.items || []), ...(chineseData?.items || []), ...(vietnamData?.items || [])].slice(0, 10)
 
   return (
     <PageWrapper>
@@ -141,6 +152,16 @@ const HomePage = () => {
               movies={koreanData?.items || []}
               loading={koreanMoviesLoading}
               viewAllLink="/country/han-quoc"
+            />
+          </div>
+
+          {/* Vietnam Movies */}
+          <div className="render-auto">
+            <MovieCarousel
+              title="Phim Việt Nam"
+              movies={vietnamData?.items || []}
+              loading={vietnamMoviesLoading}
+              viewAllLink="/country/viet-nam"
             />
           </div>
 

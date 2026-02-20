@@ -28,5 +28,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Android
+android/*
+
 .agent/*
 .agents/*
+capacitor.config.ts

@@ -4,25 +4,23 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
+  base: './', // Relative path for Capacitor
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    host: true, // Allow access from mobile devices
+    port: 5173,
+  },
   build: {
+    outDir: 'dist',
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
           "react-vendor": ["react", "react-dom", "react-router-dom"],
-          "ui-vendor": [
-            "@radix-ui/react-accordion",
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-navigation-menu",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-slot",
-            "@radix-ui/react-toggle",
-            "@radix-ui/react-toggle-group",
-          ],
           "animation-vendor": [
             "framer-motion",
             "embla-carousel-react",
