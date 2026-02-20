@@ -4,7 +4,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // Relative path for Capacitor
+  // Use '/' for web/Vercel deployment.
+  // Capacitor with androidScheme:'https' works with absolute paths too.
+  base: "/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -15,7 +17,7 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    outDir: 'dist',
+    outDir: "dist",
     sourcemap: false,
     rollupOptions: {
       output: {
