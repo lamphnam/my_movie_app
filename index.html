@@ -29,22 +29,38 @@
     <meta name="author" content="HNAM PHIM" />
     <meta name="language" content="Vietnamese" />
 
-    <!-- DNS Prefetch for Performance -->
+    <!-- DNS Prefetch / Preconnect for external resources -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="dns-prefetch" href="https://phimimg.com" />
+    <link rel="dns-prefetch" href="https://images.weserv.nl" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.weserv.nl" crossorigin />
 
-    <!-- Preload critical fonts -->
+    <!-- Non-blocking web font load: use preload + onload swap to avoid render-blocking -->
     <link
       rel="preload"
       as="style"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      />
+    </noscript>
+
+    <!-- LCP image preload: hero featured movie poster (1280 px WebP via weserv proxy) -->
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="preload"
+      as="image"
+      fetchpriority="high"
+      href="https://images.weserv.nl/?url=phim.nguonc.com%2Fpublic%2Fimages%2FPost%2F7%2Ftieng-yeu-nay-anh-dich-duoc-khong-1.jpg&w=1280&fit=cover&q=80&output=webp&af="
     />
 
     <title>HNAM PHIM - Xem Phim Online Miễn Phí</title>

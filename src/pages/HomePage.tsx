@@ -1,7 +1,6 @@
 // src/pages/HomePage.tsx
 
 import HeroSlider from '@/components/HeroSlider'
-import HeroSliderSkeleton from '@/components/HeroSliderSkeleton'
 import HeroDesktop from '@/components/HeroDesktop'
 import MovieCarousel from '@/components/MovieCarousel'
 import PageWrapper from '@/components/PageWrapper'
@@ -165,13 +164,9 @@ const HomePage = () => {
               loading={isLoading}
             />
           </div>
-          {/* Mobile: Slider */}
+          {/* Mobile: Slider — featuredMovies is static config, render immediately (no CLS) */}
           <div className="lg:hidden">
-            {isLoading ? (
-              <HeroSliderSkeleton />
-            ) : (
-              <HeroSlider movies={featuredMovies} loading={isLoading} />
-            )}
+            <HeroSlider movies={featuredMovies} loading={false} />
           </div>
         </section>
 

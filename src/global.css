@@ -3,6 +3,38 @@
 @tailwind utilities;
 
 /* ==========================================================================
+   FONT FALLBACK METRIC OVERRIDES
+   Adjusts system-font metrics to match web fonts closely, preventing
+   layout shift (CLS) caused by FOUT when web fonts are non-blocking.
+   ========================================================================== */
+
+/* Inter fallback: adjusts Arial metrics to approximate Inter */
+@font-face {
+  font-family: "Inter Fallback";
+  src:
+    local("Arial"), local("Helvetica Neue"), local("Helvetica"),
+    local("sans-serif");
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+/* Plus Jakarta Sans fallback: adjusts Arial to approximate Plus Jakarta Sans */
+@font-face {
+  font-family: "Plus Jakarta Sans Fallback";
+  src:
+    local("Arial"), local("Helvetica Neue"), local("Helvetica"),
+    local("sans-serif");
+  size-adjust: 108%;
+  ascent-override: 94%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+/* ==========================================================================
    DESIGN SYSTEM - HNAM PHIM
    Desktop-first with mobile fallbacks
    ========================================================================== */
@@ -13,8 +45,10 @@
 @layer base {
   :root {
     /* Typography */
-    --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
-    --font-body: "Inter", system-ui, -apple-system, sans-serif;
+    --font-display:
+      "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", system-ui, sans-serif;
+    --font-body:
+      "Inter", "Inter Fallback", system-ui, -apple-system, sans-serif;
 
     /* Colors - Dark Theme (Default) */
     --background: 220 20% 6%;

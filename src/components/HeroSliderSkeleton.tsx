@@ -1,8 +1,8 @@
 const HeroSliderSkeleton = () => {
   return (
     <div className="relative w-full overflow-hidden rounded-lg animate-pulse">
-      {/* Lớp nền chính cho ảnh slider */}
-      <div className="aspect-video w-full bg-secondary md:aspect-[2.4/1]"></div>
+      {/* Same height as the real HeroSlider to prevent CLS on load→content swap */}
+      <div className="h-[50svh] sm:h-[55svh] md:h-[65vh] w-full bg-secondary"></div>
 
       {/* Lớp mô phỏng nội dung */}
       <div className="absolute inset-0 z-10 flex items-end pb-8 sm:items-center sm:pb-0">

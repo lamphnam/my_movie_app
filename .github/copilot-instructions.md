@@ -15,6 +15,12 @@ Keep shadcn/ui semantic CSS variables and Tailwind usage.
 
 ## Process
 
+0. Read agent skills for design guidelines and best practices:
+   - Web Interface Guidelines: https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md
+   - Vercel React Best Practices: https://raw.githubusercontent.com/vercel-labs/vercel-react-best-practices/main/command.md
+     or access agent and agents folder on codebase for reference.
+     "my_movie_app\.agent"
+     "my_movie_app\.agents"
 1. Audit where these classes/tokens are used: text-gradient*, glass-*, hover-glow, hover-lift, animate-shimmer, animate-float, animate-pulse-glow.
 2. Replace theme tokens in globals.css:
    - Change --primary/--accent/--ring away from purple.

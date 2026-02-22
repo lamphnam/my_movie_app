@@ -129,7 +129,7 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
         onTouchStart={handleInteractionStart}
         onTouchEnd={handleInteractionEnd}
       >
-        {movies.map((movie) => (
+        {movies.map((movie, slideIndex) => (
           <div className="relative w-full flex-shrink-0 snap-start" key={movie.slug}>
             <div className="relative h-[50svh] w-full sm:h-[55svh] md:h-[65vh]">
               <GracefulImage
@@ -137,6 +137,7 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
                 alt={movie.name}
                 className="h-full w-full object-cover object-center"
                 loading="eager"
+                fetchPriority={slideIndex === 0 ? 'high' : 'auto'}
               />
               {/* Simplified gradients for mobile */}
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent"></div>
@@ -146,11 +147,13 @@ const HeroSlider = memo(({ movies, loading }: HeroSliderProps) => {
             <div className="absolute inset-0 z-10 flex items-end pb-20 sm:pb-16 md:items-center md:pb-0">
               <div className="container flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-8 sm:text-left px-4 sm:px-6">
                 {/* Poster - desktop only */}
-                <div className="hidden md:block relative group flex-shrink-0">
+                <div className="hidden md:block relative group flex-shrink-0 overflow-hidden rounded-lg">
                   <GracefulImage
                     src={optimizeImage(movie.thumb_url, 400)}
                     alt={`Poster of ${movie.name}`}
                     className="h-auto w-48 rounded-lg object-cover shadow-lg border border-white/10 lg:w-56"
+                    width={400}
+                    height={600}
                   />
                 </div>
 
