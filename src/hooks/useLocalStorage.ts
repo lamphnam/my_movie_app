@@ -1,47 +1,39 @@
-'use client'
-
 // src/hooks/useLocalStorage.ts
-import { useState } from 'react'
+import { useState, useRef, useCallback } from "react";
 
 function useLocalStorage<T>(key: string, initialValue: T) {
-  // State để lưu trữ giá trị
   const [storedValue, setStoredValue] = useState<T>(() => {
-    // SSR-safe check - return initial value if window is undefined
-    if (typeof window === 'undefined') {
-      return initialValue
-    }
-    
+    if (typeof window === "undefined") return initialValue;
     try {
-      // Lấy từ local storage theo key
-      const item = window.localStorage.getItem(key)
-      // Parse stored json hoặc nếu không có thì return initialValue
-      return item ? JSON.parse(item) : initialValue
-    } catch (error) {
-      // Nếu có lỗi thì return initialValue
-      console.error(`Error reading localStorage key "${key}":`, error)
-      return initialValue
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch {
+      return initialValue;
     }
-  })
+  });
 
-  // Return một wrapped version của useState's setter function mà persist giá trị vào localStorage
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      // Cho phép value là một function để có cùng API như useState
-      const valueToStore = value instanceof Function ? value(storedValue) : value
-      // Lưu vào state
-      setStoredValue(valueToStore)
-      
-      // Lưu vào local storage - SSR-safe
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore))
+  // Always-current ref so setValue never reads a stale closure
+  const storedValueRef = useRef(storedValue);
+  storedValueRef.current = storedValue;
+
+  const setValue = useCallback(
+    (value: T | ((val: T) => T)) => {
+      try {
+        // Use ref to get latest value, fixes stale closure bug in production
+        const valueToStore =
+          value instanceof Function ? value(storedValueRef.current) : value;
+        setStoredValue(valueToStore);
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        }
+      } catch (error) {
+        console.error(`Error setting localStorage key "${key}":`, error);
       }
-    } catch (error) {
-      // Log error for debugging
-      console.error(`Error setting localStorage key "${key}":`, error)
-    }
-  }
+    },
+    [key],
+  );
 
-  return [storedValue, setValue] as const
+  return [storedValue, setValue] as const;
 }
 
-export default useLocalStorage
+export default useLocalStorage;
