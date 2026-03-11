@@ -1,6 +1,18 @@
-import { Film, Info, ExternalLink } from 'lucide-react'
+import { Film, Info, ExternalLink, Github } from 'lucide-react'
+import { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 const Footer = () => {
+  const [aboutOpen, setAboutOpen] = useState(false)
+
   return (
     <footer className="mt-8 lg:mt-12 border-t border-border bg-muted/30" role="contentinfo">
       <div className="container-desktop py-6 lg:py-8">
@@ -21,7 +33,10 @@ const Footer = () => {
 
           {/* Quick Links - Desktop only */}
           <nav aria-label="Footer navigation" className="hidden lg:flex flex-col gap-2 text-body-sm">
-            <button className="text-muted-foreground hover:text-foreground transition-colors text-left">
+            <button
+              onClick={() => setAboutOpen(true)}
+              className="text-muted-foreground hover:text-foreground transition-colors text-left"
+            >
               Giới thiệu
             </button>
             <a
@@ -60,7 +75,10 @@ const Footer = () => {
 
           {/* Mobile only links */}
           <nav aria-label="Footer navigation" className="flex lg:hidden items-center gap-4 text-body-sm">
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <button
+              onClick={() => setAboutOpen(true)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Giới thiệu
             </button>
             <a
@@ -84,6 +102,46 @@ const Footer = () => {
           </nav>
         </div>
       </div>
+
+      {/* About Dialog */}
+      <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <Film className="w-4 h-4 text-primary-foreground" aria-hidden="true" />
+              </div>
+              HNAM Phim
+            </DialogTitle>
+            <DialogDescription>
+              HNAM Phim là dự án cá nhân được xây dựng với mục đích học tập và phát triển kỹ năng lập trình web. Ứng dụng sử dụng dữ liệu từ API công khai của nguonc.com.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-body-sm text-muted-foreground mb-2">Công nghệ sử dụng</p>
+              <div className="flex flex-wrap gap-1.5">
+                <Badge variant="secondary">React</Badge>
+                <Badge variant="secondary">TypeScript</Badge>
+                <Badge variant="secondary">Vite</Badge>
+                <Badge variant="secondary">Tailwind CSS</Badge>
+                <Badge variant="secondary">Vercel</Badge>
+              </div>
+            </div>
+            <Button variant="outline" className="w-full gap-2" asChild>
+              <a
+                href="https://github.com/lamphnam/my_movie_app"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Xem mã nguồn trên GitHub (mở trong tab mới)"
+              >
+                <Github className="w-4 h-4" aria-hidden="true" />
+                Xem trên GitHub
+              </a>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </footer>
   )
 }

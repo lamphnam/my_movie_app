@@ -5,12 +5,13 @@ import PageWrapper from '@/components/PageWrapper'
 import RelatedMovies from '@/components/RelatedMovies'
 import { Button } from '@/components/ui/button'
 import { DOMAIN_URL } from '@/constants'
-import useLocalStorage from '@/hooks/useLocalStorage'
+import { useFavorites } from '@/hooks/useFavorites'
+import { useWatchHistory } from '@/hooks/useWatchHistory'
 import { optimizeImage } from '@/lib/image'
 import { movieApi } from '@/services/api'
-import type { EpisodeItem, EpisodeServer, MovieListItem } from '@/types'
+import type { EpisodeItem, EpisodeServer } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { Calendar, Clapperboard, Globe, Heart, Play, Tv, SkipForward } from 'lucide-react'
+import { Calendar, Clapperboard, Globe, Heart, Play, Link, Tv, SkipForward } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
@@ -25,7 +26,8 @@ type CategoryGroup = {
 const DetailPage = () => {
   const { slug } = useParams<{ slug: string }>()
   const playerRef = useRef<HTMLDivElement>(null)
-  const [favorites, setFavorites] = useLocalStorage<MovieListItem[]>('favorites', [])
+  const { isFavorited: checkFavorited, toggleFavorite } = useFavorites()
+  const { history, addToHistory } = useWatchHistory()
   const [selectedEpisodeUrl, setSelectedEpisodeUrl] = useState<string | null>(null)
   const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState({ serverIndex: 0, episodeIndex: 0 })
 
@@ -37,44 +39,74 @@ const DetailPage = () => {
     queryKey: ['movie', slug],
     queryFn: () => movieApi.getMovieDetail(slug!),
     enabled: !!slug,
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
+    staleTime: 15 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   })
 
   const movie = movieData?.movie
 
+  const isFavorited = useMemo(() => checkFavorited(slug ?? ''), [checkFavorited, slug])
+
+  // Auto-select episode from watch history if returning to a previously-watched movie
   useEffect(() => {
-    if (movie?.episodes?.[0]?.items?.[0]) {
+    if (!movie?.episodes?.length) return
+    const historyEntry = history.find((h) => h.slug === slug)
+    if (historyEntry?.currentEpisodeName) {
+      for (let si = 0; si < movie.episodes.length; si++) {
+        const ei = movie.episodes[si].items.findIndex(
+          (ep: EpisodeItem) => ep.name === historyEntry.currentEpisodeName
+        )
+        if (ei !== -1) {
+          setSelectedEpisodeUrl(movie.episodes[si].items[ei].embed)
+          setCurrentEpisodeIndex({ serverIndex: si, episodeIndex: ei })
+          return
+        }
+      }
+    }
+    // Default: first episode
+    if (movie.episodes[0]?.items?.[0]) {
       setSelectedEpisodeUrl(movie.episodes[0].items[0].embed)
       setCurrentEpisodeIndex({ serverIndex: 0, episodeIndex: 0 })
     }
-  }, [movie])
-
-  const isFavorited = useMemo(() =>
-    favorites.some((fav) => fav.slug === slug),
-    [favorites, slug]
-  )
+  }, [movie, slug, history])
 
   const handleToggleFavorite = useCallback(() => {
     if (!movie) return
+    toggleFavorite(movie)
     if (isFavorited) {
-      setFavorites(favorites.filter((fav) => fav.slug !== slug))
       toast.success('Đã xóa khỏi danh sách yêu thích')
     } else {
-      setFavorites([...favorites, movie])
       toast.success('Đã thêm vào danh sách yêu thích')
     }
-  }, [isFavorited, favorites, setFavorites, movie, slug])
+  }, [isFavorited, toggleFavorite, movie])
+
+  const handleShare = useCallback(async () => {
+    const url = window.location.href
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success('Đã sao chép liên kết!')
+    } catch {
+      toast.error('Không thể sao chép liên kết')
+    }
+  }, [])
 
   const handleWatchClick = useCallback(() => {
+    // TODO: Track real playback progress from iframe when possible
+    if (movie) addToHistory(movie, undefined, 0)
     playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }, [])
+  }, [movie, addToHistory])
 
   const handleSelectEpisode = useCallback((url: string, serverIdx: number, episodeIdx: number) => {
     setSelectedEpisodeUrl(url)
     setCurrentEpisodeIndex({ serverIndex: serverIdx, episodeIndex: episodeIdx })
+    // Record the episode name in watch history
+    if (movie) {
+      const episodeName = movie.episodes[serverIdx]?.items[episodeIdx]?.name
+      // TODO: Track real playback progress from iframe when possible
+      addToHistory(movie, episodeName, 0)
+    }
     playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }, [])
+  }, [movie, addToHistory])
 
   const { genreCategory, yearCategory, countryCategory, primaryGenre, isSeries, posterUrl, backgroundPlayerUrl } = useMemo(() => {
     if (!movie) return {}
@@ -210,7 +242,7 @@ const DetailPage = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <Button onClick={handleWatchClick} className="h-10">
                   <Play className="w-4 h-4 fill-current" /> Xem
                 </Button>
@@ -219,6 +251,10 @@ const DetailPage = () => {
                     className={`w-4 h-4 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
                   />
                   Lưu
+                </Button>
+                <Button variant="outline" onClick={handleShare} className="h-10 w-20" aria-label="Share phim">
+                  <Link className="w-4 h-4" />
+                  Share
                 </Button>
               </div>
 
@@ -368,7 +404,7 @@ const DetailPage = () => {
 
       {/* Mobile Fixed Actions */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-3 pb-safe safe-area-bottom">
-        <div className="container-desktop grid grid-cols-2 gap-2">
+        <div className="container-desktop grid grid-cols-3 gap-2">
           <Button onClick={handleWatchClick} className="h-11">
             <Play className="w-4 h-4 fill-current" /> Xem Phim
           </Button>
@@ -377,6 +413,10 @@ const DetailPage = () => {
               className={`w-4 h-4 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
             />
             Lưu
+          </Button>
+          <Button variant="outline" onClick={handleShare} className="h-11" aria-label="Share phim">
+            <Link className="w-4 h-4" />
+            Share
           </Button>
         </div>
       </div>

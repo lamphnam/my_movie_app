@@ -52,6 +52,16 @@ const ContinueWatchingCard = memo(({ entry }: ContinueWatchingCardProps) => {
                         </p>
                     </div>
                 )}
+
+                {/* Progress bar */}
+                {entry.episodeProgress !== undefined && entry.episodeProgress > 0 && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+                        <div
+                            className="h-full bg-primary rounded-full transition-all duration-500"
+                            style={{ width: `${entry.episodeProgress}%` }}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Info */}

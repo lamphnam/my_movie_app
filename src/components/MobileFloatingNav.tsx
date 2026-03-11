@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
-import { Home, Menu, Search } from 'lucide-react'
+import { Home, Menu, Search, Clock, Bookmark } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import MobileSearch from './MobileSearch'
@@ -94,6 +94,20 @@ const MobileFloatingNav = () => {
                             <nav className="space-y-2">
                                 {/* Quick Links */}
                                 <div className="grid grid-cols-2 gap-2 mb-4">
+                                    <Link
+                                        to="/lich-su"
+                                        className="glass-solid-fill flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
+                                    >
+                                        <Clock className="w-4 h-4" aria-hidden="true" />
+                                        Lịch Sử
+                                    </Link>
+                                    <Link
+                                        to="/yeu-thich"
+                                        className="glass-solid-fill flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"
+                                    >
+                                        <Bookmark className="w-4 h-4" aria-hidden="true" />
+                                        Yêu Thích
+                                    </Link>
                                     <Link
                                         to="/category/phim-le"
                                         className="glass-solid-fill flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-medium hover:bg-white/10 transition-colors"

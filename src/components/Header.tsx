@@ -11,12 +11,13 @@ import {
 import { filterData } from '@/data/filters'
 import { cn } from '@/lib/utils'
 import { Film, Clock, Bookmark, Search, X } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Button } from './ui/button'
 import { useState } from 'react'
 
 const Header = () => {
   const [showSearch, setShowSearch] = useState(false)
+  const { pathname } = useLocation()
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -94,14 +95,28 @@ const Header = () => {
 
           {/* === Right Actions === */}
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg" aria-label="Xem lịch sử xem phim">
+            <Link
+              to="/lich-su"
+              className={cn(
+                'inline-flex items-center h-8 px-2.5 gap-1.5 rounded-lg transition-colors hover:bg-white/5',
+                pathname === '/lich-su' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              )}
+              aria-label="Xem lịch sử xem phim"
+            >
               <Clock className="h-4 w-4" aria-hidden="true" />
               <span className="text-sm">Lịch sử</span>
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg" aria-label="Xem phim đã lưu">
+            </Link>
+            <Link
+              to="/yeu-thich"
+              className={cn(
+                'inline-flex items-center h-8 px-2.5 gap-1.5 rounded-lg transition-colors hover:bg-white/5',
+                pathname === '/yeu-thich' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              )}
+              aria-label="Xem phim đã lưu"
+            >
               <Bookmark className="h-4 w-4" aria-hidden="true" />
               <span className="text-sm">Đã lưu</span>
-            </Button>
+            </Link>
           </div>
         </div>
       </div>

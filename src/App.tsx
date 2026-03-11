@@ -17,6 +17,8 @@ const GenrePage = lazy(() => import('./pages/GenrePage'))
 const CountryPage = lazy(() => import('./pages/CountryPage'))
 const YearPage = lazy(() => import('./pages/YearPage'))
 const FilterPage = lazy(() => import('./pages/FilterPage'))
+const HistoryPage = lazy(() => import('./pages/HistoryPage'))
+const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
 
 const AnimatedRoutes = () => {
   const location = useLocation()
@@ -26,6 +28,8 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/filter" element={<FilterPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/lich-su" element={<HistoryPage />} />
+        <Route path="/yeu-thich" element={<FavoritesPage />} />
         <Route path="/phim/:slug" element={<DetailPage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/genre/:slug" element={<GenrePage />} />

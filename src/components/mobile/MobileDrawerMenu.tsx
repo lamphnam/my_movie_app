@@ -12,6 +12,8 @@ import {
     Globe,
     Calendar,
     PlayCircle,
+    Clock,
+    Bookmark,
 } from 'lucide-react';
 
 interface MobileDrawerMenuProps {
@@ -21,6 +23,8 @@ interface MobileDrawerMenuProps {
 
 const menuItems = [
     { to: '/', label: 'Trang chủ', icon: Home },
+    { to: '/lich-su', label: 'Lịch sử', icon: Clock },
+    { to: '/yeu-thich', label: 'Yêu thích', icon: Bookmark },
     { to: '/category/phim-le', label: 'Phim lẻ', icon: Film },
     { to: '/category/phim-bo', label: 'Phim bộ', icon: Tv },
     { to: '/category/hoat-hinh', label: 'Hoạt hình', icon: PlayCircle },
