@@ -1,6 +1,7 @@
 // src/pages/DetailPage.tsx
 
 import DetailPageSkeleton from '@/components/DetailPageSkeleton'
+import GracefulImage from '@/components/GracefulImage'
 import PageWrapper from '@/components/PageWrapper'
 import RelatedMovies from '@/components/RelatedMovies'
 import { Button } from '@/components/ui/button'
@@ -26,10 +27,12 @@ type CategoryGroup = {
 const DetailPage = () => {
   const { slug } = useParams<{ slug: string }>()
   const playerRef = useRef<HTMLDivElement>(null)
+  const relatedMoviesRef = useRef<HTMLDivElement>(null)
   const { isFavorited: checkFavorited, toggleFavorite } = useFavorites()
   const { history, addToHistory } = useWatchHistory()
   const [selectedEpisodeUrl, setSelectedEpisodeUrl] = useState<string | null>(null)
   const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState({ serverIndex: 0, episodeIndex: 0 })
+  const [shouldLoadRelatedMovies, setShouldLoadRelatedMovies] = useState(false)
 
   const {
     data: movieData,
@@ -69,6 +72,24 @@ const DetailPage = () => {
       setCurrentEpisodeIndex({ serverIndex: 0, episodeIndex: 0 })
     }
   }, [movie, slug, history])
+
+  useEffect(() => {
+    const target = relatedMoviesRef.current
+    if (!target || shouldLoadRelatedMovies) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadRelatedMovies(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '300px 0px' },
+    )
+
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [shouldLoadRelatedMovies])
 
   const handleToggleFavorite = useCallback(() => {
     if (!movie) return
@@ -164,6 +185,10 @@ const DetailPage = () => {
     }
   }, [getNextEpisode, handleSelectEpisode])
 
+  const nextEpisode = useMemo(() => getNextEpisode(), [getNextEpisode])
+  const currentServerName = movie?.episodes[currentEpisodeIndex.serverIndex]?.server_name
+  const currentEpisodeName = movie?.episodes[currentEpisodeIndex.serverIndex]?.items[currentEpisodeIndex.episodeIndex]?.name
+
   if (isLoading) return <DetailPageSkeleton />
   if (isError || !movie) {
     return <div className="py-20 text-center text-destructive">Không thể tải thông tin phim.</div>
@@ -230,9 +255,13 @@ const DetailPage = () => {
             <div className="lg:sticky lg:top-20 space-y-4">
               {/* Poster */}
               <div className="relative">
-                <img
+                <GracefulImage
                   src={posterUrl}
                   alt={movie.name}
+                  width={500}
+                  height={750}
+                  loading="eager"
+                  fetchPriority="high"
                   className="w-full rounded-lg shadow-lg"
                 />
                 {/* Quality Badge */}
@@ -296,9 +325,13 @@ const DetailPage = () => {
             <div className="flex flex-col gap-4 sm:flex-row lg:block">
               {/* Mobile Poster */}
               <div className="relative lg:hidden w-1/2 max-w-[160px] self-start sm:w-1/3">
-                <img
+                <GracefulImage
                   src={posterUrl}
                   alt={movie.name}
+                  width={500}
+                  height={750}
+                  loading="eager"
+                  fetchPriority="high"
                   className="rounded-lg shadow-lg"
                 />
                 <span className="badge-primary absolute top-2 right-2 text-[10px]">
@@ -332,7 +365,21 @@ const DetailPage = () => {
 
             {/* Player Section */}
             <div className="mt-6 lg:mt-8" ref={playerRef}>
-              <h2 className="text-h2 mb-3">Xem Phim</h2>
+              <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-h2">Xem Phim</h2>
+                  <p className="text-body-sm">
+                    {currentEpisodeName
+                      ? `Đang chọn ${currentEpisodeName}${currentServerName ? ` • ${currentServerName}` : ''}`
+                      : 'Chọn một tập bên dưới để bắt đầu xem'}
+                  </p>
+                </div>
+                {isSeries && (
+                  <span className="badge-outline self-start sm:self-auto">
+                    {movie.episodes.reduce((count: number, server: EpisodeServer) => count + server.items.length, 0)} tập khả dụng
+                  </span>
+                )}
+              </div>
               <div
                 className="relative aspect-video w-full overflow-hidden rounded-lg bg-cover bg-center shadow-lg border border-border"
                 style={{ backgroundImage: `url(${backgroundPlayerUrl})` }}
@@ -342,6 +389,7 @@ const DetailPage = () => {
                     className="h-full w-full"
                     src={selectedEpisodeUrl}
                     title="Video Player"
+                    loading="lazy"
                     allowFullScreen
                   />
                 ) : (
@@ -353,10 +401,13 @@ const DetailPage = () => {
                   </div>
                 )}
               </div>
+              <p className="mt-2 text-body-sm">
+                Nếu player tải chậm, hãy đợi vài giây hoặc chọn lại tập bên dưới.
+              </p>
             </div>
 
             {/* Next Episode Button */}
-            {isSeries && getNextEpisode() && (
+            {isSeries && nextEpisode && (
               <div className="mt-4">
                 <Button
                   onClick={handleNextEpisode}
@@ -364,7 +415,7 @@ const DetailPage = () => {
                   className="w-full h-10 gap-2"
                 >
                   <SkipForward className="w-4 h-4" aria-hidden="true" />
-                  Tập tiếp theo: {getNextEpisode()?.episode.name}
+                  Tập tiếp theo: {nextEpisode.episode.name}
                 </Button>
               </div>
             )}
@@ -375,16 +426,23 @@ const DetailPage = () => {
                 <h2 className="text-h2 mb-3">Danh sách tập</h2>
                 <div className="space-y-4">
                   {movie.episodes.map((server: EpisodeServer, serverIndex: number) => (
-                    <div key={serverIndex} className="surface-card p-4">
-                      <h3 className="text-body font-medium mb-3">{server.server_name}</h3>
+                    <div
+                      key={serverIndex}
+                      className={`surface-card p-4 ${serverIndex === currentEpisodeIndex.serverIndex ? 'border-primary/40 bg-primary/5' : ''}`}
+                    >
+                      <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <h3 className="text-body font-medium">{server.server_name}</h3>
+                        <span className="text-body-sm">{server.items.length} tập</span>
+                      </div>
                       <div className="flex flex-wrap gap-2">
                         {server.items.map((episode: EpisodeItem, episodeIndex: number) => (
                           <Button
                             key={episode.slug}
                             variant={selectedEpisodeUrl === episode.embed ? 'default' : 'outline'}
                             size="sm"
+                            aria-pressed={selectedEpisodeUrl === episode.embed}
                             onClick={() => handleSelectEpisode(episode.embed, serverIndex, episodeIndex)}
-                            className="h-8 px-3"
+                            className="h-9 px-3 rounded-lg"
                           >
                             {episode.name}
                           </Button>
@@ -399,7 +457,13 @@ const DetailPage = () => {
         </div>
 
         {/* Related Movies */}
-        <RelatedMovies genreSlug={primaryGenre?.slug} currentMovieSlug={movie.slug} />
+        <div ref={relatedMoviesRef}>
+          <RelatedMovies
+            genreSlug={primaryGenre?.slug}
+            currentMovieSlug={movie.slug}
+            enabled={shouldLoadRelatedMovies}
+          />
+        </div>
       </div>
 
       {/* Mobile Fixed Actions */}

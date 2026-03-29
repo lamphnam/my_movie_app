@@ -19,7 +19,12 @@ const MovieCard = memo(({ movie }: MovieCardProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Link to={`/phim/${movie.slug}`} className="movie-card-desktop group block outline-none" tabIndex={0} aria-label={`Xem phim ${movie.name}`}>
+        <Link
+          to={`/phim/${movie.slug}`}
+          className="movie-card-desktop group block outline-none rounded-lg interactive-focus focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          tabIndex={0}
+          aria-label={`Xem phim ${movie.name}`}
+        >
           {/* Poster Container */}
           <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">
             <GracefulImage
@@ -62,6 +67,10 @@ const MovieCard = memo(({ movie }: MovieCardProps) => {
             <p className="text-body-sm line-clamp-1" title={movie.original_name}>
               {movie.original_name}
             </p>
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              {movie.quality && <span className="badge-secondary">{movie.quality}</span>}
+              {movie.current_episode && <span className="badge-outline">{movie.current_episode}</span>}
+            </div>
           </div>
         </Link>
       </PopoverTrigger>

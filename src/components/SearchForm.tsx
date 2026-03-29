@@ -24,7 +24,7 @@ const SearchForm = memo(() => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['search', debouncedQuery],
+    queryKey: ['movies', 'search', debouncedQuery, 1],
     queryFn: () => movieApi.searchMovies(debouncedQuery, 1),
     enabled: debouncedQuery.length > 2,
     staleTime: 10 * 60 * 1000,
@@ -52,6 +52,8 @@ const SearchForm = memo(() => {
   }, [])
 
   useEffect(() => {
+    if (!isFocused) return
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         searchContainerRef.current &&
@@ -61,40 +63,42 @@ const SearchForm = memo(() => {
         setSelectedIndex(-1)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [isFocused])
 
   const results = useMemo(() => searchData?.items || [], [searchData])
   const showResults = isFocused && query.length > 2
 
   // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isFocused || results.length === 0) return
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev))
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
-      } else if (e.key === 'Enter' && selectedIndex >= 0) {
-        e.preventDefault()
-        const selectedMovie = results[selectedIndex]
-        navigate(`/phim/${selectedMovie.slug}`)
-        setQuery('')
-        setIsFocused(false)
-        setSelectedIndex(-1)
-      } else if (e.key === 'Escape') {
+  const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isFocused || results.length === 0) {
+      if (e.key === 'Escape') {
         setIsFocused(false)
         setSelectedIndex(-1)
       }
+      return
     }
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isFocused, results, selectedIndex, navigate])
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault()
+      const selectedMovie = results[selectedIndex]
+      navigate(`/phim/${selectedMovie.slug}`)
+      setQuery('')
+      setIsFocused(false)
+      setSelectedIndex(-1)
+    } else if (e.key === 'Escape') {
+      setIsFocused(false)
+      setSelectedIndex(-1)
+    }
+  }, [isFocused, navigate, results, selectedIndex])
 
   return (
     <div className="relative w-full transition-all duration-300" ref={searchContainerRef}>
@@ -107,6 +111,7 @@ const SearchForm = memo(() => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
+          onKeyDown={handleInputKeyDown}
           className="h-10 sm:h-9 w-full rounded-full border-transparent bg-secondary/50 pl-10 pr-10 text-base sm:text-sm focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-primary/50 transition-all shadow-inner"
           aria-label="Nhập tên phim"
           autoComplete="off"

@@ -1,9 +1,8 @@
 // src/App.tsx (Cập nhật)
 
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from "@vercel/speed-insights/react"
 import { AnimatePresence } from 'framer-motion' // <-- IMPORT
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import type { ComponentType } from 'react'
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import Loader from './components/Loader'
@@ -41,14 +40,50 @@ const AnimatedRoutes = () => {
 }
 
 function App() {
+  const [AnalyticsComponent, setAnalyticsComponent] = useState<ComponentType | null>(null)
+  const [SpeedInsightsComponent, setSpeedInsightsComponent] = useState<ComponentType | null>(null)
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let idleId: any = null
+
+    const loadAnalytics = async () => {
+      const [{ Analytics }, { SpeedInsights }] = await Promise.all([
+        import('@vercel/analytics/react'),
+        import('@vercel/speed-insights/react'),
+      ])
+
+      setAnalyticsComponent(() => Analytics)
+      setSpeedInsightsComponent(() => SpeedInsights)
+    }
+
+    if ('requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(() => {
+        void loadAnalytics()
+      })
+    } else {
+      timeoutId = setTimeout(() => {
+        void loadAnalytics()
+      }, 1500)
+    }
+
+    return () => {
+      if (timeoutId !== null) window.clearTimeout(timeoutId)
+      if (idleId !== null && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idleId)
+      }
+    }
+  }, [])
+
   return (
     <Router>
       <Layout>
         <Suspense fallback={<Loader />}>
           <AnimatedRoutes />
         </Suspense>
-        <SpeedInsights />
-        <Analytics />
+        {SpeedInsightsComponent ? <SpeedInsightsComponent /> : null}
+        {AnalyticsComponent ? <AnalyticsComponent /> : null}
       </Layout>
     </Router>
   )

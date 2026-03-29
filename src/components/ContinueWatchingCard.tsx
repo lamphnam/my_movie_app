@@ -5,6 +5,7 @@ import type { WatchHistoryEntry } from '@/hooks/useWatchHistory'
 import { Link } from 'react-router-dom'
 import { Play, Clock } from 'lucide-react'
 import { memo } from 'react'
+import GracefulImage from './GracefulImage'
 
 interface ContinueWatchingCardProps {
     entry: WatchHistoryEntry
@@ -26,13 +27,15 @@ const ContinueWatchingCard = memo(({ entry }: ContinueWatchingCardProps) => {
     return (
         <Link
             to={`/phim/${entry.slug}`}
-            className="group block outline-none"
+            className="group block outline-none rounded-xl interactive-focus focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             aria-label={`Tiếp tục xem ${entry.name}`}
         >
-            <div className="relative overflow-hidden rounded-lg">
-                <img
+            <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted shadow-sm">
+                <GracefulImage
                     src={optimizeImage(entry.thumbUrl, 200)}
                     alt={entry.name}
+                    width={200}
+                    height={300}
                     className="w-full aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                 />
@@ -47,6 +50,10 @@ const ContinueWatchingCard = memo(({ entry }: ContinueWatchingCardProps) => {
                 {/* Episode badge */}
                 {entry.currentEpisodeName && (
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                        <span className="badge-overlay mb-1">
+                            <Play className="w-3 h-3" aria-hidden="true" />
+                            Xem tiếp
+                        </span>
                         <p className="text-xs text-white truncate">
                             {entry.currentEpisodeName}
                         </p>
@@ -73,6 +80,9 @@ const ContinueWatchingCard = memo(({ entry }: ContinueWatchingCardProps) => {
                     <Clock className="w-3 h-3" aria-hidden="true" />
                     <span>{getTimeAgo(entry.lastWatchedAt)}</span>
                 </div>
+                {!entry.currentEpisodeName && (
+                    <p className="text-xs text-muted-foreground">Mở lại phim đã xem gần đây</p>
+                )}
             </div>
         </Link>
     )

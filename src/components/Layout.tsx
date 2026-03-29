@@ -1,16 +1,17 @@
 // src/components/Layout.tsx
 
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import type React from 'react'
 import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
 import MobileTopBar from './mobile/MobileTopBar'
 import MobileBottomNav from './mobile/MobileBottomNav'
-import MobileDrawerMenu from './mobile/MobileDrawerMenu'
-import MobileSearchDrawer from './mobile/MobileSearchDrawer'
-import MobileFilterDrawer from './mobile/MobileFilterDrawer'
 import DomainHandler from './DomainHandler'
+
+const MobileDrawerMenu = lazy(() => import('./mobile/MobileDrawerMenu'))
+const MobileSearchDrawer = lazy(() => import('./mobile/MobileSearchDrawer'))
+const MobileFilterDrawer = lazy(() => import('./mobile/MobileFilterDrawer'))
 
 const Layout = ({ children }: { children?: React.ReactNode }) => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -65,9 +66,11 @@ const Layout = ({ children }: { children?: React.ReactNode }) => {
       </div>
 
       {/* Mobile Drawers */}
-      <MobileDrawerMenu open={menuOpen} onOpenChange={setMenuOpen} />
-      <MobileSearchDrawer open={searchOpen} onOpenChange={setSearchOpen} />
-      <MobileFilterDrawer open={filterOpen} onOpenChange={setFilterOpen} />
+      <Suspense fallback={null}>
+        {menuOpen && <MobileDrawerMenu open={menuOpen} onOpenChange={setMenuOpen} />}
+        {searchOpen && <MobileSearchDrawer open={searchOpen} onOpenChange={setSearchOpen} />}
+        {filterOpen && <MobileFilterDrawer open={filterOpen} onOpenChange={setFilterOpen} />}
+      </Suspense>
     </div>
   )
 }

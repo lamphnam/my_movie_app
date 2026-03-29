@@ -23,9 +23,10 @@ export default function MobileBottomNav({
                 <Link
                     to="/"
                     className={cn(
-                        'flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target transition-colors rounded-full',
-                        isActive('/') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                        'flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target transition-colors rounded-full interactive-focus',
+                        isActive('/') ? 'text-primary bg-primary/12 border border-primary/30' : 'text-muted-foreground hover:text-foreground'
                     )}
+                    aria-current={isActive('/') ? 'page' : undefined}
                 >
                     <Home className="w-5 h-5" />
                     <span className="text-[10px] font-medium">Trang chủ</span>
@@ -35,9 +36,10 @@ export default function MobileBottomNav({
                 <button
                     onClick={onSearchClick}
                     className={cn(
-                        'flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target transition-colors rounded-full',
-                        isActive('/search') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                        'flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target transition-colors rounded-full interactive-focus',
+                        isActive('/search') ? 'text-primary bg-primary/12 border border-primary/30' : 'text-muted-foreground hover:text-foreground'
                     )}
+                    aria-pressed={isActive('/search')}
                 >
                     <Search className="w-5 h-5" />
                     <span className="text-[10px] font-medium">Tìm kiếm</span>
@@ -47,9 +49,10 @@ export default function MobileBottomNav({
                 <button
                     onClick={onFilterClick}
                     className={cn(
-                        'flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target transition-colors rounded-full',
-                        isActive('/filter') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                        'flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target transition-colors rounded-full interactive-focus',
+                        isActive('/filter') ? 'text-primary bg-primary/12 border border-primary/30' : 'text-muted-foreground hover:text-foreground'
                     )}
+                    aria-pressed={isActive('/filter')}
                 >
                     <Filter className="w-5 h-5" />
                     <span className="text-[10px] font-medium">Bộ lọc</span>
@@ -58,7 +61,8 @@ export default function MobileBottomNav({
                 {/* Menu */}
                 <button
                     onClick={onMenuClick}
-                    className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target text-muted-foreground hover:text-foreground transition-colors rounded-full"
+                    className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full tap-target text-muted-foreground hover:text-foreground transition-colors rounded-full interactive-focus"
+                    aria-label="Mở menu điều hướng"
                 >
                     <Menu className="w-5 h-5" />
                     <span className="text-[10px] font-medium">Menu</span>

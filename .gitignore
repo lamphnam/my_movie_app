@@ -34,3 +34,4 @@ android/*
 .agent/*
 .agents/*
 capacitor.config.ts
+.aider*
